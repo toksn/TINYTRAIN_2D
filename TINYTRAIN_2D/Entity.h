@@ -8,12 +8,8 @@ class Entity
 public:
 	Entity(EntityManager* man);
 	virtual ~Entity();
-	virtual void draw(sf::RenderWindow& target);
+	virtual void draw(sf::RenderWindow& target) = 0;
 	virtual void update(float deltaTime) = 0;
-
-	//virtual void setTransform(b2Vec2 pos, float angle);
-	//virtual void setPosition(sf::Vector2 pos);
-	//virtual void setAngle(float angle);	
 
 	bool destroyed = false;
 	EntityManager* m_manager;

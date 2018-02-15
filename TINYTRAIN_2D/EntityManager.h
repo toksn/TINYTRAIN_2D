@@ -58,13 +58,6 @@ public:
 	virtual void update(float deltaTime) = 0;
 	virtual void draw(sf::RenderWindow & target);
 
-	// converting methods
-	// TODO: INTO CAMERA
-	sf::Transformable convertToScreen(sf::Transformable worldPos);
-	sf::Vector2f convertPosToWorld(sf::Vector2f screenPos);
-	float convertToScreen(float worldSize);
-	float convertToWorld(float screenSize);
-
 	virtual void refresh();
 	virtual void clear();
 

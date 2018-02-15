@@ -18,30 +18,6 @@ void EntityManager::draw(sf::RenderWindow& target)
 	}
 }
 
-// todo: into camera
-constexpr float oneMeterInPixel = 20.0f;
-constexpr float onePixelInMeter = 1.0f/ oneMeterInPixel;
-sf::Transformable EntityManager::convertToScreen(sf::Transformable worldPos)
-{
-	sf::Transformable trans = worldPos;
-
-	return worldPos;
-	//return sf::Vector2f(worldPos.x * oneMeterInPixel, worldPos.y * oneMeterInPixel);
-}
-sf::Vector2f EntityManager::convertPosToWorld(sf::Vector2f screenPos)
-{
-	return sf::Vector2f(screenPos.x * onePixelInMeter, screenPos.y * onePixelInMeter);
-}
-
-float EntityManager::convertToScreen(float worldSize)
-{
-	return worldSize*oneMeterInPixel;
-}
-float EntityManager::convertToWorld(float screenSize)
-{
-	return screenSize*onePixelInMeter;
-}
-
 void EntityManager::refresh()
 {
 	// delete raw pointers when marked as destroyed
