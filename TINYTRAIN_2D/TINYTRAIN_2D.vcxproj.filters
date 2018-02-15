@@ -32,6 +32,9 @@
     <ClCompile Include="main.cpp">
       <Filter>TinyTrain</Filter>
     </ClCompile>
+    <ClCompile Include="TT_Train.cpp">
+      <Filter>TinyTrain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EntityManager.h">
@@ -47,6 +50,9 @@
       <Filter>TinyTrain</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
+      <Filter>TinyTrain</Filter>
+    </ClInclude>
+    <ClInclude Include="TT_Train.h">
       <Filter>TinyTrain</Filter>
     </ClInclude>
   </ItemGroup>
