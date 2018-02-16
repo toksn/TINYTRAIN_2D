@@ -132,6 +132,7 @@
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GuiManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TT_RailRoad.cpp" />
     <ClCompile Include="TT_Train.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +141,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GuiManager.h" />
+    <ClInclude Include="tinyc2.h" />
+    <ClInclude Include="TT_RailRoad.h" />
     <ClInclude Include="TT_Train.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

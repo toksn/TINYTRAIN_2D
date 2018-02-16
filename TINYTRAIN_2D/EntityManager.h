@@ -12,14 +12,14 @@ public:
 	EntityManager();
 	~EntityManager();
 
-	template<typename T, typename... TArgs> inline T& create(TArgs&&... args)
+	template<typename T, typename... TArgs> inline T* create(TArgs&&... args)
 	{
 		//return T(std::forward<TArgs>(args));
 
 		static_assert(std::is_base_of<Entity, T>::value, "'T' must be derived from 'Entity'");
 
 		// create unique pointer by forwarding the given arguments + put it in the entities vector
-		m_entities.emplace_back(std::make_unique<T>(m_world, this, std::forward<TArgs>(args)...));
+		m_entities.emplace_back(std::make_unique<T>(this, std::forward<TArgs>(args)...));
 		//m_entities.emplace_back(std::make_unique<T>());
 
 
@@ -29,15 +29,15 @@ public:
 		m_groupedEntities[typeid(T).hash_code()].emplace_back(ptr);
 
 		// return dereferenced raw pointer
-		return *ptr;
+		return ptr;
 	}
 
-	template<typename T> inline T& create()
+	template<typename T> inline T* create()
 	{
 		static_assert(std::is_base_of<Entity, T>::value, "'T' must be derived from 'Entity'");
 
 		// create unique pointer by forwarding the given arguments + put it in the entities vector
-		auto uPtr = std::make_unique<T>(m_world, this);
+		auto uPtr = std::make_unique<T>(this);
 		auto ptr = uPtr.get();
 		
 		m_entities.emplace_back(std::move(uPtr));
@@ -47,7 +47,7 @@ public:
 		m_groupedEntities[typeid(T).hash_code()].emplace_back(ptr);
 
 		// return dereferenced raw pointer
-		return *ptr;
+		return ptr;
 	}
 
 	template<typename T> auto& getAll()
