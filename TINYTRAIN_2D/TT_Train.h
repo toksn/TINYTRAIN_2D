@@ -1,7 +1,6 @@
 #pragma once
 #include <SFML\Graphics.hpp>
 #include "Entity.h"
-//#include "TT_RailRoad.h"
 
 class TT_Train : public Entity
 {
@@ -23,9 +22,8 @@ public:
 	sf::Color m_color_wagons;
 
 	std::vector<sf::RectangleShape> m_wagons;
-	//TT_RailRoad* m_railroad;
-
-	// distance already travelled by the first wagon
+	
+	// distance travelled by the first wagon
 	float m_distance;
 	
 };

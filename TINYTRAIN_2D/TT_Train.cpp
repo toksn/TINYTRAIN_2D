@@ -1,7 +1,5 @@
 #include "TT_Train.h"
 
-
-
 TT_Train::TT_Train(EntityManager* man) : Entity(man)
 {
 	m_color_firstwagon = sf::Color::Yellow;
@@ -13,7 +11,6 @@ TT_Train::TT_Train(EntityManager* man) : Entity(man)
 
 
 }
-
 
 TT_Train::~TT_Train()
 {
@@ -42,14 +39,6 @@ void TT_Train::initWagons(const unsigned int a_numberOfWagons)
 	if (m_wagons.size() > 0)
 		m_wagons[0].setFillColor(m_color_firstwagon);
 }
-
-/*
-void TT_Train::setRailRoad(TT_RailRoad* a_railroad, float atDistance)
-{
-	m_railroad = a_railroad;
-	if (atDistance >= 0.0f && atDistance < m_railroad->getLength())
-		m_distance = atDistance;
-}*/
 
 void TT_Train::update(const float dt)
 {

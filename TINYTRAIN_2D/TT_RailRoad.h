@@ -28,6 +28,5 @@ public:
 
 	// array of trains actually driving on the track
 	std::vector<TT_Train*> m_trains;
-	//std::unique_ptr<sf::Transformable> m_trackspline;
 	sf::VertexArray m_trackspline;
 };

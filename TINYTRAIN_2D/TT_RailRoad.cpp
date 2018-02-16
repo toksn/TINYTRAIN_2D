@@ -58,20 +58,18 @@ void TT_RailRoad::addTrain(TT_Train * a_train, float a_atDistance)
 
 void TT_RailRoad::moveAndRotateOnRail(TT_Train* train)
 {
-	float dist = train->m_distance;
 	// max dist to travel on the railroad
 	float maxdist = getLength();
 
-	if (dist > maxdist)
+	if (train->m_distance > maxdist)
 	{
-		// todo: event of the train reaching the end of its railroad
-
-		dist = maxdist;
+		// todo: event of the train reaching the end of its railroad (ONLY FIRST WAGON IS CONCERNED)
+		train->m_distance = maxdist;
 	}
-	else if (dist < 0.0f)
+	else if (train->m_distance < 0.0f)
 	{
-		// todo: event of invalid distance
-		dist = 0.0f;
+		// todo: event of invalid distance (ONLY FIRST WAGON IS CONCERNED)
+		train->m_distance = 0.0f;
 	}
 
 
@@ -79,7 +77,7 @@ void TT_RailRoad::moveAndRotateOnRail(TT_Train* train)
 	for (int i = 0; i < train->m_wagons.size(); i++)
 	{
 		// calc position of the current wagon
-		float current_wagon_dist = dist - i * (train->m_wagonsize.x + train->m_wagongap);
+		float current_wagon_dist = train->m_distance - i * (train->m_wagonsize.x + train->m_wagongap);
 		hintindex = getSegmentStartIndexAtDist(current_wagon_dist, hintindex);
 
 		setPositionAndRotationFromRail(current_wagon_dist, hintindex, &train->m_wagons[i]);
@@ -135,53 +133,7 @@ void TT_RailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transf
 	}
 	
 }
-/*
-sf::Vector2f TT_RailRoad::getPositionOnRail(float a_dist, int index)
-{
-	sf::Vector2f pos;
 
-	//todo: extrapolate first segment to negative distance
-	if (a_dist < 0.0f)
-		a_dist = 0.0f;
-
-	int size = m_trackspline.getVertexCount();
-	if (size)
-	{
-		float len = getLength();
-
-		//todo: extrapolate last segment to over actual railroad length
-		if (a_dist > len)
-			a_dist = len;
-
-		// find segment index
-		int i = getSegmentStartIndexAtDist(a_dist, index);
-
-		if(i+1<size)
-		{
-			if (m_length[i] == a_dist)
-			{
-				pos = m_trackspline[i].position;
-			}
-			else
-			{
-				float seg_len = m_length[i + 1] - m_length[i];
-				float alpha_on_seg = (a_dist - m_length[i]) / seg_len;
-
-				c2v start{ m_trackspline[i].position.x,		m_trackspline[i].position.y };
-				c2v end{ m_trackspline[i+1].position.x,		m_trackspline[i+1].position.y };
-				c2v temp = c2Lerp(start, end, alpha_on_seg);
-				pos.x = temp.x;
-				pos.y = temp.y;
-			}
-		}
-		// something strange happend.. probably just vertex on the rail
-		else
-			pos = m_trackspline[i].position;
-	}
-
-	return pos;
-}
-*/
 int TT_RailRoad::getSegmentStartIndexAtDist(float a_dist, int indexHint)
 {
 	int i = 0;
