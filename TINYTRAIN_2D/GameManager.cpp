@@ -49,6 +49,26 @@ void GameManager::loadLevel()
 	rails->append(sf::Vector2f(250.0f, 140.f));
 	rails->append(sf::Vector2f(150.0f, 180.f));
 	rails->append(sf::Vector2f(130.0f, 70.f));
+
+	sf::Vector2f lastPos(130.0f, 70.f);
+	for (size_t i = 0; i < 50; i++)
+	{
+		lastPos.x += rand() % 200 - 100;
+		lastPos.y += rand() % 200 - 100;
+		
+		if (lastPos.x < 0)
+			lastPos.x = 0;
+		else if (lastPos.y > 600)
+			lastPos.x = 590;
+
+		if (lastPos.y < 0)
+			lastPos.y = 0;
+		else if (lastPos.y > 400)
+			lastPos.y = 400;
+
+		rails->append(lastPos);
+	}
+
 	rails->addTrain(playertrain);
 	playertrain->initWagons(3);
 

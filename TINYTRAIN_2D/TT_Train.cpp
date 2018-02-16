@@ -7,7 +7,7 @@ TT_Train::TT_Train(EntityManager* man) : Entity(man)
 
 	m_wagonsize = sf::Vector2f(20.0f, 10.0f);
 	m_wagongap = 5.0f;
-	m_speed = m_wagonsize.x * 1.5f;
+	m_speed = m_wagonsize.x * 5.5f;
 
 
 }
