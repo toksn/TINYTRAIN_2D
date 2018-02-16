@@ -43,19 +43,18 @@ void TT_Train::initWagons(const unsigned int a_numberOfWagons)
 		m_wagons[0].setFillColor(m_color_firstwagon);
 }
 
-
+/*
 void TT_Train::setRailRoad(TT_RailRoad* a_railroad, float atDistance)
 {
 	m_railroad = a_railroad;
 	if (atDistance >= 0.0f && atDistance < m_railroad->getLength())
 		m_distance = atDistance;
-}
+}*/
 
 void TT_Train::update(const float dt)
 {
 	// move the wagons by speed * dt on the railroad
 	m_distance += dt * m_speed;
-	m_railroad->moveAndRotateOnRail(m_distance, this);
 }
 
 void TT_Train::draw(sf::RenderWindow & target)
@@ -63,7 +62,4 @@ void TT_Train::draw(sf::RenderWindow & target)
 	// draw them wagons
 	for (int i = 0; i < m_wagons.size(); i++)
 		target.draw(m_wagons[i]);
-
-	// draw the railroad
-	target.draw(*m_railroad);
 }

@@ -4,10 +4,10 @@
 #define TINYC2_IMPLEMENTATION
 #include "tinyc2.h"
 
-TT_RailRoad::TT_RailRoad()
+TT_RailRoad::TT_RailRoad(EntityManager* man) : Entity(man)
 {
 	// default railroad draw type
-	setPrimitiveType(sf::PrimitiveType::LinesStrip);
+	m_trackspline.setPrimitiveType(sf::PrimitiveType::LinesStrip);
 }
 
 TT_RailRoad::~TT_RailRoad()
@@ -16,7 +16,7 @@ TT_RailRoad::~TT_RailRoad()
 
 void TT_RailRoad::recalcLength(unsigned int startindex)
 {
-	int size = getVertexCount();
+	int size = m_trackspline.getVertexCount();
 	m_length.resize(size);
 	
 	// first point always has length zero
@@ -28,40 +28,50 @@ void TT_RailRoad::recalcLength(unsigned int startindex)
 
 	// we can assume here that the startindex is > 0 because of the above
 	for (int i = startindex; i < size; i++)
-		m_length[i] = m_length[i-1] + c2Len(c2Sub(c2v{ this->operator[](i).position.x , this->operator[](i).position.y }, c2v{ this->operator[](i-1).position.x , this->operator[](i-1).position.y }));
+		m_length[i] = m_length[i-1] + c2Len(c2Sub(c2v{ m_trackspline[i].position.x , m_trackspline[i].position.y }, c2v{ m_trackspline[i-1].position.x , m_trackspline[i-1].position.y }));
 }
 
 void TT_RailRoad::append(const sf::Vertex & vertex)
 {
-	sf::VertexArray::append(vertex);
+	m_trackspline.append(vertex);
 
 	// calc length for the last vertex
-	recalcLength(getVertexCount() - 1);
+	recalcLength(m_trackspline.getVertexCount() - 1);
 }
 
 float TT_RailRoad::getLength()
 {
-	if (m_length.size() != getVertexCount())
+	if (m_length.size() != m_trackspline.getVertexCount())
 		recalcLength();
 
-	return m_length[getVertexCount()-1];
+	return m_length[m_trackspline.getVertexCount()-1];
 }
 
-void TT_RailRoad::moveAndRotateOnRail(float a_dist, TT_Train* train)
+void TT_RailRoad::addTrain(TT_Train * a_train, float a_atDistance)
 {
+	m_trains.push_back(a_train);
+	if (a_atDistance >= 0.0f && a_atDistance < getLength())
+		a_train->m_distance = a_atDistance;
+	else
+		a_train->m_distance = 0.0f;
+}
+
+void TT_RailRoad::moveAndRotateOnRail(TT_Train* train)
+{
+	float dist = train->m_distance;
 	// max dist to travel on the railroad
 	float maxdist = getLength();
 
-	if (a_dist > maxdist)
+	if (dist > maxdist)
 	{
 		// todo: event of the train reaching the end of its railroad
 
-		a_dist = maxdist;
+		dist = maxdist;
 	}
-	else if (a_dist < 0.0f)
+	else if (dist < 0.0f)
 	{
 		// todo: event of invalid distance
-		a_dist = 0.0f;
+		dist = 0.0f;
 	}
 
 
@@ -69,7 +79,7 @@ void TT_RailRoad::moveAndRotateOnRail(float a_dist, TT_Train* train)
 	for (int i = 0; i < train->m_wagons.size(); i++)
 	{
 		// calc position of the current wagon
-		float current_wagon_dist = a_dist - i * (train->m_wagonsize.x + train->m_wagongap);
+		float current_wagon_dist = dist - i * (train->m_wagonsize.x + train->m_wagongap);
 		hintindex = getSegmentStartIndexAtDist(current_wagon_dist, hintindex);
 
 		setPositionAndRotationFromRail(current_wagon_dist, hintindex, &train->m_wagons[i]);
@@ -80,7 +90,7 @@ void TT_RailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transf
 {
 	sf::Vector2f pos;
 	float angle = 0.0f;
-	int size = getVertexCount();
+	int size = m_trackspline.getVertexCount();
 	if (size)
 	{
 		// outside of railrange
@@ -92,8 +102,8 @@ void TT_RailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transf
 
 		if (i + 1 < size)
 		{
-			c2v start{ this->operator[](i).position.x,		this->operator[](i).position.y };
-			c2v end{ this->operator[](i + 1).position.x,	this->operator[](i + 1).position.y };
+			c2v start{ m_trackspline[i].position.x,		m_trackspline[i].position.y };
+			c2v end{ m_trackspline[i + 1].position.x,	m_trackspline[i + 1].position.y };
 
 			c2v seg = c2Sub(end, start);
 			// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
@@ -102,7 +112,7 @@ void TT_RailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transf
 
 			if (m_length[i] == a_dist)
 			{
-				pos = this->operator[](i).position;
+				pos = m_trackspline[i].position;
 			}
 			else
 			{
@@ -117,7 +127,7 @@ void TT_RailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transf
 		// something strange happend.. probably just vertex on the rail
 		else
 		{
-			pos = this->operator[](i).position;
+			pos = m_trackspline[i].position;
 		}
 			
 		obj->setPosition(pos);
@@ -125,7 +135,7 @@ void TT_RailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transf
 	}
 	
 }
-
+/*
 sf::Vector2f TT_RailRoad::getPositionOnRail(float a_dist, int index)
 {
 	sf::Vector2f pos;
@@ -134,7 +144,7 @@ sf::Vector2f TT_RailRoad::getPositionOnRail(float a_dist, int index)
 	if (a_dist < 0.0f)
 		a_dist = 0.0f;
 
-	int size = getVertexCount();
+	int size = m_trackspline.getVertexCount();
 	if (size)
 	{
 		float len = getLength();
@@ -150,15 +160,15 @@ sf::Vector2f TT_RailRoad::getPositionOnRail(float a_dist, int index)
 		{
 			if (m_length[i] == a_dist)
 			{
-				pos = this->operator[](i).position;
+				pos = m_trackspline[i].position;
 			}
 			else
 			{
 				float seg_len = m_length[i + 1] - m_length[i];
 				float alpha_on_seg = (a_dist - m_length[i]) / seg_len;
 
-				c2v start{ this->operator[](i).position.x,		this->operator[](i).position.y };
-				c2v end{ this->operator[](i+1).position.x,			this->operator[](i+1).position.y };
+				c2v start{ m_trackspline[i].position.x,		m_trackspline[i].position.y };
+				c2v end{ m_trackspline[i+1].position.x,		m_trackspline[i+1].position.y };
 				c2v temp = c2Lerp(start, end, alpha_on_seg);
 				pos.x = temp.x;
 				pos.y = temp.y;
@@ -166,17 +176,17 @@ sf::Vector2f TT_RailRoad::getPositionOnRail(float a_dist, int index)
 		}
 		// something strange happend.. probably just vertex on the rail
 		else
-			pos = this->operator[](i).position;
+			pos = m_trackspline[i].position;
 	}
 
 	return pos;
 }
-
+*/
 int TT_RailRoad::getSegmentStartIndexAtDist(float a_dist, int indexHint)
 {
 	int i = 0;
 
-	int size = getVertexCount();
+	int size = m_trackspline.getVertexCount();
 
 	if (size < 0)
 		return -1;
@@ -207,4 +217,16 @@ int TT_RailRoad::getSegmentStartIndexAtDist(float a_dist, int indexHint)
 	}
 
 	return i;
+}
+
+void TT_RailRoad::draw(sf::RenderWindow & target)
+{
+	target.draw(m_trackspline);
+}
+
+void TT_RailRoad::update(float deltaTime)
+{
+	// move all the trains on the track
+	for (int i = 0; i < m_trains.size(); i++)
+		moveAndRotateOnRail(m_trains[i]);
 }
