@@ -44,10 +44,11 @@ void GameManager::loadLevel()
 	// create a railroad for the train
 	auto rails = new TT_RailRoad();
 
+	rails->append(sf::Vector2f(200.0f, 50.f));
 	rails->append(sf::Vector2f(200.0f, 100.f));
 	rails->append(sf::Vector2f(250.0f, 140.f));
-	rails->append(sf::Vector2f(200.0f, 180.f));
-	rails->append(sf::Vector2f(200.0f, 70.f));
+	rails->append(sf::Vector2f(150.0f, 180.f));
+	rails->append(sf::Vector2f(130.0f, 70.f));
 	playertrain->setRailRoad(rails);
 	playertrain->initWagons(3);
 

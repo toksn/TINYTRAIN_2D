@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML\Graphics.hpp>
+class TT_Train;
 
 class TT_RailRoad : public sf::VertexArray
 {
@@ -11,7 +12,13 @@ public:
 	void append(const sf::Vertex& vertex);
 
 	float getLength();
-	sf::Vector2f getPositionOnRail(float a_dist);
+
+	void moveAndRotateOnRail(float a_dist, TT_Train * train);
+
+	void setPositionAndRotationFromRail(float a_dist, int index, sf::Transformable* obj);
+	
+	sf::Vector2f getPositionOnRail(float a_dist, int index = -1);
+	int getSegmentStartIndexAtDist(float a_dist, int indexHint = -1);
 
 	// contains the length at each of the vertices
 	std::vector<float> m_length;
