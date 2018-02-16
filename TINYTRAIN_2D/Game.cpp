@@ -37,8 +37,8 @@ void Game::update()
 	m_gameManager->refresh();
 	m_gameManager->update(deltaTime.asSeconds());
 
-	m_guiManager->refresh();
-	m_guiManager->update(deltaTime.asSeconds());
+	//m_guiManager->refresh();
+	//m_guiManager->update(deltaTime.asSeconds());
 	
 	// add render timer in seconds
 	m_renderTimer += deltaTime;
@@ -53,7 +53,7 @@ void Game::update()
 			m_window->clear();
 			m_gameManager->draw(*m_window);
 
-			m_guiManager->draw(*m_window);
+			//m_guiManager->draw(*m_window);
 			m_window->display();
 		}
 
