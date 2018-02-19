@@ -17,16 +17,10 @@
     <ClCompile Include="EntityManager.cpp">
       <Filter>GameFramework</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>GameFramework</Filter>
-    </ClCompile>
     <ClCompile Include="GameManager.cpp">
       <Filter>TinyTrain</Filter>
     </ClCompile>
     <ClCompile Include="GuiManager.cpp">
-      <Filter>TinyTrain</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
       <Filter>TinyTrain</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -37,6 +31,9 @@
     </ClCompile>
     <ClCompile Include="TT_RailRoad.cpp">
       <Filter>TinyTrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>GameFramework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,9 +49,6 @@
     <ClInclude Include="GuiManager.h">
       <Filter>TinyTrain</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>TinyTrain</Filter>
-    </ClInclude>
     <ClInclude Include="TT_Train.h">
       <Filter>TinyTrain</Filter>
     </ClInclude>
@@ -63,6 +57,12 @@
     </ClInclude>
     <ClInclude Include="TT_RailRoad.h">
       <Filter>TinyTrain</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateBase.h">
+      <Filter>GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>GameFramework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

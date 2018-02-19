@@ -1,24 +1,14 @@
 #pragma once
 #include <SFML\Graphics.hpp>
 
-class EntityManager;
-
-class Entity
+namespace tgf
 {
-public:
-	Entity(EntityManager* man);
-	virtual ~Entity();
-	virtual void draw(sf::RenderWindow& target) = 0;
-	virtual void update(float deltaTime) = 0;
-
-	bool destroyed = false;
-	EntityManager* m_manager;
-
-	// world pos
-	sf::Transformable m_pos;
-
-	// for drawing
-	sf::Transformable* m_transformable;
-	sf::Drawable* m_drawable;
-};
+	class Entity
+	{
+	public:
+		// drawing this entity to the target. the caller (usally a gamestate) has to make sure the target is valid. no checks will be done in the entities!
+		virtual void draw(sf::RenderWindow* target) = 0;
+		virtual void update(float deltaTime) = 0;
+	};
+}
 
