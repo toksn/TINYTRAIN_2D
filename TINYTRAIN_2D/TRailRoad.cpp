@@ -1,22 +1,22 @@
 #define TINYC2_IMPLEMENTATION
 #include "tinyc2.h"
 
-#include "TT_RailRoad.h"
-#include "TT_Train.h"
+#include "TRailRoad.h"
+#include "TTrain.h"
 
 namespace tinytrain
 {
-	TT_RailRoad::TT_RailRoad()
+	TRailRoad::TRailRoad()
 	{
 		// default railroad draw type
 		m_trackspline.setPrimitiveType(sf::PrimitiveType::LinesStrip);
 	}
 
-	TT_RailRoad::~TT_RailRoad()
+	TRailRoad::~TRailRoad()
 	{
 	}
 
-	void TT_RailRoad::recalcLength(unsigned int startindex)
+	void TRailRoad::recalcLength(unsigned int startindex)
 	{
 		int size = m_trackspline.getVertexCount();
 		m_length.resize(size);
@@ -33,7 +33,7 @@ namespace tinytrain
 			m_length[i] = m_length[i - 1] + c2Len(c2Sub(c2v{ m_trackspline[i].position.x , m_trackspline[i].position.y }, c2v{ m_trackspline[i - 1].position.x , m_trackspline[i - 1].position.y }));
 	}
 
-	void TT_RailRoad::append(const sf::Vertex & vertex)
+	void TRailRoad::append(const sf::Vertex & vertex)
 	{
 		m_trackspline.append(vertex);
 
@@ -41,7 +41,7 @@ namespace tinytrain
 		recalcLength(m_trackspline.getVertexCount() - 1);
 	}
 
-	float TT_RailRoad::getLength()
+	float TRailRoad::getLength()
 	{
 		if (m_length.size() != m_trackspline.getVertexCount())
 			recalcLength();
@@ -49,7 +49,7 @@ namespace tinytrain
 		return m_length[m_trackspline.getVertexCount() - 1];
 	}
 
-	void TT_RailRoad::addTrain(TT_Train * a_train, float a_atDistance)
+	void TRailRoad::addTrain(TTrain * a_train, float a_atDistance)
 	{
 		m_trains.push_back(a_train);
 		if (a_atDistance >= 0.0f && a_atDistance < getLength())
@@ -58,7 +58,7 @@ namespace tinytrain
 			a_train->m_distance = 0.0f;
 	}
 
-	void TT_RailRoad::moveAndRotateOnRail(TT_Train* train)
+	void TRailRoad::moveAndRotateOnRail(TTrain* train)
 	{
 		// max dist to travel on the railroad
 		float maxdist = getLength();
@@ -86,7 +86,7 @@ namespace tinytrain
 		}
 	}
 
-	void TT_RailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transformable* obj)
+	void TRailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transformable* obj)
 	{
 		sf::Vector2f pos;
 		float angle = 0.0f;
@@ -136,7 +136,7 @@ namespace tinytrain
 
 	}
 
-	int TT_RailRoad::getSegmentStartIndexAtDist(float a_dist, int indexHint)
+	int TRailRoad::getSegmentStartIndexAtDist(float a_dist, int indexHint)
 	{
 		int i = 0;
 
@@ -173,12 +173,12 @@ namespace tinytrain
 		return i;
 	}
 
-	void TT_RailRoad::draw(sf::RenderWindow* target)
+	void TRailRoad::draw(sf::RenderWindow* target)
 	{
 		target->draw(m_trackspline);
 	}
 
-	void TT_RailRoad::update(float deltaTime)
+	void TRailRoad::update(float deltaTime)
 	{
 		// move all the trains on the track
 		for (int i = 0; i < m_trains.size(); i++)

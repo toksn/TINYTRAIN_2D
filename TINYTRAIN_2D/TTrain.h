@@ -4,11 +4,11 @@
 
 namespace tinytrain
 {
-	class TT_Train : public tgf::Entity
+	class TTrain : public tgf::Entity
 	{
 	public:
-		TT_Train();
-		~TT_Train();
+		TTrain();
+		~TTrain();
 
 		void initWagons(const unsigned int a_numberOfWagons);
 

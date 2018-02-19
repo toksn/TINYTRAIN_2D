@@ -4,13 +4,13 @@
 
 namespace tinytrain
 {
-	class TT_Train;
+	class TTrain;
 
-	class TT_RailRoad : public tgf::Entity
+	class TRailRoad : public tgf::Entity
 	{
 	public:
-		TT_RailRoad();
-		~TT_RailRoad();
+		TRailRoad();
+		~TRailRoad();
 
 		void recalcLength(unsigned int startindex = 0);
 		float getLength();
@@ -21,8 +21,8 @@ namespace tinytrain
 		virtual void update(float deltaTime) override;
 
 		// functions for moving trains along the track
-		void addTrain(TT_Train* a_train, float a_atDistance = 0.0f);
-		void moveAndRotateOnRail(TT_Train * train);
+		void addTrain(TTrain* a_train, float a_atDistance = 0.0f);
+		void moveAndRotateOnRail(TTrain * train);
 		void setPositionAndRotationFromRail(float a_dist, int index, sf::Transformable* obj);
 		int getSegmentStartIndexAtDist(float a_dist, int indexHint = -1);
 
@@ -30,7 +30,7 @@ namespace tinytrain
 		std::vector<float> m_length;
 
 		// array of trains actually driving on the track
-		std::vector<TT_Train*> m_trains;
+		std::vector<TTrain*> m_trains;
 		sf::VertexArray m_trackspline;
 	};
 }

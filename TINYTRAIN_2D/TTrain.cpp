@@ -1,8 +1,8 @@
-#include "TT_Train.h"
+#include "TTrain.h"
 
 namespace tinytrain
 {
-	TT_Train::TT_Train()
+	TTrain::TTrain()
 	{
 		m_color_firstwagon = sf::Color::Yellow;
 		m_color_wagons = sf::Color::White;
@@ -12,11 +12,11 @@ namespace tinytrain
 		m_speed = m_wagonsize.x * 5.5f;
 	}
 
-	TT_Train::~TT_Train()
+	TTrain::~TTrain()
 	{
 	}
 
-	void TT_Train::initWagons(const unsigned int a_numberOfWagons)
+	void TTrain::initWagons(const unsigned int a_numberOfWagons)
 	{
 		if (a_numberOfWagons < m_wagons.size())
 		{
@@ -40,13 +40,13 @@ namespace tinytrain
 			m_wagons[0].setFillColor(m_color_firstwagon);
 	}
 
-	void TT_Train::update(const float dt)
+	void TTrain::update(const float dt)
 	{
 		// move the wagons by speed * dt on the railroad
 		m_distance += dt * m_speed;
 	}
 
-	void TT_Train::draw(sf::RenderWindow* target)
+	void TTrain::draw(sf::RenderWindow* target)
 	{
 		// draw them wagons
 		for (int i = 0; i < m_wagons.size(); i++)

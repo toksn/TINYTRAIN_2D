@@ -1,8 +1,8 @@
 #include "GameState_Running.h"
 #include <algorithm>
 
-#include "TT_RailRoad.h"
-#include "TT_Train.h"
+#include "TRailRoad.h"
+#include "TTrain.h"
 
 namespace tinytrain
 {
@@ -28,10 +28,10 @@ namespace tinytrain
 		SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
 		***************************************************************************
 		// create train for the player
-		TT_Train* playertrain = create<TT_Train>();
+		TTrain* playertrain = create<TTrain>();
 
 		// create a railroad for the train
-		TT_RailRoad* rails = create<TT_RailRoad>();
+		TRailRoad* rails = create<TRailRoad>();
 
 		rails->append(sf::Vector2f(200.0f, 50.f));
 		rails->append(sf::Vector2f(200.0f, 100.f));

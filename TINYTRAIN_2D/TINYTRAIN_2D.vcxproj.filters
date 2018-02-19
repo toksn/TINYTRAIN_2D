@@ -29,10 +29,10 @@
     <ClCompile Include="GameState_Running.cpp">
       <Filter>TinyTrain\gamestates</Filter>
     </ClCompile>
-    <ClCompile Include="TT_RailRoad.cpp">
+    <ClCompile Include="TTrain.cpp">
       <Filter>TinyTrain\objects</Filter>
     </ClCompile>
-    <ClCompile Include="TT_Train.cpp">
+    <ClCompile Include="TRailRoad.cpp">
       <Filter>TinyTrain\objects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -52,10 +52,10 @@
     <ClInclude Include="GameState_Running.h">
       <Filter>TinyTrain\gamestates</Filter>
     </ClInclude>
-    <ClInclude Include="TT_RailRoad.h">
+    <ClInclude Include="TTrain.h">
       <Filter>TinyTrain\objects</Filter>
     </ClInclude>
-    <ClInclude Include="TT_Train.h">
+    <ClInclude Include="TRailRoad.h">
       <Filter>TinyTrain\objects</Filter>
     </ClInclude>
   </ItemGroup>
