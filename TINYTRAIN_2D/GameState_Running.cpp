@@ -1,26 +1,26 @@
-#include "GameManager.h"
+#include "GameState_Running.h"
 #include <algorithm>
 
 #include "TT_RailRoad.h"
 #include "TT_Train.h"
 
 
-GameManager::GameManager(tgf::Game * game)
+GameState_Running::GameState_Running(tgf::Game * game)
 {
 	m_game = game;
 	loadLevel();
 }
 
-GameManager::~GameManager()
+GameState_Running::~GameState_Running()
 {
 }
 
-void GameManager::update(float deltaTime)
+void GameState_Running::update(float deltaTime)
 {
 	// update level
 }
 
-void GameManager::loadLevel()
+void GameState_Running::loadLevel()
 {
 	/**************************************************************************
 	SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
@@ -70,10 +70,10 @@ void GameManager::loadLevel()
 	// passengers to pick up
 }
 
-void GameManager::draw(sf::RenderTarget * target)
+void GameState_Running::draw(sf::RenderTarget * target)
 {
 }
 
-void GameManager::handleInput()
+void GameState_Running::handleInput()
 {
 }

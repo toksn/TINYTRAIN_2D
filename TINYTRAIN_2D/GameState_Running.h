@@ -1,11 +1,11 @@
 #pragma once
 #include "GameStateBase.h"
 
-class GameManager : public tgf::GameStateBase
+class GameState_Running : public tgf::GameStateBase
 {
 public:
-	GameManager(tgf::Game* game);
-	~GameManager();
+	GameState_Running(tgf::Game* game);
+	~GameState_Running();
 
 	// Inherited via GameStateBase
 	virtual void update(float deltaTime) override;

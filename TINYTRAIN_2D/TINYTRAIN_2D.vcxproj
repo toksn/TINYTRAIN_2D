@@ -127,7 +127,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameState_Running.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TT_RailRoad.cpp" />
     <ClCompile Include="TT_Train.cpp" />
@@ -135,7 +135,7 @@
   <ItemGroup>
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameState_Running.h" />
     <ClInclude Include="GameStateBase.h" />
     <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TT_RailRoad.h" />
