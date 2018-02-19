@@ -1,3 +1,4 @@
+#include "tinyc2.h"
 #include "TLevel.h"
 #include "TTrain.h"
 #include "TRailRoad.h"
@@ -48,20 +49,35 @@ namespace tinytrain
 			m_railroad->append(sf::Vector2f(150.0f, 180.f));
 			m_railroad->append(sf::Vector2f(130.0f, 70.f));
 
-			sf::Vector2f lastPos(130.0f, 70.f);
+			c2v start{ 150.0f, 180.f };
+			c2v end{ 130.0f, 70.f };
+			float dist = 10.0f;
+			int angle_range = 20;
+			angle_range *= 100;
+
+			c2v seg = c2Sub(end, start);
+			// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
+			float angle = atan2(seg.y, seg.x) * 57.295779513f;
+
 			for (size_t i = 0; i < 500; i++)
 			{
+				angle += ((rand() % angle_range) - angle_range * 0.5f)/100.0f;
+
 				//lastPos.x += rand() % 200 - 100;
 				//lastPos.y += rand() % 200 - 100;
 
-				lastPos.x += rand() % 30;
-				lastPos.y += rand() % 30;
+				//lastPos.x += rand() % 30;
+				//lastPos.y += rand() % 30;
+
+				start = end;
+				end.x += dist * cos(angle / 57.295779513f);
+				end.y += dist * sin(angle / 57.295779513f);
 				
-				m_railroad->append(lastPos);
+				m_railroad->append(sf::Vector2f(end.x, end.y));
 			}
 
 			m_railroad->addTrain(m_train.get());
-			m_train->initWagons(3);
+			m_train->initWagons(30);
 
 			// create obstacles for the games to be lost
 			//create<TT_Obstacle>();

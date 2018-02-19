@@ -44,6 +44,9 @@ namespace tinytrain
 
 	void GameState_Running::draw(sf::RenderTarget * target)
 	{
+		if (target == nullptr)
+			return;
+
 		// gameview
 		target->setView(*m_view);
 
@@ -75,6 +78,7 @@ namespace tinytrain
 	}
 	void GameState_Running::onWindowSizeChanged(int w, int h)
 	{
-
+		if (m_view)
+			m_view->setSize(w, h);
 	}
 }
