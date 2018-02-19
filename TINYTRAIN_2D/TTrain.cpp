@@ -46,6 +46,14 @@ namespace tinytrain
 		m_distance += dt * m_speed;
 	}
 
+	sf::Vector2f TTrain::getPosition()
+	{
+		if (m_wagons.size())
+			return m_wagons[0].getPosition();
+
+		return sf::Vector2f();
+	}
+
 	void TTrain::draw(sf::RenderTarget * target)
 	{
 		// draw them wagons

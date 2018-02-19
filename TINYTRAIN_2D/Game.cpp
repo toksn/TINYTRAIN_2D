@@ -26,24 +26,7 @@ namespace tgf
 	{
 		while (m_window && m_window->isOpen())
 		{
-			sf::Event event;
-			while (m_window->pollEvent(event))
-			{
-				if (event.type == sf::Event::Closed)
-					m_window->close();
-
-				if (event.type == sf::Event::Resized)
-				{
-					auto size = m_window->getSize();
-					printf("\nwindow size changed: %i x %i", size.x, size.y);
-					m_guiView->reset(sf::FloatRect(0.0f, 0.0f, (float)size.x, (float)size.y));
-
-					for(auto& state : m_states)
-					{
-
-					}
-				}
-			}
+			handleGlobalInput();
 
 			// update the game
 			update();
@@ -61,7 +44,6 @@ namespace tgf
 		if (currentState == nullptr)
 			return;
 
-		currentState->handleInput();
 		currentState->update(deltaTime.asSeconds());
 
 		m_window->clear(sf::Color::Black);
@@ -106,6 +88,25 @@ namespace tgf
 
 	void Game::handleGlobalInput()
 	{
+		sf::Event event;
+		while (m_window->pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				m_window->close();
+			else if (event.type == sf::Event::Resized)
+			{
+				auto size = m_window->getSize();
+				printf("\nwindow size changed: %i x %i", size.x, size.y);
+				m_guiView->reset(sf::FloatRect(0.0f, 0.0f, (float)size.x, (float)size.y));
+
+				// inform all current gamestates
+				for (auto& state : m_states)
+					state->onWindowSizeChanged(size.x, size.y);
+			}
+			else
+				m_states.back().get()->handleInput(event);
+		}
+
 		// F10 to toggle FPS
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::F10))
 			m_bShowFPS = !m_bShowFPS;

@@ -16,6 +16,8 @@ namespace tinytrain
 		virtual void draw(sf::RenderTarget * target) override;
 		virtual void update(const float dt) override;
 
+		sf::Vector2f getPosition();
+
 		// wagon stats
 		float m_speed;
 		sf::Vector2f m_wagonsize;

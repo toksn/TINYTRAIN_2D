@@ -14,9 +14,11 @@ namespace tinytrain
 		// Inherited via GameStateBase
 		virtual void update(float deltaTime) override;
 		virtual void draw(sf::RenderTarget * target) override;
-		virtual void handleInput() override;
+		virtual void handleInput(sf::Event& e) override;
+		virtual void onWindowSizeChanged(int w, int h) override;
 
 	private:
 		std::unique_ptr<TLevel> m_level;
+		std::unique_ptr<sf::View> m_view;
 	};
 }

@@ -49,21 +49,14 @@ namespace tinytrain
 			m_railroad->append(sf::Vector2f(130.0f, 70.f));
 
 			sf::Vector2f lastPos(130.0f, 70.f);
-			for (size_t i = 0; i < 50; i++)
+			for (size_t i = 0; i < 500; i++)
 			{
-				lastPos.x += rand() % 200 - 100;
-				lastPos.y += rand() % 200 - 100;
+				//lastPos.x += rand() % 200 - 100;
+				//lastPos.y += rand() % 200 - 100;
 
-				if (lastPos.x < 0)
-					lastPos.x = 0;
-				else if (lastPos.y > 600)
-					lastPos.x = 590;
-
-				if (lastPos.y < 0)
-					lastPos.y = 0;
-				else if (lastPos.y > 400)
-					lastPos.y = 400;
-
+				lastPos.x += rand() % 30;
+				lastPos.y += rand() % 30;
+				
 				m_railroad->append(lastPos);
 			}
 
