@@ -12,36 +12,36 @@
     <Filter Include="TinyTrain">
       <UniqueIdentifier>{059c5eec-91e2-4dcb-a48d-1b4c9c48f270}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TinyTrain\gamestates">
+      <UniqueIdentifier>{a493d4a6-711d-4698-8081-ce8f82719b0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TinyTrain\objects">
+      <UniqueIdentifier>{0a8198f0-8677-41b2-899f-9a4710ac4f2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>TinyTrain</Filter>
-    </ClCompile>
-    <ClCompile Include="TT_Train.cpp">
-      <Filter>TinyTrain</Filter>
-    </ClCompile>
-    <ClCompile Include="TT_RailRoad.cpp">
       <Filter>TinyTrain</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="GameState_Running.cpp">
-      <Filter>TinyTrain</Filter>
+      <Filter>TinyTrain\gamestates</Filter>
+    </ClCompile>
+    <ClCompile Include="TT_RailRoad.cpp">
+      <Filter>TinyTrain\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="TT_Train.cpp">
+      <Filter>TinyTrain\objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
       <Filter>GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="TT_Train.h">
-      <Filter>TinyTrain</Filter>
-    </ClInclude>
     <ClInclude Include="tinyc2.h">
       <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TT_RailRoad.h">
-      <Filter>TinyTrain</Filter>
     </ClInclude>
     <ClInclude Include="GameStateBase.h">
       <Filter>GameFramework</Filter>
@@ -50,7 +50,13 @@
       <Filter>GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="GameState_Running.h">
-      <Filter>TinyTrain</Filter>
+      <Filter>TinyTrain\gamestates</Filter>
+    </ClInclude>
+    <ClInclude Include="TT_RailRoad.h">
+      <Filter>TinyTrain\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="TT_Train.h">
+      <Filter>TinyTrain\objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
