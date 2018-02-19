@@ -173,7 +173,7 @@ namespace tinytrain
 		return i;
 	}
 
-	void TRailRoad::draw(sf::RenderWindow* target)
+	void TRailRoad::draw(sf::RenderTarget * target)
 	{
 		target->draw(m_trackspline);
 	}

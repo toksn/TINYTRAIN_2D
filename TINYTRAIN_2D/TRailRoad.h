@@ -17,7 +17,7 @@ namespace tinytrain
 		void append(const sf::Vertex& vertex);
 
 		// Inherited via Entity
-		virtual void draw(sf::RenderWindow* target) override;
+		virtual void draw(sf::RenderTarget * target) override;
 		virtual void update(float deltaTime) override;
 
 		// functions for moving trains along the track

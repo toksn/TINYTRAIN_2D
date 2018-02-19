@@ -46,7 +46,7 @@ namespace tinytrain
 		m_distance += dt * m_speed;
 	}
 
-	void TTrain::draw(sf::RenderWindow* target)
+	void TTrain::draw(sf::RenderTarget * target)
 	{
 		// draw them wagons
 		for (int i = 0; i < m_wagons.size(); i++)

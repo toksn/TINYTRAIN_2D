@@ -1,7 +1,10 @@
 #pragma once
+#include <memory>
 #include "GameStateBase.h"
 namespace tinytrain
 {
+	class TLevel;
+
 	class GameState_Running : public tgf::GameStateBase
 	{
 	public:
@@ -13,9 +16,7 @@ namespace tinytrain
 		virtual void draw(sf::RenderTarget * target) override;
 		virtual void handleInput() override;
 
-		void loadLevel();
-
 	private:
-
+		std::unique_ptr<TLevel> m_level;
 	};
 }

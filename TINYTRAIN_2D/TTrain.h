@@ -13,7 +13,7 @@ namespace tinytrain
 		void initWagons(const unsigned int a_numberOfWagons);
 
 		// Inherited via Entity
-		virtual void draw(sf::RenderWindow* target) override;
+		virtual void draw(sf::RenderTarget * target) override;
 		virtual void update(const float dt) override;
 
 		// wagon stats
