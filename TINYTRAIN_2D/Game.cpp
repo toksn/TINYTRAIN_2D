@@ -11,6 +11,8 @@ namespace tgf
 		m_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height), game_name);
 		m_window->setFramerateLimit(framerate_limit);
 
+		m_guiView = std::make_unique<sf::View>(sf::FloatRect(0.0f, 0.0f, window_width, window_height));
+
 		m_frameClock = std::make_unique<sf::Clock>();
 		m_bShowFPS = false;
 	}
@@ -34,8 +36,12 @@ namespace tgf
 				{
 					auto size = m_window->getSize();
 					printf("\nwindow size changed: %i x %i", size.x, size.y);
+					m_guiView->reset(sf::FloatRect(0.0f, 0.0f, (float)size.x, (float)size.y));
 
-					m_window->setView(sf::View(sf::FloatRect(0.0f, 0.0f, (float)size.x, (float)size.y)));
+					for(auto& state : m_states)
+					{
+
+					}
 				}
 			}
 
@@ -108,14 +114,14 @@ namespace tgf
 	void Game::changeState(std::unique_ptr<GameStateBase> state)
 	{
 		if (m_states.empty() == false)
-			m_states.pop();
-		m_states.push(std::move(state));
+			m_states.pop_back();
+		m_states.push_back(std::move(state));
 	}
 
 	GameStateBase * Game::peekState()
 	{
 		if (m_states.empty() == false)
-			return m_states.top().get();
+			return m_states.back().get();
 		return nullptr;
 	}
 		

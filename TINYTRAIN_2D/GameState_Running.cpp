@@ -32,12 +32,16 @@ namespace tinytrain
 		if (m_level)
 			m_level->draw(target);
 
-		// guiview
+		// todo: guiview
+		auto size = target->getSize();
+		target->setView(sf::View(sf::FloatRect(0.0f, 0.0f, (float)size.x, (float)size.y)));
 
 		// draw gui
+		// text something
 	}
 
 	void GameState_Running::handleInput()
 	{
+		// mouse inputs for new parts of the track
 	}
 }

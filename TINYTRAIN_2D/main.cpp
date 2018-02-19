@@ -10,7 +10,7 @@ int main()
 	
 	//std::unique_ptr<tgf::GameStateBase> state(new GameManager(&game));
 	
-	game.m_states.push(std::make_unique<tinytrain::GameState_Running>(&game));
+	game.m_states.push_back(std::make_unique<tinytrain::GameState_Running>(&game));
 	game.run();
 
 	return 0;

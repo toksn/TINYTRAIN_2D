@@ -26,7 +26,10 @@ namespace tgf
 		void setMaxFPS(sf::Uint16 maxFPS);
 
 		std::unique_ptr<sf::RenderWindow> m_window;
-		std::stack<std::unique_ptr<GameStateBase>> m_states;
+		std::vector<std::unique_ptr<GameStateBase>> m_states;
+
+		// gui view that can be used by every gamestate
+		std::unique_ptr<sf::View> m_guiView;
 	private:
 		void handleGlobalInput();
 
