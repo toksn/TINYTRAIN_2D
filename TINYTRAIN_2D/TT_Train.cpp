@@ -1,6 +1,6 @@
 #include "TT_Train.h"
 
-TT_Train::TT_Train(EntityManager* man) : Entity(man)
+TT_Train::TT_Train()
 {
 	m_color_firstwagon = sf::Color::Yellow;
 	m_color_wagons = sf::Color::White;
@@ -8,8 +8,6 @@ TT_Train::TT_Train(EntityManager* man) : Entity(man)
 	m_wagonsize = sf::Vector2f(20.0f, 10.0f);
 	m_wagongap = 5.0f;
 	m_speed = m_wagonsize.x * 5.5f;
-
-
 }
 
 TT_Train::~TT_Train()
@@ -46,9 +44,9 @@ void TT_Train::update(const float dt)
 	m_distance += dt * m_speed;
 }
 
-void TT_Train::draw(sf::RenderWindow & target)
+void TT_Train::draw(sf::RenderWindow* target)
 {
 	// draw them wagons
 	for (int i = 0; i < m_wagons.size(); i++)
-		target.draw(m_wagons[i]);
+		target->draw(m_wagons[i]);
 }

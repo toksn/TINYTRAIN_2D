@@ -5,12 +5,11 @@
 #include "TT_Train.h"
 
 
-
-GameManager::GameManager() : EntityManager()
+GameManager::GameManager(tgf::Game * game)
 {
-	m_physicsTimer = 0.0f;
+	m_game = game;
+	loadLevel();
 }
-
 
 GameManager::~GameManager()
 {
@@ -18,26 +17,14 @@ GameManager::~GameManager()
 
 void GameManager::update(float deltaTime)
 {
-	// add physics timer in seconds
-	m_physicsTimer += deltaTime;
-	// do fixed physics steps until theres less than 16.666ms left
-	while (m_physicsTimer >= PHYSICS_STEP)
-	{
-		//m_world->Step(PHYSICS_STEP, 3, 4);
-
-		for (auto& e : m_entities) e->update(PHYSICS_STEP);
-
-		m_physicsTimer -= PHYSICS_STEP;
-	}
-
-	
+	// update level
 }
 
 void GameManager::loadLevel()
 {
 	/**************************************************************************
 	SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
-	***************************************************************************/
+	***************************************************************************
 	// create train for the player
 	TT_Train* playertrain = create<TT_Train>();
 
@@ -81,4 +68,12 @@ void GameManager::loadLevel()
 
 	// TODO:
 	// passengers to pick up
+}
+
+void GameManager::draw(sf::RenderTarget * target)
+{
+}
+
+void GameManager::handleInput()
+{
 }

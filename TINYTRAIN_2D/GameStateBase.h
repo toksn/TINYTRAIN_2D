@@ -1,9 +1,10 @@
 #pragma once
 #include <SFML\Graphics.hpp>
-class Game;
 
 namespace tgf
 {
+	class Game;
+
 	class GameStateBase
 	{
 	public:

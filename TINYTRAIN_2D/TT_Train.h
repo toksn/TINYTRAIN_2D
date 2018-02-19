@@ -2,16 +2,16 @@
 #include <SFML\Graphics.hpp>
 #include "Entity.h"
 
-class TT_Train : public Entity
+class TT_Train : public tgf::Entity
 {
 public:
-	TT_Train(EntityManager* man);
+	TT_Train();
 	~TT_Train();
 
 	void initWagons(const unsigned int a_numberOfWagons);
 
 	// Inherited via Entity
-	virtual void draw(sf::RenderWindow & target) override;
+	virtual void draw(sf::RenderWindow* target) override;
 	virtual void update(const float dt) override;
 	
 	// wagon stats
@@ -27,4 +27,3 @@ public:
 	float m_distance;
 	
 };
-

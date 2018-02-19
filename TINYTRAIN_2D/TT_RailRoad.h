@@ -3,10 +3,10 @@
 #include <SFML\Graphics.hpp>
 class TT_Train;
 
-class TT_RailRoad : public Entity
+class TT_RailRoad : public tgf::Entity
 {
 public:
-	TT_RailRoad(EntityManager* man);
+	TT_RailRoad();
 	~TT_RailRoad();
 
 	void recalcLength(unsigned int startindex = 0);
@@ -14,7 +14,7 @@ public:
 	void append(const sf::Vertex& vertex);
 
 	// Inherited via Entity
-	virtual void draw(sf::RenderWindow & target) override;
+	virtual void draw(sf::RenderWindow* target) override;
 	virtual void update(float deltaTime) override;
 	
 	// functions for moving trains along the track

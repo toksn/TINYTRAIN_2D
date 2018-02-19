@@ -126,21 +126,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="GuiManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TT_RailRoad.cpp" />
     <ClCompile Include="TT_Train.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameStateBase.h" />
-    <ClInclude Include="GuiManager.h" />
     <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TT_RailRoad.h" />
     <ClInclude Include="TT_Train.h" />

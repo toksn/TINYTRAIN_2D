@@ -1,23 +1,19 @@
 #pragma once
-#include "EntityManager.h"
+#include "GameStateBase.h"
 
-// define fixed physics step
-#define PHYSICS_STEP 0.01666666f
-
-class GameManager : public EntityManager
+class GameManager : public tgf::GameStateBase
 {
 public:
-	GameManager();
+	GameManager(tgf::Game* game);
 	~GameManager();
 
+	// Inherited via GameStateBase
 	virtual void update(float deltaTime) override;
-	
-	void loadLevel();
-	//virtual void draw(sf::RenderWindow & target) override;
+	virtual void draw(sf::RenderTarget * target) override;
+	virtual void handleInput() override;
 
-	//virtual void refresh() override;
-	//virtual void clear() override;
+	void loadLevel();
 
 private:
-	float m_physicsTimer;
+
 };

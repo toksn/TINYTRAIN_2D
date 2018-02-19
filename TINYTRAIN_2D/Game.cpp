@@ -70,25 +70,9 @@ namespace tgf
 			// add render timer in seconds
 			m_renderTimer += deltaTime;
 			// do fixed render steps until theres less than desired timeframe left
-			//if(m_renderTimer >= m_desiredFrameTime)
-			{
-				if (m_window)
-				{
-					m_window->clear();
-					m_gameManager->draw(*m_window);
-
-					//m_guiManager->draw(*m_window);
-					m_window->display();
-				}
-
-				if (m_desiredFrameTime == sf::Time::Zero)
-					m_renderTimer = sf::Time::Zero;
-				else
-				{
-					while (m_renderTimer>m_desiredFrameTime)
-						m_renderTimer -= m_desiredFrameTime;
-				}
-			}
+			while (m_renderTimer>m_desiredFrameTime)
+				m_renderTimer -= m_desiredFrameTime;
+			
 			/*
 			sf::Time elapsedFrameTime = m_frameClock->getElapsedTime() + m_renderTimer;
 			if (elapsedFrameTime < m_desiredFrameTime)

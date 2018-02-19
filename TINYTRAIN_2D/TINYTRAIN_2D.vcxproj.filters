@@ -14,13 +14,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EntityManager.cpp">
-      <Filter>GameFramework</Filter>
-    </ClCompile>
     <ClCompile Include="GameManager.cpp">
-      <Filter>TinyTrain</Filter>
-    </ClCompile>
-    <ClCompile Include="GuiManager.cpp">
       <Filter>TinyTrain</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -37,16 +31,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EntityManager.h">
-      <Filter>GameFramework</Filter>
-    </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="GameManager.h">
-      <Filter>TinyTrain</Filter>
-    </ClInclude>
-    <ClInclude Include="GuiManager.h">
       <Filter>TinyTrain</Filter>
     </ClInclude>
     <ClInclude Include="TT_Train.h">

@@ -4,7 +4,7 @@
 #define TINYC2_IMPLEMENTATION
 #include "tinyc2.h"
 
-TT_RailRoad::TT_RailRoad(EntityManager* man) : Entity(man)
+TT_RailRoad::TT_RailRoad()
 {
 	// default railroad draw type
 	m_trackspline.setPrimitiveType(sf::PrimitiveType::LinesStrip);
@@ -171,9 +171,9 @@ int TT_RailRoad::getSegmentStartIndexAtDist(float a_dist, int indexHint)
 	return i;
 }
 
-void TT_RailRoad::draw(sf::RenderWindow & target)
+void TT_RailRoad::draw(sf::RenderWindow* target)
 {
-	target.draw(m_trackspline);
+	target->draw(m_trackspline);
 }
 
 void TT_RailRoad::update(float deltaTime)
