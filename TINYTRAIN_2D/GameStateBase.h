@@ -16,7 +16,7 @@ namespace tgf
 		virtual void onWindowSizeChanged(int w, int h) = 0;
 
 
-		template<class T> void bindEventCallback(sf::Event::EventType et, T* const object, void(T::* const mf)(sf::Event))
+		template<class T> void bindEventCallback(sf::Event::EventType et, T* const object, void(T::* const mf)(sf::Event&))
 		{
 			m_eventCallbacks[et].push_back(std::bind(mf, object, std::placeholders::_1));
 		}
@@ -25,6 +25,6 @@ namespace tgf
 
 	private:
 		// store function pointers to call, mapped to specific events
-		std::map<sf::Event::EventType, std::vector<std::function<void(sf::Event)>>> m_eventCallbacks;
+		std::map<sf::Event::EventType, std::vector<std::function<void(sf::Event&)>>> m_eventCallbacks;
 	};
 }

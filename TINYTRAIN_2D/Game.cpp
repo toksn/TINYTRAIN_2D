@@ -96,7 +96,7 @@ namespace tgf
 			else if (event.type == sf::Event::Resized)
 			{
 				auto size = m_window->getSize();
-				printf("\nwindow size changed: %i x %i", size.x, size.y);
+				printf("\nwindow size changed: %i x %i\n", size.x, size.y);
 				m_guiView->reset(sf::FloatRect(0.0f, 0.0f, (float)size.x, (float)size.y));
 
 				// inform all current gamestates
