@@ -1,6 +1,11 @@
 #pragma once
 #include "Entity.h"
 
+namespace tgf
+{
+	class GameStateBase;
+}
+
 namespace tinytrain
 {
 	enum class INPUTSTATE
@@ -10,12 +15,11 @@ namespace tinytrain
 	};
 
 	class TRailTrack;
-	class GameState_Running;
 
 	class TPlayer : tgf::Entity
 	{
 	public:
-		TPlayer(GameState_Running* gs);
+		TPlayer(tgf::GameStateBase* gs);
 		~TPlayer();
 
 		// Inherited via Entity

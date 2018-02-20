@@ -3,7 +3,7 @@
 
 namespace tinytrain
 {
-	TPlayer::TPlayer(GameState_Running* gs)
+	TPlayer::TPlayer(tgf::GameStateBase* gs)
 	{
 		if (gs)
 		{
@@ -24,6 +24,7 @@ namespace tinytrain
 
 	void TPlayer::update(float deltaTime)
 	{
+		
 	}
 
 	void TPlayer::recalcDrawRect(int width, int height)
