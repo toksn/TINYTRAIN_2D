@@ -127,9 +127,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameStateBase.cpp" />
     <ClCompile Include="GameState_Running.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TLevel.cpp" />
+    <ClCompile Include="TPlayer.cpp" />
     <ClCompile Include="TRailTrack.cpp" />
     <ClCompile Include="TTrain.cpp" />
   </ItemGroup>
@@ -140,6 +142,7 @@
     <ClInclude Include="GameStateBase.h" />
     <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TLevel.h" />
+    <ClInclude Include="TPlayer.h" />
     <ClInclude Include="TRailTrack.h" />
     <ClInclude Include="TTrain.h" />
   </ItemGroup>

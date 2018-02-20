@@ -2,17 +2,19 @@
 #include <algorithm>
 
 #include "TLevel.h"
+#include "TPlayer.h"
 #include "TTrain.h"
 #include "Game.h"
 
 namespace tinytrain
 {
-
 	GameState_Running::GameState_Running(tgf::Game * game)
 	{
 		m_game = game;
 		m_level = std::make_unique<TLevel>();
 		m_level->load();
+
+		m_player = std::make_unique<TPlayer>(this);
 
 		m_view = std::make_unique<sf::View>();
 		if (game && m_view && game->m_window)
@@ -20,8 +22,14 @@ namespace tinytrain
 			sf::Vector2f size = sf::Vector2f(game->m_window->getSize());
 			m_view->setSize(size);
 			m_view->setCenter(size*0.5f);
+
+			m_player->recalcDrawRect(size.x, size.y);
+			if (m_level)
+				m_player->setTrack(m_level->m_railtrack.get());
+
+			// register input callback
+			//m_eventCallbacks[sf::Event::MouseButtonPressed].push_back(std::bind(&TPlayer::onMousePressed, m_player.get(), std::placeholders::_1));
 		}
-			
 	}
 
 	GameState_Running::~GameState_Running()
@@ -38,6 +46,10 @@ namespace tinytrain
 			// update view 
 			if (m_level->m_train && m_view)
 				m_view->setCenter(m_level->m_train->getPosition());
+
+			// update player (mouse input to spline)
+			if (m_player)
+				m_player->update(deltaTime);
 		}
 			
 	}
@@ -53,32 +65,31 @@ namespace tinytrain
 		// draw level
 		if (m_level)
 			m_level->draw(target);
-		/*
-		// todo: guiview
+		
+		// guiview
 		if (m_game && m_game->m_window)
 			target->setView(*m_game->m_guiView);
 
 		// draw gui
-		// text something*/
+		
+		// draw player (drawing rect)
+		m_player->draw(target);
 	}
 
+	/*
 	void GameState_Running::handleInput(sf::Event& e)
 	{
-		// todo: inputs for new parts of the track
-		switch (e.type)
+		for (auto f : m_eventCallbacks[e.type])
 		{
-		case sf::Event::MouseMoved:
-			//if(m_drawingState == DRAWINGSTATE::IDLE)
-			break;
-		default:
-			break;
+			f(e);
 		}
+	}*/
 
-		// ...
-	}
 	void GameState_Running::onWindowSizeChanged(int w, int h)
 	{
 		if (m_view)
 			m_view->setSize(w, h);
+
+		m_player->recalcDrawRect(w, h);
 	}
 }

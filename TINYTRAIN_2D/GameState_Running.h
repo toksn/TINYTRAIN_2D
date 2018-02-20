@@ -1,9 +1,11 @@
 #pragma once
 #include <memory>
 #include "GameStateBase.h"
+
 namespace tinytrain
 {
 	class TLevel;
+	class TPlayer;
 
 	class GameState_Running : public tgf::GameStateBase
 	{
@@ -14,11 +16,12 @@ namespace tinytrain
 		// Inherited via GameStateBase
 		virtual void update(float deltaTime) override;
 		virtual void draw(sf::RenderTarget * target) override;
-		virtual void handleInput(sf::Event& e) override;
+		//virtual void handleInput(sf::Event& e) override;
 		virtual void onWindowSizeChanged(int w, int h) override;
 
 	private:
 		std::unique_ptr<TLevel> m_level;
 		std::unique_ptr<sf::View> m_view;
+		std::unique_ptr<TPlayer> m_player;
 	};
 }
