@@ -73,7 +73,8 @@ namespace tinytrain
 		if(m_player)
 			m_player->draw(target);
 
-		m_player.reset(nullptr);
+		// destroying the player on purpose (for testing purposes)
+		//m_player.reset(nullptr);
 	}
 
 	/*
