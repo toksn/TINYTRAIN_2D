@@ -15,16 +15,37 @@ namespace tgf
 
 		virtual void onWindowSizeChanged(int w, int h) = 0;
 
-
 		template<class T> void bindEventCallback(sf::Event::EventType et, T* const object, void(T::* const mf)(sf::Event&))
 		{
-			m_eventCallbacks[et].push_back(std::bind(mf, object, std::placeholders::_1));
+			// save a pair of the acutal function call and the object pointer for callback deletion
+			m_eventCallbacks[et].push_back
+				( std::make_pair<std::function<void(sf::Event&)>, void*>(std::bind(mf, object, std::placeholders::_1), &*object) );
+		}
+
+		// unbinds all registered callbacks for a specific object (pointer). 
+		//
+		// Note: only one callback per event is removed for the object as it is assumed
+		// for any object to only register one object with each event
+		template<class T> void unbindAllCallbacks(T* const object)
+		{
+			// check the callback function vector for each event
+			for (auto vecFuncPointerPair = m_eventCallbacks.begin(); vecFuncPointerPair != m_eventCallbacks.end(); ++vecFuncPointerPair)
+			{
+				for (auto f = vecFuncPointerPair->second.begin(); f != vecFuncPointerPair->second.end(); ++f)
+				{
+					if (f->second == object)
+					{
+						vecFuncPointerPair->second.erase(f);
+						break;
+					}
+				}
+			}
 		}
 
 		Game* m_game = 0;
 
 	private:
-		// store function pointers to call, mapped to specific events
-		std::map<sf::Event::EventType, std::vector<std::function<void(sf::Event&)>>> m_eventCallbacks;
+		// store function pointers to call (along with a raw pointer for compare on unbind), mapped to specific events
+		std::map<sf::Event::EventType, std::vector<std::pair<std::function<void(sf::Event&)>, void*>>> m_eventCallbacks;
 	};
 }

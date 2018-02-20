@@ -18,7 +18,7 @@ namespace tinytrain
 
 	void TRailTrack::recalcLength(unsigned int startindex)
 	{
-		int size = m_trackspline.getVertexCount();
+		size_t size = m_trackspline.getVertexCount();
 		m_length.resize(size);
 
 		// first point always has length zero
@@ -90,7 +90,7 @@ namespace tinytrain
 	{
 		sf::Vector2f pos;
 		float angle = 0.0f;
-		int size = m_trackspline.getVertexCount();
+		size_t size = m_trackspline.getVertexCount();
 		if (size)
 		{
 			// outside of railrange
@@ -140,7 +140,7 @@ namespace tinytrain
 	{
 		int i = 0;
 
-		int size = m_trackspline.getVertexCount();
+		size_t size = m_trackspline.getVertexCount();
 
 		if (size < 0)
 			return -1;

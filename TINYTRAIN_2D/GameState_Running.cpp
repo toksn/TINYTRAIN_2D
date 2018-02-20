@@ -26,9 +26,6 @@ namespace tinytrain
 			m_player->recalcDrawRect(size.x, size.y);
 			if (m_level)
 				m_player->setTrack(m_level->m_railtrack.get());
-
-			// register input callback
-			//m_eventCallbacks[sf::Event::MouseButtonPressed].push_back(std::bind(&TPlayer::onMousePressed, m_player.get(), std::placeholders::_1));
 		}
 	}
 
@@ -73,7 +70,10 @@ namespace tinytrain
 		// draw gui
 		
 		// draw player (drawing rect)
-		m_player->draw(target);
+		if(m_player)
+			m_player->draw(target);
+
+		m_player.reset(nullptr);
 	}
 
 	/*

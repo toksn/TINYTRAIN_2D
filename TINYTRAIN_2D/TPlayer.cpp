@@ -6,6 +6,9 @@
 
 namespace tinytrain
 {
+#pragma warning(disable:4244)
+#pragma warning(disable:4838)
+
 	TPlayer::TPlayer(GameState_Running* gs)
 	{
 		m_gs = gs;
@@ -26,6 +29,9 @@ namespace tinytrain
 
 	TPlayer::~TPlayer()
 	{
+		printf("~TPlayer, possible callback crashes now!\n");
+		if (m_gs)
+			m_gs->unbindAllCallbacks(this);
 	}
 
 	void TPlayer::draw(sf::RenderTarget * target)
