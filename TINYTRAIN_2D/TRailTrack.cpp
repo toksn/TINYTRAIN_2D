@@ -1,22 +1,22 @@
 #define TINYC2_IMPLEMENTATION
 #include "tinyc2.h"
 
-#include "TRailRoad.h"
+#include "TRailTrack.h"
 #include "TTrain.h"
 
 namespace tinytrain
 {
-	TRailRoad::TRailRoad()
+	TRailTrack::TRailTrack()
 	{
-		// default railroad draw type
+		// default railtrack draw type
 		m_trackspline.setPrimitiveType(sf::PrimitiveType::LinesStrip);
 	}
 
-	TRailRoad::~TRailRoad()
+	TRailTrack::~TRailTrack()
 	{
 	}
 
-	void TRailRoad::recalcLength(unsigned int startindex)
+	void TRailTrack::recalcLength(unsigned int startindex)
 	{
 		int size = m_trackspline.getVertexCount();
 		m_length.resize(size);
@@ -33,7 +33,7 @@ namespace tinytrain
 			m_length[i] = m_length[i - 1] + c2Len(c2Sub(c2v{ m_trackspline[i].position.x , m_trackspline[i].position.y }, c2v{ m_trackspline[i - 1].position.x , m_trackspline[i - 1].position.y }));
 	}
 
-	void TRailRoad::append(const sf::Vertex & vertex)
+	void TRailTrack::append(const sf::Vertex & vertex)
 	{
 		m_trackspline.append(vertex);
 
@@ -41,7 +41,7 @@ namespace tinytrain
 		recalcLength(m_trackspline.getVertexCount() - 1);
 	}
 
-	float TRailRoad::getLength()
+	float TRailTrack::getLength()
 	{
 		if (m_length.size() != m_trackspline.getVertexCount())
 			recalcLength();
@@ -49,7 +49,7 @@ namespace tinytrain
 		return m_length[m_trackspline.getVertexCount() - 1];
 	}
 
-	void TRailRoad::addTrain(TTrain * a_train, float a_atDistance)
+	void TRailTrack::addTrain(TTrain * a_train, float a_atDistance)
 	{
 		m_trains.push_back(a_train);
 		if (a_atDistance >= 0.0f && a_atDistance < getLength())
@@ -58,14 +58,14 @@ namespace tinytrain
 			a_train->m_distance = 0.0f;
 	}
 
-	void TRailRoad::moveAndRotateOnRail(TTrain* train)
+	void TRailTrack::moveAndRotateOnRail(TTrain* train)
 	{
-		// max dist to travel on the railroad
+		// max dist to travel on the railtrack
 		float maxdist = getLength();
 
 		if (train->m_distance > maxdist)
 		{
-			// todo: event of the train reaching the end of its railroad (ONLY FIRST WAGON IS CONCERNED)
+			// todo: event of the train reaching the end of its railtrack (ONLY FIRST WAGON IS CONCERNED)
 			train->m_distance = maxdist;
 		}
 		else if (train->m_distance < 0.0f)
@@ -86,7 +86,7 @@ namespace tinytrain
 		}
 	}
 
-	void TRailRoad::setPositionAndRotationFromRail(float a_dist, int i, sf::Transformable* obj)
+	void TRailTrack::setPositionAndRotationFromRail(float a_dist, int i, sf::Transformable* obj)
 	{
 		sf::Vector2f pos;
 		float angle = 0.0f;
@@ -136,7 +136,7 @@ namespace tinytrain
 
 	}
 
-	int TRailRoad::getSegmentStartIndexAtDist(float a_dist, int indexHint)
+	int TRailTrack::getSegmentStartIndexAtDist(float a_dist, int indexHint)
 	{
 		int i = 0;
 
@@ -173,12 +173,12 @@ namespace tinytrain
 		return i;
 	}
 
-	void TRailRoad::draw(sf::RenderTarget * target)
+	void TRailTrack::draw(sf::RenderTarget * target)
 	{
 		target->draw(m_trackspline);
 	}
 
-	void TRailRoad::update(float deltaTime)
+	void TRailTrack::update(float deltaTime)
 	{
 		// move all the trains on the track
 		for (int i = 0; i < m_trains.size(); i++)

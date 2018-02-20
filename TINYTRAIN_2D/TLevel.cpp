@@ -1,7 +1,7 @@
 #include "tinyc2.h"
 #include "TLevel.h"
 #include "TTrain.h"
-#include "TRailRoad.h"
+#include "TRailTrack.h"
 
 namespace tinytrain
 {
@@ -18,16 +18,16 @@ namespace tinytrain
 	{
 		if (m_train)
 			m_train->draw(target);
-		if (m_railroad)
-			m_railroad->draw(target);
+		if (m_railtrack)
+			m_railtrack->draw(target);
 	}
 
 	void TLevel::update(float deltaTime)
 	{
 		if (m_train)
 			m_train->update(deltaTime);
-		if (m_railroad)
-			m_railroad->update(deltaTime);
+		if (m_railtrack)
+			m_railtrack->update(deltaTime);
 	}
 
 	void TLevel::load(std::string file)
@@ -40,14 +40,14 @@ namespace tinytrain
 			// create train for the player
 			m_train = std::make_unique<TTrain>();
 
-			// create a railroad for the train
-			m_railroad = std::make_unique<TRailRoad>();
+			// create a railtrack for the train
+			m_railtrack = std::make_unique<TRailTrack>();
 
-			m_railroad->append(sf::Vector2f(200.0f, 50.f));
-			m_railroad->append(sf::Vector2f(200.0f, 100.f));
-			m_railroad->append(sf::Vector2f(250.0f, 140.f));
-			m_railroad->append(sf::Vector2f(150.0f, 180.f));
-			m_railroad->append(sf::Vector2f(130.0f, 70.f));
+			m_railtrack->append(sf::Vector2f(200.0f, 50.f));
+			m_railtrack->append(sf::Vector2f(200.0f, 100.f));
+			m_railtrack->append(sf::Vector2f(250.0f, 140.f));
+			m_railtrack->append(sf::Vector2f(150.0f, 180.f));
+			m_railtrack->append(sf::Vector2f(130.0f, 70.f));
 
 			c2v start{ 150.0f, 180.f };
 			c2v end{ 130.0f, 70.f };
@@ -73,10 +73,10 @@ namespace tinytrain
 				end.x += dist * cos(angle / 57.295779513f);
 				end.y += dist * sin(angle / 57.295779513f);
 				
-				m_railroad->append(sf::Vector2f(end.x, end.y));
+				m_railtrack->append(sf::Vector2f(end.x, end.y));
 			}
 
-			m_railroad->addTrain(m_train.get());
+			m_railtrack->addTrain(m_train.get());
 			m_train->initWagons(30);
 
 			// create obstacles for the games to be lost

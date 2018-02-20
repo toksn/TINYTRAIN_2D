@@ -5,7 +5,7 @@
 namespace tinytrain
 {
 	class TTrain;
-	class TRailRoad;
+	class TRailTrack;
 
 	class TLevel : tgf::Entity
 	{
@@ -21,7 +21,7 @@ namespace tinytrain
 		void load(std::string file = "");
 		
 		std::unique_ptr<TTrain> m_train;
-		std::unique_ptr<TRailRoad> m_railroad;
+		std::unique_ptr<TRailTrack> m_railtrack;
 	};
 
 

@@ -6,11 +6,11 @@ namespace tinytrain
 {
 	class TTrain;
 
-	class TRailRoad : public tgf::Entity
+	class TRailTrack : public tgf::Entity
 	{
 	public:
-		TRailRoad();
-		~TRailRoad();
+		TRailTrack();
+		~TRailTrack();
 
 		void recalcLength(unsigned int startindex = 0);
 		float getLength();

@@ -130,7 +130,7 @@
     <ClCompile Include="GameState_Running.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TLevel.cpp" />
-    <ClCompile Include="TRailRoad.cpp" />
+    <ClCompile Include="TRailTrack.cpp" />
     <ClCompile Include="TTrain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,7 +140,7 @@
     <ClInclude Include="GameStateBase.h" />
     <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TLevel.h" />
-    <ClInclude Include="TRailRoad.h" />
+    <ClInclude Include="TRailTrack.h" />
     <ClInclude Include="TTrain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

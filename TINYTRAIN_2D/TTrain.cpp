@@ -42,7 +42,7 @@ namespace tinytrain
 
 	void TTrain::update(const float dt)
 	{
-		// move the wagons by speed * dt on the railroad
+		// move the wagons by speed * dt on the railtrack
 		m_distance += dt * m_speed;
 	}
 
