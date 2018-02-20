@@ -1,0 +1,4 @@
+- extend track by input
+
+- camera focused on end of the track instead of the train
+- smooth camera movement

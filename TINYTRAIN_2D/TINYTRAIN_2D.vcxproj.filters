@@ -77,4 +77,9 @@
       <Filter>TinyTrain\controllers</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="todo.txt">
+      <Filter>TinyTrain</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
