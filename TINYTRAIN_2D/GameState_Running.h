@@ -21,7 +21,7 @@ namespace tinytrain
 
 	private:
 		std::unique_ptr<TLevel> m_level;
-		std::unique_ptr<sf::View> m_view;
+		std::unique_ptr<sf::View> m_camera;
 		std::unique_ptr<TPlayer> m_player;
 	};
 }

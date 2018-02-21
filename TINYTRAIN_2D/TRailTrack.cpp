@@ -10,6 +10,8 @@ namespace tinytrain
 	{
 		// default railtrack draw type
 		m_trackspline.setPrimitiveType(sf::PrimitiveType::LinesStrip);
+
+		m_segLength = 100.0f;
 	}
 
 	TRailTrack::~TRailTrack()
@@ -107,7 +109,7 @@ namespace tinytrain
 
 				c2v seg = c2Sub(end, start);
 				// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
-				angle = atan2(seg.y, seg.x) * 57.295779513f;
+				angle = atan2(seg.y, seg.x) * RAD_TO_DEG;
 
 
 				if (m_length[i] == a_dist)
@@ -136,6 +138,7 @@ namespace tinytrain
 
 	}
 
+	// return -1 in case of an error
 	int TRailTrack::getSegmentStartIndexAtDist(float a_dist, int indexHint)
 	{
 		int i = 0;
@@ -171,6 +174,94 @@ namespace tinytrain
 		}
 
 		return i;
+	}
+
+	float TRailTrack::getDirectionAngleAtTime(float a_time, bool rad)
+	{
+		// no direction calc possible when not enough points
+		if (m_trackspline.getVertexCount() < 2) 
+			return 0.0f;
+
+
+		c2v start, end, seg;
+		if (a_time == 1.0f)
+		{
+			start = { m_trackspline[m_trackspline.getVertexCount() - 2].position.x, m_trackspline[m_trackspline.getVertexCount() - 2].position.y };
+			end =	{ m_trackspline[m_trackspline.getVertexCount() - 1].position.x, m_trackspline[m_trackspline.getVertexCount() - 1].position.y };
+		}
+		else if (a_time == 0.0f)
+		{
+			start = { m_trackspline[0].position.x, m_trackspline[0].position.y };
+			end =	{ m_trackspline[1].position.x, m_trackspline[1].position.y };
+		}
+		else
+		{
+			int segindex = getSegmentStartIndexAtDist(getLength()*a_time);
+			if (segindex < 0 || segindex >= m_trackspline.getVertexCount())
+				return 0.0f;
+			
+			start = { m_trackspline[segindex].position.x, m_trackspline[segindex].position.y };
+			end =	{ m_trackspline[segindex + 1].position.x, m_trackspline[segindex + 1].position.y };
+		}
+
+		seg		= c2Sub(end, start);
+		return rad? atan2(seg.y, seg.x) : atan2(seg.y, seg.x)*RAD_TO_DEG;
+	}
+
+	sf::Vector2f TRailTrack::getLocationAtTime(float a_time)
+	{
+		if (m_trackspline.getVertexCount() == 0)
+			return sf::Vector2f();
+
+		c2v pos;
+		if (a_time == 1.0f)
+			pos = { m_trackspline[m_trackspline.getVertexCount() - 1].position.x, m_trackspline[m_trackspline.getVertexCount() - 1].position.y };
+		else if (a_time == 0.0f)
+			pos = { m_trackspline[0].position.x, m_trackspline[0].position.y };
+		else
+		{
+			float a_dist = getLength()*a_time;
+			int segindex = getSegmentStartIndexAtDist(a_dist);
+			if (segindex < 0 || segindex >= m_trackspline.getVertexCount())
+				return sf::Vector2f();
+
+			// segment
+			c2v start = { m_trackspline[segindex].position.x, m_trackspline[segindex].position.y };
+			c2v end =	{ m_trackspline[segindex + 1].position.x, m_trackspline[segindex + 1].position.y };
+
+			// calc rest dist on the segment
+			a_dist -= m_length[segindex];
+
+			// make it 0-1 range based on the segment
+			a_dist = a_dist / c2Len(c2Sub(end, start));
+			pos = c2Lerp(start, end, a_dist);
+		}
+		
+		return sf::Vector2f(pos.x, pos.y);
+	}
+
+	float TRailTrack::getSegmentLength()
+	{
+		return m_segLength;
+	}
+
+	void TRailTrack::setSegmentLength(float a_len)
+	{
+		m_segLength = a_len;
+	}
+
+	void TRailTrack::addDrawnLinePoints(std::vector<sf::Vector2f> a_points, sf::Color a_color)
+	{
+		int i = 0;
+		if (m_trackspline.getVertexCount() && a_points.size())
+		{
+			// check wether to skip the first new point because it is the same as the previous last point on the spline
+			if (m_trackspline[m_trackspline.getVertexCount() - 1].position == a_points[0])
+				i++;
+		}
+
+		for (; i < a_points.size(); i++)
+			append(sf::Vertex(a_points[i], a_color));
 	}
 
 	void TRailTrack::draw(sf::RenderTarget * target)

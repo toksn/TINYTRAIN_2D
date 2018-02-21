@@ -30,8 +30,10 @@ namespace tinytrain
 		void onMouseReleased(sf::Event& e);
 
 		void setColor(sf::Color col);
+		
 	private:
 		void stopDrawing();
+		void addDrawnLineToRailTrack();
 
 		TRailTrack* m_railtrack;
 		GameState_Running* m_gs;

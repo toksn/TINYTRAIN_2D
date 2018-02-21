@@ -26,11 +26,24 @@ namespace tinytrain
 		void setPositionAndRotationFromRail(float a_dist, int index, sf::Transformable* obj);
 		int getSegmentStartIndexAtDist(float a_dist, int indexHint = -1);
 
+
+		float getDirectionAngleAtTime(float a_time, bool rad = true);
+		sf::Vector2f getLocationAtTime(float a_time);
+		//c2v getLocationAtTime(float a_time);
+
+		float getSegmentLength();
+		void setSegmentLength(float a_len);
+		void addDrawnLinePoints(std::vector<sf::Vector2f> a_points, sf::Color a_color);
+
+
 		// contains the length at each of the vertices
 		std::vector<float> m_length;
 
 		// array of trains actually driving on the track
 		std::vector<TTrain*> m_trains;
 		sf::VertexArray m_trackspline;
+
+	private:
+		float m_segLength;
 	};
 }

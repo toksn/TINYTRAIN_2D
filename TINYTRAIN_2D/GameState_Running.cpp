@@ -16,12 +16,12 @@ namespace tinytrain
 
 		m_player = std::make_unique<TPlayer>(this);
 
-		m_view = std::make_unique<sf::View>();
-		if (game && m_view && game->m_window)
+		m_camera = std::make_unique<sf::View>();
+		if (game && m_camera && game->m_window)
 		{
 			sf::Vector2f size = sf::Vector2f(game->m_window->getSize());
-			m_view->setSize(size);
-			m_view->setCenter(size*0.5f);
+			m_camera->setSize(size);
+			m_camera->setCenter(size*0.5f);
 
 			m_player->recalcDrawRect(size.x, size.y);
 			if (m_level)
@@ -41,8 +41,8 @@ namespace tinytrain
 			m_level->update(deltaTime);
 
 			// update view 
-			if (m_level->m_train && m_view)
-				m_view->setCenter(m_level->m_train->getPosition());
+			if (m_level->m_train && m_camera)
+				m_camera->setCenter(m_level->m_train->getPosition());
 
 			// update player (mouse input to spline)
 			if (m_player)
@@ -57,7 +57,7 @@ namespace tinytrain
 			return;
 
 		// gameview
-		target->setView(*m_view);
+		target->setView(*m_camera);
 
 		// draw level
 		if (m_level)
@@ -88,8 +88,8 @@ namespace tinytrain
 
 	void GameState_Running::onWindowSizeChanged(int w, int h)
 	{
-		if (m_view)
-			m_view->setSize(w, h);
+		if (m_camera)
+			m_camera->setSize(w, h);
 
 		m_player->recalcDrawRect(w, h);
 	}

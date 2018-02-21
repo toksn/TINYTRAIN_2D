@@ -57,7 +57,7 @@ namespace tinytrain
 
 			c2v seg = c2Sub(end, start);
 			// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
-			float angle = atan2(seg.y, seg.x) * 57.295779513f;
+			float angle = atan2(seg.y, seg.x) * RAD_TO_DEG;
 
 			for (size_t i = 0; i < 500; i++)
 			{
@@ -70,8 +70,8 @@ namespace tinytrain
 				//lastPos.y += rand() % 30;
 
 				start = end;
-				end.x += dist * cos(angle / 57.295779513f);
-				end.y += dist * sin(angle / 57.295779513f);
+				end.x += dist * cos(angle / RAD_TO_DEG);
+				end.y += dist * sin(angle / RAD_TO_DEG);
 				
 				m_railtrack->append(sf::Vector2f(end.x, end.y));
 			}
