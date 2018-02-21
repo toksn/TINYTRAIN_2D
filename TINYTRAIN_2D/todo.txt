@@ -1,6 +1,5 @@
 TODO:
-- add spline class for smooth railtracks
-	c1 continuity, local control, interpolation: catmull rom, bezier, herminte
+- implement circular catmul rom spline to prevent self intersections ect. (see http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf, https://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/)
 - camera focused on end of the track instead of the train (+rotation)
 - smooth camera movement
 
@@ -9,3 +8,5 @@ DONE:
 - extend track by input
 - new track segment is not streched to full length now because the min/max thingy doesnt work as intended
 	- THIS MAY EVEN BE A FEATURE?! try when spline is done
+- add spline class for smooth railtracks
+	c1 continuity, local control, interpolation: catmull rom, bezier, herminte
