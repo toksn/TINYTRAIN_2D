@@ -24,7 +24,6 @@ namespace tgf
 			void recalcLength(unsigned int startindex = 0);
 			float getLengthAtTime(float a_time);
 
-			void appendControlPoints(std::vector<sf::Vector2f> a_pts, sf::Color a_color);
 			void appendControlPoint(sf::Vector2f a_pt);
 
 			bool getLastControlPoint(sf::Vector2f& a_pt);
@@ -38,7 +37,7 @@ namespace tgf
 			int getSegmentStartIndexAtDist(float a_dist, int indexHint = -1);
 
 			// OVERRIDE THIS FOR A NEW SPLINE
-			virtual void onControlPointsAdded(size_t a_startindex) = 0;
+			virtual void onControlPointsAdded(int a_startindex) = 0;
 
 			void appendSplinePoint(sf::Vector2f a_pt);
 			

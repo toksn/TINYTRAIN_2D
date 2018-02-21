@@ -115,6 +115,9 @@ namespace tgf
 			if (m_splinePointsLengths.size() != m_splinePoints.getVertexCount())
 				recalcLength();
 
+			if (m_splinePoints.getVertexCount() == 0)
+				return 0.0f;
+
 			return m_splinePointsLengths.back();
 		}
 
@@ -140,16 +143,7 @@ namespace tgf
 		{
 			return getLength() * a_time;
 		}
-
-		void Spline::appendControlPoints(std::vector<sf::Vector2f> a_pts, sf::Color a_color)
-		{
-			auto size_before = m_controlPoints.getVertexCount();
-			for(auto pt : a_pts)
-				m_controlPoints.append(sf::Vertex(pt, a_color));
-			
-			onControlPointsAdded(size_before);
-		}
-
+		
 		void Spline::appendControlPoint(sf::Vector2f a_pt)
 		{
 			auto size_before = m_controlPoints.getVertexCount();

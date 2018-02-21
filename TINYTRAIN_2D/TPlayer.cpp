@@ -21,7 +21,7 @@ namespace tinytrain
 			//...
 		}
 
-		m_minDist = 5.0f;
+		m_minDist = 15.0f;
 		m_color = sf::Color::Red;
 		setColor(m_color);
 
@@ -137,12 +137,17 @@ namespace tinytrain
 			c2v lastSplinePoint, curSquarePt;
 			c2r splineDir;
 
-			auto pt = m_railtrack->m_trackspline->getLocationAtTime(1.0);
-			lastSplinePoint.x = pt.x;
-			lastSplinePoint.y = pt.y;
-
 			float angle_rad = m_railtrack->m_trackspline->getDirectionAngleAtTime(1.0);
+			//float angle_rad = 0.0f;
+			sf::Vector2f start, end;
+			if (m_railtrack->m_trackspline->getLastControlPointSegment(start, end) == false)
+				return;
+
+			c2v seg = c2Sub({ end.x,end.y }, { start.x,start.y });
+			angle_rad = atan2(seg.y, seg.x);
 			splineDir = c2Rot(angle_rad);
+			lastSplinePoint.x = end.x;
+			lastSplinePoint.y = end.y;
 			
 			// *********** 1:
 			// normalize on-screen square in screenspace

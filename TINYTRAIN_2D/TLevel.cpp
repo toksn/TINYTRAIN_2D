@@ -59,7 +59,7 @@ namespace tinytrain
 			// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
 			float angle = atan2(seg.y, seg.x) * RAD_TO_DEG;
 
-			for (size_t i = 0; i < 500; i++)
+			for (size_t i = 0; i < 10; i++)
 			{
 				angle += ((rand() % angle_range) - angle_range * 0.5f)/100.0f;
 

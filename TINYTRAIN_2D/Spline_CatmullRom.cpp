@@ -7,26 +7,30 @@ namespace tgf
 	{
 		Spline_CatmullRom::Spline_CatmullRom()
 		{
+			m_pointsPerSegment = 20;
 		}
 
 		Spline_CatmullRom::~Spline_CatmullRom()
 		{
 		}
 
-		void Spline_CatmullRom::onControlPointsAdded(size_t a_startindex)
+		void Spline_CatmullRom::onControlPointsAdded(int a_startindex)
 		{
 			if (m_controlPoints.getVertexCount() < 4)
 			{
 				return;
 			}
 
-			int new_control_point_index = m_controlPoints.getVertexCount() - 1;
-			int pt = new_control_point_index - 2;
-			for (int i = 0; i <= m_pointsPerSegment; i++)
+			while (a_startindex <= m_controlPoints.getVertexCount()-1)
 			{
-				float u = (float)i / (float)m_pointsPerSegment;
+				int new_control_point_index = a_startindex++;
+				int pt = new_control_point_index - 2;
+				for (int i = 0; i <= m_pointsPerSegment; i++)
+				{
+					float u = (float)i / (float)m_pointsPerSegment;
 
-				appendSplinePoint(interpolate(u, m_controlPoints[pt - 1].position, m_controlPoints[pt].position, m_controlPoints[pt + 1].position, m_controlPoints[pt + 2].position));
+					appendSplinePoint(interpolate(u, m_controlPoints[pt - 1].position, m_controlPoints[pt].position, m_controlPoints[pt + 1].position, m_controlPoints[pt + 2].position));
+				}
 			}
 		}
 

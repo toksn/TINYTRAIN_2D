@@ -141,7 +141,7 @@ namespace tinytrain
 		}
 
 		for (; i < a_points.size(); i++)
-			m_trackspline->appendControlPoints(a_points, a_color);
+			m_trackspline->appendControlPoint(a_points[i]);
 	}
 
 	void TRailTrack::draw(sf::RenderTarget * target)
