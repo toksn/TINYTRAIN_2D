@@ -150,14 +150,20 @@ namespace tinytrain
 			c2v max{ m_drawingArea.left+m_drawingArea.width, m_drawingArea.top+m_drawingArea.height };
 			c2v DrawnLine_BoundingBox_Dimension, newSquare;
 			float squareLengthPx = 1.0;
-			for (int i = 0; i < m_drawnLine.getVertexCount(); i++)
-			{
-				min.x = c2Min(m_drawnLine[i].position.x, min.x);
-				min.y = c2Min(m_drawnLine[i].position.y, min.y);
 
-				max.x = c2Max(m_drawnLine[i].position.x, max.x);
-				max.y = c2Max(m_drawnLine[i].position.y, max.y);
-			}
+			// todo: make normalizedrawnline = false an option
+			bool bNormalizeToDrawnLine = true;
+			if (bNormalizeToDrawnLine)
+			{
+				min = { m_drawnLine[0].position.x, m_drawnLine[0].position.y };
+				max = { m_drawnLine[0].position.x, m_drawnLine[0].position.y };
+				for (int i = 1; i < m_drawnLine.getVertexCount(); i++)
+				{					
+					c2v pt{ m_drawnLine[i].position.x, m_drawnLine[i].position.y };
+					min = c2Minv(pt, min);
+					max = c2Maxv(pt, max);
+				}
+			}			
 			DrawnLine_BoundingBox_Dimension = c2Sub(max, min);
 			squareLengthPx = c2Max(DrawnLine_BoundingBox_Dimension.x, DrawnLine_BoundingBox_Dimension.y);
 
