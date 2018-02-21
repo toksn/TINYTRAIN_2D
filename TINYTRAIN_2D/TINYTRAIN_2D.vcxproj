@@ -130,6 +130,8 @@
     <ClCompile Include="GameStateBase.cpp" />
     <ClCompile Include="GameState_Running.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Spline.cpp" />
+    <ClCompile Include="Spline_CatmullRom.cpp" />
     <ClCompile Include="TLevel.cpp" />
     <ClCompile Include="TPlayer.cpp" />
     <ClCompile Include="TRailTrack.cpp" />
@@ -140,6 +142,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState_Running.h" />
     <ClInclude Include="GameStateBase.h" />
+    <ClInclude Include="Spline.h" />
+    <ClInclude Include="Spline_CatmullRom.h" />
     <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TLevel.h" />
     <ClInclude Include="TPlayer.h" />

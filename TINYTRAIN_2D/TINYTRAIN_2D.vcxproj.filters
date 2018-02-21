@@ -21,6 +21,9 @@
     <Filter Include="TinyTrain\controllers">
       <UniqueIdentifier>{d53cf1fd-63c3-4d5c-9452-1b9dfe53c9f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameFramework\Math">
+      <UniqueIdentifier>{76c04630-4c10-43ab-82fb-893bd74a4749}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -46,6 +49,12 @@
     </ClCompile>
     <ClCompile Include="TPlayer.cpp">
       <Filter>TinyTrain\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Spline.cpp">
+      <Filter>GameFramework\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Spline_CatmullRom.cpp">
+      <Filter>GameFramework\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +84,12 @@
     </ClInclude>
     <ClInclude Include="TPlayer.h">
       <Filter>TinyTrain\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Spline.h">
+      <Filter>GameFramework\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Spline_CatmullRom.h">
+      <Filter>GameFramework\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
