@@ -19,16 +19,16 @@ namespace tinytrain
 		sf::Vector2f getPosition();
 
 		// wagon stats
-		float m_speed;
-		sf::Vector2f m_wagonsize;
-		float m_wagongap;
-		sf::Color m_color_firstwagon;
-		sf::Color m_color_wagons;
+		float speed_;
+		sf::Vector2f wagonsize_;
+		float wagongap_;
+		sf::Color color__firstwagon;
+		sf::Color color__wagons;
 
-		std::vector<sf::RectangleShape> m_wagons;
+		std::vector<sf::RectangleShape> wagons_;
 
 		// distance travelled by the first wagon
-		float m_distance;
+		float distance_;
 
 	};
 }

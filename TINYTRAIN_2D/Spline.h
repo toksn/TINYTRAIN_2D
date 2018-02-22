@@ -29,9 +29,9 @@ namespace tgf
 			bool getLastControlPoint(sf::Vector2f& a_pt);
 			bool getLastControlPointSegment(sf::Vector2f& a_start, sf::Vector2f& a_end);
 
-			sf::Color m_color_controlpts;
-			sf::Color m_color;
-			bool m_drawControlPoints;
+			sf::Color color__controlpts;
+			sf::Color color_;
+			bool drawControlPoints_;
 
 		protected:
 			int getSegmentStartIndexAtTime(float a_time, int indexHint = -1);
@@ -43,11 +43,11 @@ namespace tgf
 			void appendSplinePoint(sf::Vector2f a_pt);
 
 			// controlpoints
-			sf::VertexArray m_controlPoints;
+			sf::VertexArray controlPoints_;
 			// spline
-			sf::VertexArray m_splinePoints;
-			std::vector<float> m_splinePointsLengths;
-			int m_pointsPerSegment;
+			sf::VertexArray splinePoints_;
+			std::vector<float> splinePointsLengths_;
+			int pointsPerSegment_;
 		};
 	}
 }

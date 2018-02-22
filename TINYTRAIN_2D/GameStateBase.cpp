@@ -4,7 +4,7 @@ namespace tgf
 {
 	void GameStateBase::handleInput(sf::Event & e)
 	{
-		for (auto f : m_eventCallbacks[e.type])
+		for (auto f : eventCallbacks_[e.type])
 			f.first(e);
 	}
 }

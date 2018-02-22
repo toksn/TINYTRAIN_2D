@@ -20,8 +20,8 @@ namespace tinytrain
 		// load a level from file
 		void load(std::string file = "");
 		
-		std::unique_ptr<TTrain> m_train;
-		std::unique_ptr<TRailTrack> m_railtrack;
+		std::unique_ptr<TTrain> train_;
+		std::unique_ptr<TRailTrack> railtrack_;
 	};
 
 

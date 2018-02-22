@@ -25,21 +25,21 @@ namespace tgf
 		// this can be used to manually controlling the fps instead of using the SFML framerate
 		void setMaxFPS(sf::Uint16 maxFPS);
 
-		std::unique_ptr<sf::RenderWindow> m_window;
-		std::vector<std::unique_ptr<GameStateBase>> m_states;
+		std::unique_ptr<sf::RenderWindow> window_;
+		std::vector<std::unique_ptr<GameStateBase>> states_;
 
 		// gui view that can be used by every gamestate
-		std::unique_ptr<sf::View> m_guiView;
+		std::unique_ptr<sf::View> guiView_;
 	private:
 		void handleGlobalInput();
 
-		bool m_bShowFPS;
-		std::unique_ptr<sf::Clock> m_frameClock;
+		bool bShowFPS_;
+		std::unique_ptr<sf::Clock> frameClock_;
 
 		// this can be used to manually controlling the fps instead of using the SFML framerate
-		sf::Uint16	m_maxFPS;
-		sf::Time	m_renderTimer;
-		sf::Time	m_desiredFrameTime;
+		sf::Uint16	maxFPS_;
+		sf::Time	renderTimer_;
+		sf::Time	desiredFrameTime_;
 	};
 
 }

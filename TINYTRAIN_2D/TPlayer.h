@@ -35,16 +35,16 @@ namespace tinytrain
 		void stopDrawing();
 		void addDrawnLineToRailTrack();
 
-		TRailTrack* m_railtrack;
-		GameState_Running* m_gs;
-		sf::Color m_color;
+		TRailTrack* railtrack_;
+		GameState_Running* gs_;
+		sf::Color color_;
 
-		INPUTSTATE m_inputstate;
-		sf::FloatRect m_drawingArea;
-		sf::RectangleShape m_drawingAreaShape;
+		INPUTSTATE inputstate_;
+		sf::FloatRect drawingArea_;
+		sf::RectangleShape drawingAreaShape_;
 
-		sf::VertexArray m_drawnLine;
-		float m_minDist;
+		sf::VertexArray drawnLine_;
+		float minDist_;
 	};
 }
 

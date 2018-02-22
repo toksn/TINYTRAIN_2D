@@ -20,8 +20,8 @@ namespace tinytrain
 		virtual void onWindowSizeChanged(int w, int h) override;
 
 	private:
-		std::unique_ptr<TLevel> m_level;
-		std::unique_ptr<sf::View> m_camera;
-		std::unique_ptr<TPlayer> m_player;
+		std::unique_ptr<TLevel> level_;
+		std::unique_ptr<sf::View> camera_;
+		std::unique_ptr<TPlayer> player_;
 	};
 }

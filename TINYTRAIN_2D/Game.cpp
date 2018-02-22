@@ -8,13 +8,13 @@ namespace tgf
 {
 	Game::Game(std::string game_name, int window_width, int window_height, int framerate_limit)
 	{
-		m_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height), game_name);
-		m_window->setFramerateLimit(framerate_limit);
+		window_ = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height), game_name);
+		window_->setFramerateLimit(framerate_limit);
 
-		m_guiView = std::make_unique<sf::View>(sf::FloatRect(0.0f, 0.0f, window_width, window_height));
+		guiView_ = std::make_unique<sf::View>(sf::FloatRect(0.0f, 0.0f, window_width, window_height));
 
-		m_frameClock = std::make_unique<sf::Clock>();
-		m_bShowFPS = false;
+		frameClock_ = std::make_unique<sf::Clock>();
+		bShowFPS_ = false;
 	}
 
 
@@ -24,7 +24,7 @@ namespace tgf
 
 	void Game::run()
 	{
-		while (m_window && m_window->isOpen())
+		while (window_ && window_->isOpen())
 		{
 			handleGlobalInput();
 
@@ -37,7 +37,7 @@ namespace tgf
 	void Game::update()
 	{
 		// check for elapsed time and restart clock for next cycle
-		sf::Time deltaTime = m_frameClock->restart();
+		sf::Time deltaTime = frameClock_->restart();
 		float curFPS = 1.0f / deltaTime.asSeconds();
 
 		GameStateBase* currentState = peekState();
@@ -46,38 +46,38 @@ namespace tgf
 
 		currentState->update(deltaTime.asSeconds());
 
-		m_window->clear(sf::Color::Black);
-		currentState->draw(m_window.get());
-		m_window->display();
+		window_->clear(sf::Color::Black);
+		currentState->draw(window_.get());
+		window_->display();
 		
-		if (m_bShowFPS)
-			printf("\nFPS: %f", 1.0f / m_renderTimer.asSeconds());
+		if (bShowFPS_)
+			printf("\nFPS: %f", 1.0f / renderTimer_.asSeconds());
 
-		if (m_desiredFrameTime != sf::Time::Zero)
+		if (desiredFrameTime_ != sf::Time::Zero)
 		{
 			// add render timer in seconds
-			m_renderTimer += deltaTime;
+			renderTimer_ += deltaTime;
 			// do fixed render steps until theres less than desired timeframe left
-			while (m_renderTimer>m_desiredFrameTime)
-				m_renderTimer -= m_desiredFrameTime;
+			while (renderTimer_>desiredFrameTime_)
+				renderTimer_ -= desiredFrameTime_;
 			
 			/*
-			sf::Time elapsedFrameTime = m_frameClock->getElapsedTime() + m_renderTimer;
-			if (elapsedFrameTime < m_desiredFrameTime)
+			sf::Time elapsedFrameTime = frameClock_->getElapsedTime() + renderTimer_;
+			if (elapsedFrameTime < desiredFrameTime_)
 			{
 			// use sf::sleep for a more or less exact sleep because they use temporary high system precision
-			sf::Time timeToSleep = m_desiredFrameTime - elapsedFrameTime;
+			sf::Time timeToSleep = desiredFrameTime_ - elapsedFrameTime;
 			if (timeToSleep > g_timingBuffer)
 			{
 			sf::sleep(timeToSleep - g_timingBuffer);
 
-			const sf::Time timeAfterSleep = m_frameClock->getElapsedTime() + m_renderTimer;
+			const sf::Time timeAfterSleep = frameClock_->getElapsedTime() + renderTimer_;
 			const sf::Time actualTimeSlept = timeAfterSleep - elapsedFrameTime;
 			printf("\nwanted to sleep: %dms\t\tactual time slept: %dms", (timeToSleep - g_timingBuffer).asMilliseconds(), actualTimeSlept.asMilliseconds());
 			}
 
 			// busy wait for the small rest of the frame (~1ms)
-			while (m_frameClock->getElapsedTime() +m_renderTimer - elapsedFrameTime < timeToSleep)
+			while (frameClock_->getElapsedTime() +renderTimer_ - elapsedFrameTime < timeToSleep)
 			{
 			std::this_thread::yield();
 			}
@@ -89,53 +89,53 @@ namespace tgf
 	void Game::handleGlobalInput()
 	{
 		sf::Event event;
-		while (m_window->pollEvent(event))
+		while (window_->pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
-				m_window->close();
+				window_->close();
 			else if (event.type == sf::Event::Resized)
 			{
-				auto size = m_window->getSize();
+				auto size = window_->getSize();
 				printf("\nwindow size changed: %i x %i\n", size.x, size.y);
-				m_guiView->reset(sf::FloatRect(0.0f, 0.0f, (float)size.x, (float)size.y));
+				guiView_->reset(sf::FloatRect(0.0f, 0.0f, (float)size.x, (float)size.y));
 
 				// inform all current gamestates
-				for (auto& state : m_states)
+				for (auto& state : states_)
 					state->onWindowSizeChanged(size.x, size.y);
 			}
 			else
-				m_states.back().get()->handleInput(event);
+				states_.back().get()->handleInput(event);
 		}
 
 		// F10 to toggle FPS
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::F10))
-			m_bShowFPS = !m_bShowFPS;
+			bShowFPS_ = !bShowFPS_;
 	}
 
 	void Game::changeState(std::unique_ptr<GameStateBase> state)
 	{
-		if (m_states.empty() == false)
-			m_states.pop_back();
-		m_states.push_back(std::move(state));
+		if (states_.empty() == false)
+			states_.pop_back();
+		states_.push_back(std::move(state));
 	}
 
 	GameStateBase * Game::peekState()
 	{
-		if (m_states.empty() == false)
-			return m_states.back().get();
+		if (states_.empty() == false)
+			return states_.back().get();
 		return nullptr;
 	}
 		
 	void Game::setMaxFPS(sf::Uint16 maxFPS)
 	{
 		if (maxFPS == 0)
-			m_desiredFrameTime = sf::Time::Zero;
+			desiredFrameTime_ = sf::Time::Zero;
 		else
 		{
-			m_maxFPS = maxFPS;
-			//m_renderStep = sf::microseconds( 1.0f / m_maxFPS);
-			m_desiredFrameTime = sf::microseconds(sf::Int64(1000000.0 / m_maxFPS));
-			//m_desiredFrameTime = sf::microseconds(sf::Int64(1000000.0 / m_maxFPS));
+			maxFPS_ = maxFPS;
+			//renderStep_ = sf::microseconds( 1.0f / maxFPS_);
+			desiredFrameTime_ = sf::microseconds(sf::Int64(1000000.0 / maxFPS_));
+			//desiredFrameTime_ = sf::microseconds(sf::Int64(1000000.0 / maxFPS_));
 		}
 	}
 }

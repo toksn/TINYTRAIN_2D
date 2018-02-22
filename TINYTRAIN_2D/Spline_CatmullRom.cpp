@@ -7,7 +7,7 @@ namespace tgf
 	{
 		Spline_CatmullRom::Spline_CatmullRom()
 		{
-			m_pointsPerSegment = 20;
+			pointsPerSegment_ = 20;
 			type_ = CatmullRomType::Centripetal;
 		}
 
@@ -17,27 +17,27 @@ namespace tgf
 
 		void Spline_CatmullRom::onControlPointsAdded(int a_startindex)
 		{
-			if (m_controlPoints.getVertexCount() < 4)
+			if (controlPoints_.getVertexCount() < 4)
 			{
 				return;
 			}
 
-			while (a_startindex <= m_controlPoints.getVertexCount()-1)
+			while (a_startindex <= controlPoints_.getVertexCount()-1)
 			{
 				int new_control_point_index = a_startindex++;
 				int pt = new_control_point_index - 2;
-				for (int i = 0; i <= m_pointsPerSegment; i++)
+				for (int i = 0; i <= pointsPerSegment_; i++)
 				{
 					if (type_ == CatmullRomType::Uniform)
 					{
-						float u = (float)i / (float)m_pointsPerSegment;
-						appendSplinePoint(interpolateUniform(u, m_controlPoints[pt - 1].position, m_controlPoints[pt].position, m_controlPoints[pt + 1].position, m_controlPoints[pt + 2].position));
+						float u = (float)i / (float)pointsPerSegment_;
+						appendSplinePoint(interpolateUniform(u, controlPoints_[pt - 1].position, controlPoints_[pt].position, controlPoints_[pt + 1].position, controlPoints_[pt + 2].position));
 					}
 					else
 					{
-						// for this calculation, see Definition section of https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline
-						float* x = new float[4]{ m_controlPoints[pt - 1].position.x, m_controlPoints[pt].position.x, m_controlPoints[pt+1].position.x, m_controlPoints[pt+2].position.x };
-						float* y = new float[4]{ m_controlPoints[pt - 1].position.y, m_controlPoints[pt].position.y, m_controlPoints[pt+1].position.y, m_controlPoints[pt+2].position.y };
+						// for this calculation, see Definition section of https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rospline_
+						float* x = new float[4]{ controlPoints_[pt - 1].position.x, controlPoints_[pt].position.x, controlPoints_[pt+1].position.x, controlPoints_[pt+2].position.x };
+						float* y = new float[4]{ controlPoints_[pt - 1].position.y, controlPoints_[pt].position.y, controlPoints_[pt+1].position.y, controlPoints_[pt+2].position.y };
 						float* time = new float[4]{ 0, 1, 2, 3 };
 
 						float tstart = 1.0f;
@@ -57,9 +57,9 @@ namespace tgf
 						tstart = time[1];
 						tend = time[2];
 
-						float u = tstart + (i * (tend - tstart)) / m_pointsPerSegment;
-						//float u = (float)i / (float)m_pointsPerSegment;
-						appendSplinePoint(interpolate(u, m_controlPoints[pt - 1].position, m_controlPoints[pt].position, m_controlPoints[pt + 1].position, m_controlPoints[pt + 2].position, time));
+						float u = tstart + (i * (tend - tstart)) / pointsPerSegment_;
+						//float u = (float)i / (float)pointsPerSegment_;
+						appendSplinePoint(interpolate(u, controlPoints_[pt - 1].position, controlPoints_[pt].position, controlPoints_[pt + 1].position, controlPoints_[pt + 2].position, time));
 						delete[] x;
 						delete[] y;
 						delete[] time;
@@ -84,7 +84,7 @@ namespace tgf
 			return point;
 		}
 
-		// calculation is based on figure 3 of http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+		// calculation is based on figure 3 of http://www.cemyuksel.com/research/catmullroparam_/catmullrom.pdf
 		// uniform time vector should be the same as interpolateUniform(..) but slower because of the additional calcs
 		// 
 		// param: float* time is a float array of 4 entries, memory managment outside, no checks will be done in this func!

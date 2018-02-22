@@ -8,7 +8,7 @@ TODO:
 
 
 DONE:
-- implement circular catmul rom spline to prevent self intersections ect. (see http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf, https://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/)
+- implement circular catmul rom spline to prevent self intersections ect. (see http://www.cemyuksel.com/research/catmullroparam_/catmullrom.pdf, https://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/)
 - add spline class for smooth railtracks
 	c1 continuity, local control, interpolation: catmull rom, bezier, herminte
 - new track segment is not streched to full length now because the min/max thingy doesnt work as intended

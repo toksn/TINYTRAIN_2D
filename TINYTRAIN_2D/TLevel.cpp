@@ -16,18 +16,18 @@ namespace tinytrain
 
 	void TLevel::draw(sf::RenderTarget * target)
 	{
-		if (m_train)
-			m_train->draw(target);
-		if (m_railtrack)
-			m_railtrack->draw(target);
+		if (train_)
+			train_->draw(target);
+		if (railtrack_)
+			railtrack_->draw(target);
 	}
 
 	void TLevel::update(float deltaTime)
 	{
-		if (m_train)
-			m_train->update(deltaTime);
-		if (m_railtrack)
-			m_railtrack->update(deltaTime);
+		if (train_)
+			train_->update(deltaTime);
+		if (railtrack_)
+			railtrack_->update(deltaTime);
 	}
 
 	void TLevel::load(std::string file)
@@ -38,16 +38,16 @@ namespace tinytrain
 			SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
 			***************************************************************************/
 			// create train for the player
-			m_train = std::make_unique<TTrain>();
+			train_ = std::make_unique<TTrain>();
 
 			// create a railtrack for the train
-			m_railtrack = std::make_unique<TRailTrack>();
+			railtrack_ = std::make_unique<TRailTrack>();
 
-			m_railtrack->append(sf::Vector2f(200.0f, 50.f));
-			m_railtrack->append(sf::Vector2f(200.0f, 100.f));
-			m_railtrack->append(sf::Vector2f(250.0f, 140.f));
-			m_railtrack->append(sf::Vector2f(150.0f, 180.f));
-			m_railtrack->append(sf::Vector2f(130.0f, 70.f));
+			railtrack_->append(sf::Vector2f(200.0f, 50.f));
+			railtrack_->append(sf::Vector2f(200.0f, 100.f));
+			railtrack_->append(sf::Vector2f(250.0f, 140.f));
+			railtrack_->append(sf::Vector2f(150.0f, 180.f));
+			railtrack_->append(sf::Vector2f(130.0f, 70.f));
 
 			c2v start{ 150.0f, 180.f };
 			c2v end{ 130.0f, 70.f };
@@ -73,11 +73,11 @@ namespace tinytrain
 				end.x += dist * cos(angle / RAD_TO_DEG);
 				end.y += dist * sin(angle / RAD_TO_DEG);
 				
-				m_railtrack->append(sf::Vector2f(end.x, end.y));
+				railtrack_->append(sf::Vector2f(end.x, end.y));
 			}
 
-			m_railtrack->addTrain(m_train.get());
-			m_train->initWagons(30);
+			railtrack_->addTrain(train_.get());
+			train_->initWagons(30);
 
 			// create obstacles for the games to be lost
 			//create<TT_Obstacle>();

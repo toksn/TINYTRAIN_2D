@@ -33,14 +33,14 @@ namespace tinytrain
 		void addDrawnLinePoints(std::vector<sf::Vector2f> a_points, sf::Color a_color);
 
 		// contains the length at each of the vertices
-		std::vector<float> m_length;
+		std::vector<float> length_;
 
 		// array of trains actually driving on the track
-		std::vector<TTrain*> m_trains;
+		std::vector<TTrain*> trains_;
 				
 	private:
 
-		float m_segLength;
-		std::unique_ptr<tgf::math::Spline_CatmullRom> m_trackspline;
+		float segLength_;
+		std::unique_ptr<tgf::math::Spline_CatmullRom> trackspline_;
 	};
 }

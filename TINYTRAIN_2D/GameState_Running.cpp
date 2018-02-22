@@ -10,22 +10,22 @@ namespace tinytrain
 {
 	GameState_Running::GameState_Running(tgf::Game * game)
 	{
-		m_game = game;
-		m_level = std::make_unique<TLevel>();
-		m_level->load();
+		game_ = game;
+		level_ = std::make_unique<TLevel>();
+		level_->load();
 
-		m_player = std::make_unique<TPlayer>(this);
+		player_ = std::make_unique<TPlayer>(this);
 
-		m_camera = std::make_unique<sf::View>();
-		if (game && m_camera && game->m_window)
+		camera_ = std::make_unique<sf::View>();
+		if (game && camera_ && game->window_)
 		{
-			sf::Vector2f size = sf::Vector2f(game->m_window->getSize());
-			m_camera->setSize(size);
-			m_camera->setCenter(size*0.5f);
+			sf::Vector2f size = sf::Vector2f(game->window_->getSize());
+			camera_->setSize(size);
+			camera_->setCenter(size*0.5f);
 
-			m_player->recalcDrawRect(size.x, size.y);
-			if (m_level)
-				m_player->setTrack(m_level->m_railtrack.get());
+			player_->recalcDrawRect(size.x, size.y);
+			if (level_)
+				player_->setTrack(level_->railtrack_.get());
 		}
 	}
 
@@ -35,18 +35,18 @@ namespace tinytrain
 
 	void GameState_Running::update(float deltaTime)
 	{
-		if (m_level)
+		if (level_)
 		{
 			// update level
-			m_level->update(deltaTime);
+			level_->update(deltaTime);
 
 			// update view 
-			if (m_level->m_train && m_camera)
-				m_camera->setCenter(m_level->m_train->getPosition());
+			if (level_->train_ && camera_)
+				camera_->setCenter(level_->train_->getPosition());
 
 			// update player (mouse input to spline)
-			if (m_player)
-				m_player->update(deltaTime);
+			if (player_)
+				player_->update(deltaTime);
 		}
 			
 	}
@@ -57,30 +57,30 @@ namespace tinytrain
 			return;
 
 		// gameview
-		target->setView(*m_camera);
+		target->setView(*camera_);
 
 		// draw level
-		if (m_level)
-			m_level->draw(target);
+		if (level_)
+			level_->draw(target);
 		
 		// guiview
-		if (m_game && m_game->m_window)
-			target->setView(*m_game->m_guiView);
+		if (game_ && game_->window_)
+			target->setView(*game_->guiView_);
 
 		// draw gui
 		
 		// draw player (drawing rect)
-		if(m_player)
-			m_player->draw(target);
+		if(player_)
+			player_->draw(target);
 
 		// destroying the player on purpose (for testing purposes)
-		//m_player.reset(nullptr);
+		//player_.reset(nullptr);
 	}
 
 	/*
 	void GameState_Running::handleInput(sf::Event& e)
 	{
-		for (auto f : m_eventCallbacks[e.type])
+		for (auto f : eventCallbacks_[e.type])
 		{
 			f(e);
 		}
@@ -88,9 +88,9 @@ namespace tinytrain
 
 	void GameState_Running::onWindowSizeChanged(int w, int h)
 	{
-		if (m_camera)
-			m_camera->setSize(w, h);
+		if (camera_)
+			camera_->setSize(w, h);
 
-		m_player->recalcDrawRect(w, h);
+		player_->recalcDrawRect(w, h);
 	}
 }

@@ -9,7 +9,7 @@ namespace tgf
 		{
 		public:
 			// catmull rom type
-			// see http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf for more info
+			// see http://www.cemyuksel.com/research/catmullroparam_/catmullrom.pdf for more info
 			enum class CatmullRomType
 			{
 				Uniform,		// uniform is faster, can introduce self intersections

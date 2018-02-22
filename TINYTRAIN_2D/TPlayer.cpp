@@ -12,7 +12,7 @@ namespace tinytrain
 
 	TPlayer::TPlayer(GameState_Running* gs)
 	{
-		m_gs = gs;
+		gs_ = gs;
 		if (gs)
 		{
 			gs->bindEventCallback(sf::Event::MouseButtonPressed, this, &TPlayer::onMousePressed);
@@ -20,42 +20,42 @@ namespace tinytrain
 			//...
 		}
 
-		m_minDist = 15.0f;
-		m_color = sf::Color::Red;
-		setColor(m_color);
+		minDist_ = 15.0f;
+		color_ = sf::Color::Red;
+		setColor(color_);
 
-		m_drawnLine.setPrimitiveType(sf::PrimitiveType::LineStrip);
+		drawnLine_.setPrimitiveType(sf::PrimitiveType::LineStrip);
 	}
 
 
 	TPlayer::~TPlayer()
 	{
 		printf("~TPlayer, possible callback crashes now!\n");
-		if (m_gs)
-			m_gs->unbindAllCallbacks(this);
+		if (gs_)
+			gs_->unbindAllCallbacks(this);
 	}
 
 	void TPlayer::draw(sf::RenderTarget * target)
 	{
-		target->draw(m_drawingAreaShape);
-		target->draw(m_drawnLine);
+		target->draw(drawingAreaShape_);
+		target->draw(drawnLine_);
 	}
 
 	void TPlayer::update(float deltaTime)
 	{
-		if (m_inputstate == INPUTSTATE::DRAWING && m_gs && m_gs->m_game)
+		if (inputstate_ == INPUTSTATE::DRAWING && gs_ && gs_->game_)
 		{
 			// get current mouse location
-			auto curScreenPos = sf::Mouse::getPosition(*m_gs->m_game->m_window);
-			if (m_drawingArea.contains(curScreenPos.x, curScreenPos.y))
+			auto curScreenPos = sf::Mouse::getPosition(*gs_->game_->window_);
+			if (drawingArea_.contains(curScreenPos.x, curScreenPos.y))
 			{
-				auto size = m_drawnLine.getVertexCount();
+				auto size = drawnLine_.getVertexCount();
 				if (size)
 				{
-					c2v start{ m_drawnLine[size - 1].position.x, m_drawnLine[size - 1].position.y };
+					c2v start{ drawnLine_[size - 1].position.x, drawnLine_[size - 1].position.y };
 					c2v end{ curScreenPos.x, curScreenPos.y };
-					if (c2Len(c2Sub(end, start)) > m_minDist)
-						m_drawnLine.append(sf::Vertex(sf::Vector2f(end.x, end.y), m_color));
+					if (c2Len(c2Sub(end, start)) > minDist_)
+						drawnLine_.append(sf::Vertex(sf::Vector2f(end.x, end.y), color_));
 				}
 			}
 			else
@@ -78,43 +78,43 @@ namespace tinytrain
 		drawsize.y *= factor;
 		drawsize.x = drawsize.y;
 
-		m_drawingArea = sf::FloatRect(pos.x, pos.y, drawsize.x, drawsize.y);
-		m_drawingAreaShape.setSize(sf::Vector2f(drawsize.x, drawsize.y));
-		m_drawingAreaShape.setPosition(pos.x, pos.y);
-		m_drawingAreaShape.setFillColor(sf::Color::Transparent);
-		m_drawingAreaShape.setOutlineColor(sf::Color::Red);
-		m_drawingAreaShape.setOutlineThickness(1);
+		drawingArea_ = sf::FloatRect(pos.x, pos.y, drawsize.x, drawsize.y);
+		drawingAreaShape_.setSize(sf::Vector2f(drawsize.x, drawsize.y));
+		drawingAreaShape_.setPosition(pos.x, pos.y);
+		drawingAreaShape_.setFillColor(sf::Color::Transparent);
+		drawingAreaShape_.setOutlineColor(sf::Color::Red);
+		drawingAreaShape_.setOutlineThickness(1);
 	}
 
 	void TPlayer::stopDrawing()
 	{
 		printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
-		m_inputstate = INPUTSTATE::IDLE;
+		inputstate_ = INPUTSTATE::IDLE;
 		addDrawnLineToRailTrack();
 	}
 
 	void TPlayer::setTrack(TRailTrack * track)
 	{
-		m_railtrack = track;
+		railtrack_ = track;
 	}
 
 	void TPlayer::onMousePressed(sf::Event& e)
 	{
-		if (e.mouseButton.button == sf::Mouse::Left && m_drawingArea.contains(e.mouseButton.x, e.mouseButton.y))
+		if (e.mouseButton.button == sf::Mouse::Left && drawingArea_.contains(e.mouseButton.x, e.mouseButton.y))
 		{
 			printf("DRAWING : started at pixel %i, %i\n", e.mouseButton.x, e.mouseButton.y);
 
 			// store the initial point
-			m_drawnLine.resize(1);
-			m_drawnLine[0] = sf::Vertex(sf::Vector2f(e.mouseButton.x, e.mouseButton.y), m_color);
+			drawnLine_.resize(1);
+			drawnLine_[0] = sf::Vertex(sf::Vector2f(e.mouseButton.x, e.mouseButton.y), color_);
 
-			m_inputstate = INPUTSTATE::DRAWING;
+			inputstate_ = INPUTSTATE::DRAWING;
 		}
 	}
 
 	void TPlayer::onMouseReleased(sf::Event& e)
 	{
-		if (m_inputstate != INPUTSTATE::IDLE && e.mouseButton.button == sf::Mouse::Left )
+		if (inputstate_ != INPUTSTATE::IDLE && e.mouseButton.button == sf::Mouse::Left )
 		{
 			stopDrawing();
 		}
@@ -122,15 +122,15 @@ namespace tinytrain
 
 	void TPlayer::setColor(sf::Color col)
 	{
-		m_color = col;
-		m_drawingAreaShape.setOutlineColor(m_color);
-		for (int i = 0; i < m_drawnLine.getVertexCount(); i++)
-			m_drawnLine[i].color = m_color;
+		color_ = col;
+		drawingAreaShape_.setOutlineColor(color_);
+		for (int i = 0; i < drawnLine_.getVertexCount(); i++)
+			drawnLine_[i].color = color_;
 	}
 
 	void TPlayer::addDrawnLineToRailTrack()
 	{
-		if (m_railtrack && m_drawnLine.getVertexCount())
+		if (railtrack_ && drawnLine_.getVertexCount())
 		{
 			std::vector<sf::Vector2f> splinePointsToAdd;
 			c2v lastSplinePoint, curSquarePt;
@@ -138,9 +138,9 @@ namespace tinytrain
 
 			sf::Vector2f start, end;
 			float angle_rad = 0.0f;
-			if (m_railtrack->getLastControlPointSegmentFromTrack(start, end) == false)
+			if (railtrack_->getLastControlPointSegmentFromTrack(start, end) == false)
 			{
-				if (m_railtrack->getLastControlPointFromTrack(end) == false)
+				if (railtrack_->getLastControlPointFromTrack(end) == false)
 					return;
 			}
 			else
@@ -150,9 +150,9 @@ namespace tinytrain
 			}			
 
 			// calc drawn_angle from first drawn segment
-			if (m_drawnLine.getVertexCount() >= 2)
+			if (drawnLine_.getVertexCount() >= 2)
 			{
-				c2v seg = c2Sub({ m_drawnLine[1].position.x,m_drawnLine[1].position.y }, { m_drawnLine[0].position.x,m_drawnLine[0].position.y });
+				c2v seg = c2Sub({ drawnLine_[1].position.x,drawnLine_[1].position.y }, { drawnLine_[0].position.x,drawnLine_[0].position.y });
 				angle_rad -= atan2(seg.y, seg.x);
 			}
 			splineDir = c2Rot(angle_rad);
@@ -162,8 +162,8 @@ namespace tinytrain
 			// *********** 1:
 			// normalize on-screen square in screenspace
 			// (2D bounding box -> longest side to be 1.0)
-			c2v min{ m_drawingArea.left, m_drawingArea.top };
-			c2v max{ m_drawingArea.left+m_drawingArea.width, m_drawingArea.top+m_drawingArea.height };
+			c2v min{ drawingArea_.left, drawingArea_.top };
+			c2v max{ drawingArea_.left+drawingArea_.width, drawingArea_.top+drawingArea_.height };
 			c2v DrawnLine_BoundingBox_Dimension, newSquare;
 			float squareLengthPx = 1.0;
 
@@ -171,11 +171,11 @@ namespace tinytrain
 			bool bNormalizeToDrawnLine = true;
 			if (bNormalizeToDrawnLine)
 			{
-				min = { m_drawnLine[0].position.x, m_drawnLine[0].position.y };
-				max = { m_drawnLine[0].position.x, m_drawnLine[0].position.y };
-				for (int i = 1; i < m_drawnLine.getVertexCount(); i++)
+				min = { drawnLine_[0].position.x, drawnLine_[0].position.y };
+				max = { drawnLine_[0].position.x, drawnLine_[0].position.y };
+				for (int i = 1; i < drawnLine_.getVertexCount(); i++)
 				{					
-					c2v pt{ m_drawnLine[i].position.x, m_drawnLine[i].position.y };
+					c2v pt{ drawnLine_[i].position.x, drawnLine_[i].position.y };
 					min = c2Minv(pt, min);
 					max = c2Maxv(pt, max);
 				}
@@ -184,28 +184,28 @@ namespace tinytrain
 			squareLengthPx = c2Max(DrawnLine_BoundingBox_Dimension.x, DrawnLine_BoundingBox_Dimension.y);
 
 			// normalize the screenpositions
-			for (int i = 0; i < m_drawnLine.getVertexCount(); i++)
+			for (int i = 0; i < drawnLine_.getVertexCount(); i++)
 			{
-				m_drawnLine[i].position -= sf::Vector2f(min.x, min.y);
-				m_drawnLine[i].position /= squareLengthPx;
+				drawnLine_[i].position -= sf::Vector2f(min.x, min.y);
+				drawnLine_[i].position /= squareLengthPx;
 			}
 
 
 			// *********** 2:
 			// repos on-screen square to have origin in first linepoint
-			sf::Vector2f initPos = m_drawnLine[0].position;//{ m_drawnLine[0].position.x, m_drawnLine[0].position.y };
-			for (int i = 0; i < m_drawnLine.getVertexCount(); i++)
-				m_drawnLine[i].position -= initPos;
+			sf::Vector2f initPos = drawnLine_[0].position;//{ drawnLine_[0].position.x, drawnLine_[0].position.y };
+			for (int i = 0; i < drawnLine_.getVertexCount(); i++)
+				drawnLine_[i].position -= initPos;
 
 			// *********** 3:
 			// multiply with direction and position the points in relation to the lastSplinePoint
-			for (int i = 1; i < m_drawnLine.getVertexCount(); i++)
+			for (int i = 1; i < drawnLine_.getVertexCount(); i++)
 			{
-				curSquarePt.x = m_drawnLine[i].position.x;
-				curSquarePt.y = m_drawnLine[i].position.y;
+				curSquarePt.x = drawnLine_[i].position.x;
+				curSquarePt.y = drawnLine_[i].position.y;
 
 				// apply segment length scale
-				float splineSegmentLength = m_railtrack->getSegmentLength();
+				float splineSegmentLength = railtrack_->getSegmentLength();
 				curSquarePt = c2Mulvs(curSquarePt, splineSegmentLength);
 				
 				// rotate to match spline direction
@@ -217,7 +217,7 @@ namespace tinytrain
 				splinePointsToAdd.push_back(sf::Vector2f(curSquarePt.x, curSquarePt.y));
 			}
 
-			m_railtrack->addDrawnLinePoints(splinePointsToAdd, m_color);
+			railtrack_->addDrawnLinePoints(splinePointsToAdd, color_);
 		}
 	}
 

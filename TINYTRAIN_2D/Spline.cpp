@@ -8,14 +8,14 @@ namespace tgf
 		Spline::Spline()
 		{
 			// default railtrack draw type
-			m_controlPoints.setPrimitiveType(sf::PrimitiveType::LinesStrip);
-			m_splinePoints.setPrimitiveType(sf::PrimitiveType::LinesStrip);
+			controlPoints_.setPrimitiveType(sf::PrimitiveType::LinesStrip);
+			splinePoints_.setPrimitiveType(sf::PrimitiveType::LinesStrip);
 
-			m_pointsPerSegment = 20;
-			m_drawControlPoints = true;
+			pointsPerSegment_ = 20;
+			drawControlPoints_ = true;
 
-			m_color = sf::Color::Red;
-			m_color_controlpts = sf::Color::White;
+			color_ = sf::Color::Red;
+			color__controlpts = sf::Color::White;
 		}
 		
 		Spline::~Spline()
@@ -24,10 +24,10 @@ namespace tgf
 
 		void Spline::draw(sf::RenderTarget * target)
 		{
-			if (m_drawControlPoints)
-				target->draw(m_controlPoints);
+			if (drawControlPoints_)
+				target->draw(controlPoints_);
 
-			target->draw(m_splinePoints);
+			target->draw(splinePoints_);
 		}
 
 		void Spline::update(float deltaTime)
@@ -44,27 +44,27 @@ namespace tgf
 
 		sf::Vector2f Spline::getLocationAtTime(float a_time, int& indexHint )
 		{
-			if (m_splinePoints.getVertexCount() == 0)
+			if (splinePoints_.getVertexCount() == 0)
 				return sf::Vector2f();
 
 			c2v pos;
 			if (a_time == 1.0f)
-				pos = { m_splinePoints[m_splinePoints.getVertexCount() - 1].position.x, m_splinePoints[m_splinePoints.getVertexCount() - 1].position.y };
+				pos = { splinePoints_[splinePoints_.getVertexCount() - 1].position.x, splinePoints_[splinePoints_.getVertexCount() - 1].position.y };
 			else if (a_time == 0.0f)
-				pos = { m_splinePoints[0].position.x, m_splinePoints[0].position.y };
+				pos = { splinePoints_[0].position.x, splinePoints_[0].position.y };
 			else
 			{
 				float a_dist = getLength()*a_time;
 				indexHint = getSegmentStartIndexAtDist(a_dist, indexHint);
-				if (indexHint < 0 || indexHint >= m_splinePoints.getVertexCount())
+				if (indexHint < 0 || indexHint >= splinePoints_.getVertexCount())
 					return sf::Vector2f();
 
 				// segment
-				c2v start = { m_splinePoints[indexHint].position.x, m_splinePoints[indexHint].position.y };
-				c2v end = { m_splinePoints[indexHint + 1].position.x, m_splinePoints[indexHint + 1].position.y };
+				c2v start = { splinePoints_[indexHint].position.x, splinePoints_[indexHint].position.y };
+				c2v end = { splinePoints_[indexHint + 1].position.x, splinePoints_[indexHint + 1].position.y };
 
 				// calc rest dist on the segment
-				a_dist -= m_splinePointsLengths[indexHint];
+				a_dist -= splinePointsLengths_[indexHint];
 
 				// make it 0-1 range based on the segment
 				a_dist = a_dist / c2Len(c2Sub(end, start));
@@ -81,29 +81,29 @@ namespace tgf
 		float Spline::getDirectionAngleAtTime(float a_time, int& indexHint, bool a_in_radiant)
 		{
 			// no direction calc possible when not enough points
-			if (m_splinePoints.getVertexCount() < 2)
+			if (splinePoints_.getVertexCount() < 2)
 				return 0.0f;
 
 
 			c2v start, end, seg;
 			if (a_time == 1.0f)
 			{
-				start = { m_splinePoints[m_splinePoints.getVertexCount() - 2].position.x, m_splinePoints[m_splinePoints.getVertexCount() - 2].position.y };
-				end = { m_splinePoints[m_splinePoints.getVertexCount() - 1].position.x, m_splinePoints[m_splinePoints.getVertexCount() - 1].position.y };
+				start = { splinePoints_[splinePoints_.getVertexCount() - 2].position.x, splinePoints_[splinePoints_.getVertexCount() - 2].position.y };
+				end = { splinePoints_[splinePoints_.getVertexCount() - 1].position.x, splinePoints_[splinePoints_.getVertexCount() - 1].position.y };
 			}
 			else if (a_time == 0.0f)
 			{
-				start = { m_splinePoints[0].position.x, m_splinePoints[0].position.y };
-				end = { m_splinePoints[1].position.x, m_splinePoints[1].position.y };
+				start = { splinePoints_[0].position.x, splinePoints_[0].position.y };
+				end = { splinePoints_[1].position.x, splinePoints_[1].position.y };
 			}
 			else
 			{
 				indexHint = getSegmentStartIndexAtDist(getLength()*a_time, indexHint);
-				if (indexHint < 0 || indexHint >= m_splinePoints.getVertexCount())
+				if (indexHint < 0 || indexHint >= splinePoints_.getVertexCount())
 					return 0.0f;
 
-				start = { m_splinePoints[indexHint].position.x, m_splinePoints[indexHint].position.y };
-				end = { m_splinePoints[indexHint + 1].position.x, m_splinePoints[indexHint + 1].position.y };
+				start = { splinePoints_[indexHint].position.x, splinePoints_[indexHint].position.y };
+				end = { splinePoints_[indexHint + 1].position.x, splinePoints_[indexHint + 1].position.y };
 			}
 
 			seg = c2Sub(end, start);
@@ -112,30 +112,30 @@ namespace tgf
 		}
 		float Spline::getLength()
 		{
-			if (m_splinePointsLengths.size() != m_splinePoints.getVertexCount())
+			if (splinePointsLengths_.size() != splinePoints_.getVertexCount())
 				recalcLength();
 
-			if (m_splinePoints.getVertexCount() == 0)
+			if (splinePoints_.getVertexCount() == 0)
 				return 0.0f;
 
-			return m_splinePointsLengths.back();
+			return splinePointsLengths_.back();
 		}
 
 		void Spline::recalcLength(unsigned int startindex)
 		{
-			size_t size = m_splinePoints.getVertexCount();
-			m_splinePointsLengths.resize(size);
+			size_t size = splinePoints_.getVertexCount();
+			splinePointsLengths_.resize(size);
 
 			// first point always has length zero
 			if (startindex == 0)
 			{
-				m_splinePointsLengths[startindex] = 0;
+				splinePointsLengths_[startindex] = 0;
 				startindex++;
 			}
 
 			// we can assume here that the startindex is > 0 because of the above increment
 			for (int i = startindex; i < size; i++)
-				m_splinePointsLengths[i] = m_splinePointsLengths[i - 1] + c2Len(c2Sub(c2v{ m_splinePoints[i].position.x , m_splinePoints[i].position.y }, c2v{ m_splinePoints[i - 1].position.x , m_splinePoints[i - 1].position.y }));
+				splinePointsLengths_[i] = splinePointsLengths_[i - 1] + c2Len(c2Sub(c2v{ splinePoints_[i].position.x , splinePoints_[i].position.y }, c2v{ splinePoints_[i - 1].position.x , splinePoints_[i - 1].position.y }));
 		}
 
 
@@ -146,36 +146,36 @@ namespace tgf
 		
 		void Spline::appendControlPoint(sf::Vector2f a_pt)
 		{
-			auto size_before = m_controlPoints.getVertexCount();
-			m_controlPoints.append(sf::Vertex(a_pt, m_color_controlpts));
+			auto size_before = controlPoints_.getVertexCount();
+			controlPoints_.append(sf::Vertex(a_pt, color__controlpts));
 
 			onControlPointsAdded(size_before);
 		}
 
 		bool Spline::getLastControlPoint(sf::Vector2f & a_pt)
 		{
-			if(m_controlPoints.getVertexCount() == 0)
+			if(controlPoints_.getVertexCount() == 0)
 				return false;
 
-			 a_pt = m_controlPoints[m_controlPoints.getVertexCount() - 1].position;
+			 a_pt = controlPoints_[controlPoints_.getVertexCount() - 1].position;
 			 return true;
 		}
 
 		bool Spline::getLastControlPointSegment(sf::Vector2f & a_start, sf::Vector2f & a_end)
 		{
-			if (m_controlPoints.getVertexCount() < 2)
+			if (controlPoints_.getVertexCount() < 2)
 				return false;
 
-			a_start = m_controlPoints[m_controlPoints.getVertexCount() - 2].position;
-			a_end	= m_controlPoints[m_controlPoints.getVertexCount() - 1].position;
+			a_start = controlPoints_[controlPoints_.getVertexCount() - 2].position;
+			a_end	= controlPoints_[controlPoints_.getVertexCount() - 1].position;
 			return true;
 		}
 
 		void Spline::appendSplinePoint(sf::Vector2f a_pt)
 		{
-			m_splinePoints.append(sf::Vertex(a_pt, m_color));
+			splinePoints_.append(sf::Vertex(a_pt, color_));
 
-			recalcLength(m_splinePoints.getVertexCount() - 1);	
+			recalcLength(splinePoints_.getVertexCount() - 1);	
 		}
 
 		int Spline::getSegmentStartIndexAtTime(float a_time, int indexHint)
@@ -188,7 +188,7 @@ namespace tgf
 		{
 			int i = 0;
 
-			size_t size = m_splinePoints.getVertexCount();
+			size_t size = splinePoints_.getVertexCount();
 
 			if (size < 0)
 				return -1;
@@ -205,10 +205,10 @@ namespace tgf
 				// keep index range
 				while (i >= 0 && i < size - 1)
 				{
-					if (m_splinePointsLengths[i] <= a_dist)
+					if (splinePointsLengths_[i] <= a_dist)
 					{
 						// found correct segment
-						if (m_splinePointsLengths[i + 1] > a_dist)
+						if (splinePointsLengths_[i + 1] > a_dist)
 							break;
 						else
 							i++;
