@@ -137,17 +137,28 @@ namespace tinytrain
 			c2v lastSplinePoint, curSquarePt;
 			c2r splineDir;
 
-			float angle_rad = m_railtrack->m_trackspline->getDirectionAngleAtTime(1.0);
-			//float angle_rad = 0.0f;
 			sf::Vector2f start, end;
+			float angle_rad = 0.0f;
 			if (m_railtrack->m_trackspline->getLastControlPointSegment(start, end) == false)
-				return;
+			{
+				if (m_railtrack->m_trackspline->getLastControlPoint(end) == false)
+					return;
+			}
+			else
+			{
+				c2v seg = c2Sub({ end.x,end.y }, { start.x,start.y });
+				angle_rad = atan2(seg.y, seg.x);
+			}			
 
-			c2v seg = c2Sub({ end.x,end.y }, { start.x,start.y });
-			angle_rad = atan2(seg.y, seg.x);
+			// calc drawn_angle from first drawn segment
+			if (m_drawnLine.getVertexCount() >= 2)
+			{
+				c2v seg = c2Sub({ m_drawnLine[1].position.x,m_drawnLine[1].position.y }, { m_drawnLine[0].position.x,m_drawnLine[0].position.y });
+				angle_rad -= atan2(seg.y, seg.x);
+			}
 			splineDir = c2Rot(angle_rad);
-			lastSplinePoint.x = end.x;
-			lastSplinePoint.y = end.y;
+
+			lastSplinePoint = { end.x, end.y };
 			
 			// *********** 1:
 			// normalize on-screen square in screenspace
@@ -185,14 +196,7 @@ namespace tinytrain
 			// repos on-screen square to have origin in first linepoint
 			sf::Vector2f initPos = m_drawnLine[0].position;//{ m_drawnLine[0].position.x, m_drawnLine[0].position.y };
 			for (int i = 0; i < m_drawnLine.getVertexCount(); i++)
-			{
 				m_drawnLine[i].position -= initPos;
-
-				// rotate by 90 degree to fit SFML orientation
-				float temp = m_drawnLine[i].position.x;
-				m_drawnLine[i].position.x = -m_drawnLine[i].position.y;
-				m_drawnLine[i].position.y = temp;
-			}
 
 			// *********** 3:
 			// multiply with direction and position the points in relation to the lastSplinePoint

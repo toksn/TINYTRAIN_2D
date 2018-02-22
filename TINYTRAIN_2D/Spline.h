@@ -31,6 +31,7 @@ namespace tgf
 
 			sf::Color m_color_controlpts;
 			sf::Color m_color;
+			bool m_drawControlPoints;
 
 		protected:
 			int getSegmentStartIndexAtTime(float a_time, int indexHint = -1);
@@ -40,8 +41,6 @@ namespace tgf
 			virtual void onControlPointsAdded(int a_startindex) = 0;
 
 			void appendSplinePoint(sf::Vector2f a_pt);
-			
-			bool m_drawControlPoints;
 
 			// controlpoints
 			sf::VertexArray m_controlPoints;

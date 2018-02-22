@@ -12,6 +12,7 @@ namespace tinytrain
 		m_segLength = 100.0f;
 
 		m_trackspline = std::make_unique<tgf::math::Spline_CatmullRom>();
+		m_trackspline->m_drawControlPoints = false;
 	}
 
 	TRailTrack::~TRailTrack()
