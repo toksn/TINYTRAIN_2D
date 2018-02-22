@@ -138,9 +138,9 @@ namespace tinytrain
 
 			sf::Vector2f start, end;
 			float angle_rad = 0.0f;
-			if (m_railtrack->m_trackspline->getLastControlPointSegment(start, end) == false)
+			if (m_railtrack->getLastControlPointSegmentFromTrack(start, end) == false)
 			{
-				if (m_railtrack->m_trackspline->getLastControlPoint(end) == false)
+				if (m_railtrack->getLastControlPointFromTrack(end) == false)
 					return;
 			}
 			else

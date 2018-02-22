@@ -130,6 +130,22 @@ namespace tinytrain
 		m_segLength = a_len;
 	}
 
+	bool TRailTrack::getLastControlPointFromTrack(sf::Vector2f & a_pt)
+	{
+		if (m_trackspline)
+			return m_trackspline->getLastControlPoint(a_pt);
+
+		return false;
+	}
+
+	bool TRailTrack::getLastControlPointSegmentFromTrack(sf::Vector2f & a_start, sf::Vector2f & a_end)
+	{
+		if (m_trackspline)
+			return m_trackspline->getLastControlPointSegment(a_start, a_end);
+
+		return false;
+	}
+
 	void TRailTrack::addDrawnLinePoints(std::vector<sf::Vector2f> a_points, sf::Color a_color)
 	{
 		int i = 0;

@@ -28,6 +28,8 @@ namespace tinytrain
 
 		float getSegmentLength();
 		void setSegmentLength(float a_len);
+		bool getLastControlPointFromTrack(sf::Vector2f& a_pt);
+		bool getLastControlPointSegmentFromTrack(sf::Vector2f& a_start, sf::Vector2f& a_end);
 		void addDrawnLinePoints(std::vector<sf::Vector2f> a_points, sf::Color a_color);
 
 		// contains the length at each of the vertices
@@ -35,10 +37,10 @@ namespace tinytrain
 
 		// array of trains actually driving on the track
 		std::vector<TTrain*> m_trains;
-		//sf::VertexArray m_trackspline;
-		
-		std::unique_ptr<tgf::math::Spline_CatmullRom> m_trackspline;
+				
 	private:
+
 		float m_segLength;
+		std::unique_ptr<tgf::math::Spline_CatmullRom> m_trackspline;
 	};
 }
