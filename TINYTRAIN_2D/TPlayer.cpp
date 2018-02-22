@@ -1,6 +1,5 @@
 #include "TPlayer.h"
 #include "TRailTrack.h"
-#include "Spline.h"
 #include "GameState_Running.h"
 #include "Game.h"
 
@@ -168,7 +167,7 @@ namespace tinytrain
 			c2v DrawnLine_BoundingBox_Dimension, newSquare;
 			float squareLengthPx = 1.0;
 
-			// todo: make normalizedrawnline = false an option
+			// todo: make normalizedrawnline an on/off option
 			bool bNormalizeToDrawnLine = true;
 			if (bNormalizeToDrawnLine)
 			{

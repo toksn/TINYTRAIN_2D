@@ -1,11 +1,8 @@
 #pragma once
 #include "Entity.h"
+#include "Spline_CatmullRom.h"
 #include <memory>
 #include <SFML\Graphics.hpp>
-
-namespace tgf {namespace math {
-	class Spline;
-}}
 
 namespace tinytrain
 {
@@ -40,7 +37,7 @@ namespace tinytrain
 		std::vector<TTrain*> m_trains;
 		//sf::VertexArray m_trackspline;
 		
-		std::unique_ptr<tgf::math::Spline> m_trackspline;
+		std::unique_ptr<tgf::math::Spline_CatmullRom> m_trackspline;
 	private:
 		float m_segLength;
 	};
