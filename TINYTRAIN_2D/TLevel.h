@@ -1,11 +1,11 @@
 #pragma once
 #include <memory>
 #include "Entity.h"
+#include "TRailTrack.h"
 
 namespace tinytrain
 {
 	class TTrain;
-	class TRailTrack;
 
 	class TLevel : tgf::Entity
 	{

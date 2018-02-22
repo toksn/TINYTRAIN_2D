@@ -70,55 +70,6 @@ namespace tinytrain
 			train->wagons_[i].setRotation(angle);
 		}
 	}
-	/*
-	void TRailTrack::setPositionAndRotationFromRail(float a_dist, int i, sf::Transformable* obj)
-	{
-		sf::Vector2f pos;
-		float angle = 0.0f;
-		size_t size = trackspline_.getVertexCount();
-		if (size)
-		{
-			// outside of railrange
-			if (i + 1 >= size)
-				i--;
-
-			if (i < 0)
-				i = 0;
-
-			if (i + 1 < size)
-			{
-				c2v start{ trackspline_[i].position.x,		trackspline_[i].position.y };
-				c2v end{ trackspline_[i + 1].position.x,	trackspline_[i + 1].position.y };
-
-				c2v seg = c2Sub(end, start);
-				// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
-				angle = atan2(seg.y, seg.x) * RAD_TO_DEG;
-
-
-				if (length_[i] == a_dist)
-				{
-					pos = trackspline_[i].position;
-				}
-				else
-				{
-					float seg_len = length_[i + 1] - length_[i];
-					float alpha_on_seg = (a_dist - length_[i]) / seg_len;
-
-					c2v temp = c2Lerp(start, end, alpha_on_seg);
-					pos.x = temp.x;
-					pos.y = temp.y;
-				}
-			}
-			// something strange happend.. probably just vertex on the rail
-			else
-			{
-				pos = trackspline_[i].position;
-			}
-
-			obj->setPosition(pos);
-			obj->setRotation(angle);
-		}
-	}*/
 
 	float TRailTrack::getSegmentLength()
 	{
@@ -159,6 +110,19 @@ namespace tinytrain
 
 		for (; i < a_points.size(); i++)
 			trackspline_->appendControlPoint(a_points[i]);
+
+		onSplineChanged();
+	}
+
+	tgf::math::Spline_CatmullRom * TRailTrack::getTrackSpline()
+	{
+		return trackspline_.get();
+	}
+
+	void TRailTrack::onSplineChanged()
+	{
+		for (auto f : trackChangedCallbacks_)
+			f.first();
 	}
 
 	void TRailTrack::draw(sf::RenderTarget * target)

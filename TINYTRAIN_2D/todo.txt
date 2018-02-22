@@ -1,13 +1,25 @@
 TODO:
-- camera focused on end of the track instead of the train (+rotation)
+- place stuff on track < 0.0 results in pos = 0 or something off
 - smooth camera movement
 - add obstacles to loose the game
 - add target zones to win the game
 - add further gamestates (mainmenu, pause, win/loose screen)
+
+- rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
+- use last controlpoint of a track for the display as well
+
+- use component based system 
+	- gameobject : entity {components_; draw/update: for(components_) c->draw()/c->update(); }
+	- component : entity {ownerobject_; draw/update: for(components_) c->draw()/c->update(); } maybe friend class?
+		- moveTo/moveBy
+		- inputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
+
 - add optional targets to score more points/objectives (passengers)
 
 
+
 DONE:
+- camera focused on end of the track instead of the train (+rotation)
 - implement circular catmul rom spline to prevent self intersections ect. (see http://www.cemyuksel.com/research/catmullroparam_/catmullrom.pdf, https://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/)
 - add spline class for smooth railtracks
 	c1 continuity, local control, interpolation: catmull rom, bezier, herminte

@@ -3,8 +3,8 @@
 
 #include "TLevel.h"
 #include "TPlayer.h"
-#include "TTrain.h"
 #include "Game.h"
+#include "tinyc2.h"
 
 namespace tinytrain
 {
@@ -17,16 +17,33 @@ namespace tinytrain
 		player_ = std::make_unique<TPlayer>(this);
 
 		camera_ = std::make_unique<sf::View>();
-		if (game && camera_ && game->window_)
+		if (game && camera_ && game->window_ && player_)
 		{
+			// initial camera view matching the window in size and position (coordinate system match)
 			sf::Vector2f size = sf::Vector2f(game->window_->getSize());
 			camera_->setSize(size);
 			camera_->setCenter(size*0.5f);
 
+			// init drawrect and set railtrack for the player
 			player_->recalcDrawRect(size.x, size.y);
 			if (level_)
-				player_->setTrack(level_->railtrack_.get());
+			{
+				auto rail = level_->railtrack_.get();
+				player_->setTrack(rail);
+
+				if (rail)
+					rail->bindTrackChangedCallback(this, &GameState_Running::moveCameraToLastRail);
+			}
+
+			bRotateCameraWithTrack_ = true;
+			camFlowTime_ = 0.5;
+			camCurrentTime_ = 0.0;
+
+			// initially move camera to end of rail
+			moveCameraToLastRail();
 		}
+		else
+			printf("GAMESTATE INITIALIZING ERROR.\n");
 	}
 
 	GameState_Running::~GameState_Running()
@@ -40,15 +57,34 @@ namespace tinytrain
 			// update level
 			level_->update(deltaTime);
 
-			// update view 
-			if (level_->train_ && camera_)
-				camera_->setCenter(level_->train_->getPosition());
+			// update camera
+			if (camera_)
+			{
+				camCurrentTime_ += deltaTime;
+				float u = 1.0f;
+				if (camCurrentTime_ < camFlowTime_)
+					u = camCurrentTime_ / camFlowTime_;
+
+				// move/rotate camera when needed
+				if (camNewPos_ != camOldPos_)
+				{
+					c2v start{ camOldPos_.x, camOldPos_.y };
+					c2v end	 { camNewPos_.x, camNewPos_.y };
+
+					start = c2Lerp(start, end, u);
+
+					camera_->setCenter(start.x, start.y);
+				}
+				if (camNewRot_ != camOldRot_)
+				{
+					camera_->setRotation(camOldRot_ + (camNewRot_ - camOldRot_)*u);
+				}
+			}			
 
 			// update player (mouse input to spline)
 			if (player_)
 				player_->update(deltaTime);
 		}
-			
 	}
 
 	void GameState_Running::draw(sf::RenderTarget * target)
@@ -76,21 +112,49 @@ namespace tinytrain
 		// destroying the player on purpose (for testing purposes)
 		//player_.reset(nullptr);
 	}
-
-	/*
-	void GameState_Running::handleInput(sf::Event& e)
-	{
-		for (auto f : eventCallbacks_[e.type])
-		{
-			f(e);
-		}
-	}*/
-
+	
 	void GameState_Running::onWindowSizeChanged(int w, int h)
 	{
 		if (camera_)
 			camera_->setSize(w, h);
 
 		player_->recalcDrawRect(w, h);
+	}
+
+	// this can be a used by a callback when the rail has been changed
+	void GameState_Running::moveCameraToLastRail()
+	{
+		auto track = level_->railtrack_->getTrackSpline();
+		if (track)
+		{
+			int hintindex = -1;
+			float angle = 0.0f;
+			if (bRotateCameraWithTrack_)
+			{
+				angle = track->getDirectionAngleAtTime(1.0, hintindex, false);
+				// SFML Coordinate System correction
+				angle += 90.0f;
+			}
+
+			auto pos = track->getLocationAtTime(1.0, hintindex);
+			moveCameraToPoint(pos, angle, camFlowTime_);
+		}
+	}
+
+	void GameState_Running::moveCameraToPoint(sf::Vector2f pos, float angle, float time)
+	{
+		camCurrentTime_ = 0.0f;
+		camFlowTime_ = time;
+		camNewPos_ = pos;
+		camOldPos_ = camera_->getCenter();
+		camNewRot_ = angle;
+		camOldRot_ = camera_->getRotation();
+
+		// clamp rotation
+		float totalrot = camOldRot_ - camNewRot_;
+		if (totalrot > 180.0f)
+			camOldRot_ -= 360.0f;
+		else if (totalrot < -180.0f)
+			camOldRot_ += 360.0f;
 	}
 }

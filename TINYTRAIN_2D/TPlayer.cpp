@@ -218,6 +218,17 @@ namespace tinytrain
 			}
 
 			railtrack_->addDrawnLinePoints(splinePointsToAdd, color_);
+
+			if (false && gs_ && splinePointsToAdd.size())
+			{
+				// get angle in degrees
+				float angle = 0.0f;
+				auto track = railtrack_->getTrackSpline();
+				if (track)
+					angle = track->getDirectionAngleAtTime(1.0, false) + 90.0f;
+
+				gs_->moveCameraToPoint(splinePointsToAdd.back(), angle, 0.5f);
+			}
 		}
 	}
 

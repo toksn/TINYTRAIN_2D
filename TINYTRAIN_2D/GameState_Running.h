@@ -19,9 +19,21 @@ namespace tinytrain
 		//virtual void handleInput(sf::Event& e) override;
 		virtual void onWindowSizeChanged(int w, int h) override;
 
+		void moveCameraToLastRail();
+		void moveCameraToPoint(sf::Vector2f pos, float angle, float time);
+
 	private:
 		std::unique_ptr<TLevel> level_;
-		std::unique_ptr<sf::View> camera_;
 		std::unique_ptr<TPlayer> player_;
+
+		// camera related
+		std::unique_ptr<sf::View> camera_;
+		bool bRotateCameraWithTrack_;
+		float camFlowTime_;
+		float camCurrentTime_;
+		sf::Vector2f camNewPos_;
+		sf::Vector2f camOldPos_;
+		float camNewRot_;
+		float camOldRot_;
 	};
 }
