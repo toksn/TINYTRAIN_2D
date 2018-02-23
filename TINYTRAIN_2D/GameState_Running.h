@@ -2,10 +2,16 @@
 #include <memory>
 #include "GameStateBase.h"
 
+namespace tgf
+{
+	class Entity; 
+}
+
 namespace tinytrain
 {
 	class TLevel;
 	class TPlayer;
+	class TTrain;
 
 	class GameState_Running : public tgf::GameStateBase
 	{
@@ -21,6 +27,9 @@ namespace tinytrain
 
 		void moveCameraToLastRail();
 		void moveCameraToPoint(sf::Vector2f pos, float angle, float time);
+
+		void won(TTrain* train);
+		void lost(TTrain* train);
 
 	private:
 		std::unique_ptr<TLevel> level_;

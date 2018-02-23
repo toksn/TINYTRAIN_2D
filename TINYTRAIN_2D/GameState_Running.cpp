@@ -51,6 +51,12 @@ namespace tinytrain
 
 	GameState_Running::~GameState_Running()
 	{
+		if (level_)
+		{
+			auto rail = level_->railtrack_.get();
+			if (rail)
+				rail->unbindAllCallbacks(this);
+		}
 	}
 
 	void GameState_Running::update(float deltaTime)
@@ -159,5 +165,15 @@ namespace tinytrain
 			camOldRot_ -= 360.0f;
 		else if (totalrot < -180.0f)
 			camOldRot_ += 360.0f;
+	}
+
+
+	void GameState_Running::won(TTrain * train)
+	{
+		printf("you win.\n");
+	}
+	void GameState_Running::lost(TTrain * train)
+	{
+		printf("you loose.\n");
 	}
 }
