@@ -97,7 +97,7 @@ namespace tinytrain
 		return false;
 	}
 
-	void TRailTrack::addDrawnLinePoints(std::vector<sf::Vector2f> a_points, sf::Color a_color)
+	void TRailTrack::addDrawnLinePoints(std::vector<sf::Vector2f> a_points)
 	{
 		int i = 0;
 		if (a_points.size())

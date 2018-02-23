@@ -82,7 +82,7 @@ namespace tinytrain
 		drawingAreaShape_.setSize(sf::Vector2f(drawsize.x, drawsize.y));
 		drawingAreaShape_.setPosition(pos.x, pos.y);
 		drawingAreaShape_.setFillColor(sf::Color::Transparent);
-		drawingAreaShape_.setOutlineColor(sf::Color::Red);
+		drawingAreaShape_.setOutlineColor(color_);
 		drawingAreaShape_.setOutlineThickness(1);
 	}
 
@@ -96,6 +96,8 @@ namespace tinytrain
 	void TPlayer::setTrack(TRailTrack * track)
 	{
 		railtrack_ = track;
+		if (railtrack_ && railtrack_->getTrackSpline())
+			railtrack_->getTrackSpline()->setColor(color_);
 	}
 
 	void TPlayer::onMousePressed(sf::Event& e)
@@ -217,7 +219,7 @@ namespace tinytrain
 				splinePointsToAdd.push_back(sf::Vector2f(curSquarePt.x, curSquarePt.y));
 			}
 
-			railtrack_->addDrawnLinePoints(splinePointsToAdd, color_);
+			railtrack_->addDrawnLinePoints(splinePointsToAdd);
 
 			if (false && gs_ && splinePointsToAdd.size())
 			{

@@ -15,8 +15,15 @@ namespace tinytrain
 		level_->load();
 
 		player_ = std::make_unique<TPlayer>(this);
+		player_->setColor(sf::Color::Green);
 
 		camera_ = std::make_unique<sf::View>();
+
+		// CAMERA SETTINGS
+		bRotateCameraWithTrack_ = false;
+		camFlowTime_ = 1.0;
+		camCurrentTime_ = 0.0;
+		
 		if (game && camera_ && game->window_ && player_)
 		{
 			// initial camera view matching the window in size and position (coordinate system match)
@@ -34,10 +41,6 @@ namespace tinytrain
 				if (rail)
 					rail->bindTrackChangedCallback(this, &GameState_Running::moveCameraToLastRail);
 			}
-
-			bRotateCameraWithTrack_ = true;
-			camFlowTime_ = 0.5;
-			camCurrentTime_ = 0.0;
 
 			// initially move camera to end of rail
 			moveCameraToLastRail();

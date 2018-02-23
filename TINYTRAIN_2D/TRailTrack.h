@@ -31,7 +31,7 @@ namespace tinytrain
 		void setSegmentLength(float a_len);
 		bool getLastControlPointFromTrack(sf::Vector2f& a_pt);
 		bool getLastControlPointSegmentFromTrack(sf::Vector2f& a_start, sf::Vector2f& a_end);
-		void addDrawnLinePoints(std::vector<sf::Vector2f> a_points, sf::Color a_color);
+		void addDrawnLinePoints(std::vector<sf::Vector2f> a_points);
 
 		tgf::math::Spline_CatmullRom* getTrackSpline();
 

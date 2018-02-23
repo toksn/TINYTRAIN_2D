@@ -29,8 +29,12 @@ namespace tgf
 			bool getLastControlPoint(sf::Vector2f& a_pt);
 			bool getLastControlPointSegment(sf::Vector2f& a_start, sf::Vector2f& a_end);
 
-			sf::Color color__controlpts;
-			sf::Color color_;
+			// colorizing
+			sf::Color getColor();
+			void setColor(sf::Color a_color, bool recolor_existing = true);
+			sf::Color getColor_controlPts();
+			void setColor_controlPts(sf::Color a_color, bool recolor_existing = true);
+
 			bool drawControlPoints_;
 
 		protected:
@@ -48,6 +52,10 @@ namespace tgf
 			sf::VertexArray splinePoints_;
 			std::vector<float> splinePointsLengths_;
 			int pointsPerSegment_;
+
+			// colors
+			sf::Color colorControlPts_;
+			sf::Color color_;
 		};
 	}
 }

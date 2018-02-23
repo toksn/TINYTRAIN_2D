@@ -15,7 +15,7 @@ namespace tgf
 			drawControlPoints_ = true;
 
 			color_ = sf::Color::Red;
-			color__controlpts = sf::Color::White;
+			colorControlPts_ = sf::Color::White;
 		}
 		
 		Spline::~Spline()
@@ -147,7 +147,7 @@ namespace tgf
 		void Spline::appendControlPoint(sf::Vector2f a_pt)
 		{
 			auto size_before = controlPoints_.getVertexCount();
-			controlPoints_.append(sf::Vertex(a_pt, color__controlpts));
+			controlPoints_.append(sf::Vertex(a_pt, colorControlPts_));
 
 			onControlPointsAdded(size_before);
 		}
@@ -169,6 +169,36 @@ namespace tgf
 			a_start = controlPoints_[controlPoints_.getVertexCount() - 2].position;
 			a_end	= controlPoints_[controlPoints_.getVertexCount() - 1].position;
 			return true;
+		}
+
+		sf::Color Spline::getColor()
+		{
+			return color_;
+		}
+
+		void Spline::setColor(sf::Color a_color, bool recolor_existing)
+		{
+			color_ = a_color;
+			if (recolor_existing)
+			{
+				for (size_t i = 0; i < splinePoints_.getVertexCount(); i++)
+					splinePoints_[i].color = color_;
+			}	
+		}
+
+		sf::Color Spline::getColor_controlPts()
+		{
+			return colorControlPts_;
+		}
+
+		void Spline::setColor_controlPts(sf::Color a_color, bool recolor_existing)
+		{
+			colorControlPts_ = a_color;
+			if (recolor_existing)
+			{
+				for (size_t i = 0; i < controlPoints_.getVertexCount(); i++)
+					splinePoints_[i].color = colorControlPts_;
+			}
 		}
 
 		void Spline::appendSplinePoint(sf::Vector2f a_pt)
@@ -200,10 +230,10 @@ namespace tgf
 				if (indexHint >= 0 && indexHint < size - 1)
 					i = indexHint;
 				else
-					i = c2Min(((float)(size - 1) * a_dist / len), size - 2);
+					i = c2Max(1, c2Min(((float)(size - 1) * a_dist / len), size - 2));
 
 				// keep index range
-				while (i >= 0 && i < size - 1)
+				while (i > 0 && i < size - 1)
 				{
 					if (splinePointsLengths_[i] <= a_dist)
 					{
