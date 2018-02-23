@@ -15,7 +15,7 @@ namespace tinytrain
 		collisionMananger_ = std::make_unique<TTrainCollisionManager>();
 
 		level_ = std::make_unique<TLevel>();
-		level_->load();
+		level_->load(this);
 
 		player_ = std::make_unique<TPlayer>(this);
 		player_->setColor(sf::Color::Green);
@@ -173,10 +173,12 @@ namespace tinytrain
 
 	void GameState_Running::won(TTrain * train)
 	{
+		train->pause();
 		printf("you win.\n");
 	}
 	void GameState_Running::lost(TTrain * train)
 	{
+		train->pause();
 		printf("you loose.\n");
 	}
 

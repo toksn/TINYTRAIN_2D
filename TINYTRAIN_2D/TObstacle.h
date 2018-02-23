@@ -6,10 +6,11 @@ namespace tinytrain
 {
 	class TTrain;
 	class GameState_Running;
+
 	class TObstacle : public tgf::Entity
 	{
 	public:
-		TObstacle(GameState_Running* gs);
+		TObstacle(GameState_Running* gs, bool wintrigger = false);
 		~TObstacle();
 
 		// Inherited via Entity
@@ -18,10 +19,10 @@ namespace tinytrain
 
 		virtual void onTriggerEnter(Entity* a_other);
 
-		bool winningTrigger_;
+		const bool winningTrigger_;
 
 		bool drawCollisionShape_;
-		std::unique_ptr<sf::Shape> collisionShape_;
+		std::unique_ptr<sf::FloatRect> collisionShape_;
 
 	protected:
 		std::unique_ptr<sf::Drawable> drawable_;

@@ -2,6 +2,7 @@
 #include "TLevel.h"
 #include "TTrain.h"
 #include "TRailTrack.h"
+#include "GameState_Running.h"
 
 namespace tinytrain
 {
@@ -20,6 +21,15 @@ namespace tinytrain
 			train_->draw(target);
 		if (railtrack_)
 			railtrack_->draw(target);
+
+		for (int i = obstacles_.size() - 1; i >= 0; i--)
+		{
+			auto o = obstacles_[i].get();
+			if (o)
+				o->draw(target);
+			else
+				obstacles_.erase(obstacles_.begin() + i);
+		}
 	}
 
 	void TLevel::update(float deltaTime)
@@ -28,9 +38,18 @@ namespace tinytrain
 			train_->update(deltaTime);
 		if (railtrack_)
 			railtrack_->update(deltaTime);
+
+		for (int i = obstacles_.size()-1; i >= 0; i--)
+		{
+			auto o = obstacles_[i].get();
+			if (o)
+				o->update(deltaTime);
+			else
+				obstacles_.erase(obstacles_.begin()+i);
+		}			
 	}
 
-	void TLevel::load(std::string file)
+	void TLevel::load(GameState_Running* gs, std::string file)
 	{
 		if (file.empty())
 		{
@@ -38,8 +57,9 @@ namespace tinytrain
 			SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
 			***************************************************************************/
 			// create train for the player
-			train_ = std::make_unique<TTrain>();
-
+			train_ = std::make_unique<TTrain>(gs);
+			train_->play();
+			
 			// create a railtrack for the train
 			railtrack_ = std::make_unique<TRailTrack>();
 
@@ -80,7 +100,7 @@ namespace tinytrain
 			train_->initWagons(30);
 
 			// create obstacles for the games to be lost
-			//create<TT_Obstacle>();
+			obstacles_.push_back(std::make_unique<TObstacle>(gs, false));
 
 			// create target zone for the game to be won
 			//create<TT_TargetZone>();

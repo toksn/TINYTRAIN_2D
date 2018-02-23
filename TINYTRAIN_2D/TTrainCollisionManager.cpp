@@ -112,8 +112,13 @@ namespace tinytrain
 
 	void TTrainCollisionManager::tryCollideTrainObject(TTrain* train, collidingObject& obj)
 	{
-		//if (collide(train, obj))
-		if (false)
+		bool hit = false;
+
+		// check train vs rect
+		hit = obj.obj->collisionShape_->contains(train->getPosition());
+		
+		// call callbacks
+		if (hit)
 		{
 			if (obj.callback)
 				obj.callback((tgf::Entity*)train);
@@ -122,8 +127,15 @@ namespace tinytrain
 
 	void TTrainCollisionManager::tryCollideObjects(collidingObject& obj1, collidingObject& obj2)
 	{
-		//if (collide(obj1, obj2))
-		if(false)
+		bool hit = false;
+
+		// check rect vs rect
+		hit = obj1.obj->collisionShape_->intersects(*obj2.obj->collisionShape_);
+		if (hit == false)
+			hit = obj1.obj->collisionShape_->contains(sf::Vector2f(obj2.obj->collisionShape_->top, obj2.obj->collisionShape_->left));
+
+		// call callbacks
+		if(hit)
 		{
 			if(obj1.callback)
 				obj1.callback((tgf::Entity*)obj2.obj);

@@ -6,6 +6,8 @@
 namespace tinytrain
 {
 	class TTrain;
+	class TObstacle;
+	class GameState_Running;
 
 	class TLevel : tgf::Entity
 	{
@@ -18,10 +20,11 @@ namespace tinytrain
 		virtual void update(float deltaTime) override;
 
 		// load a level from file
-		void load(std::string file = "");
+		void load(GameState_Running* gs, std::string file = "");
 		
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;
+		std::vector<std::unique_ptr<TObstacle>> obstacles_;
 	};
 
 
