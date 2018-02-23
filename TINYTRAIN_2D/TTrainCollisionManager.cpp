@@ -89,7 +89,7 @@ namespace tinytrain
 							tryCollideObjects(collider, other);
 					}
 				}
-				
+				/*
 				// only check against all objects of the upcoming categories to prevent finding collisions twice
 				auto upcoming_category = category;
 				++upcoming_category;
@@ -105,7 +105,8 @@ namespace tinytrain
 								tryCollideObjects(collider, other);
 						}
 					}
-				} 
+					++upcoming_category;
+				} */
 			}
 		}
 	}

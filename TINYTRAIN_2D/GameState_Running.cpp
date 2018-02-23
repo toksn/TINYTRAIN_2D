@@ -69,6 +69,9 @@ namespace tinytrain
 			// update level
 			level_->update(deltaTime);
 
+			// update collisions
+			collisionMananger_->update();
+
 			// update camera
 			if (camera_)
 			{
