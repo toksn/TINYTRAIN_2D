@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "GameStateBase.h"
+#include "TTrainCollisionManager.h"
 
 namespace tgf
 {
@@ -31,9 +32,12 @@ namespace tinytrain
 		void won(TTrain* train);
 		void lost(TTrain* train);
 
+		TTrainCollisionManager* getCollisionManager();
+
 	private:
 		std::unique_ptr<TLevel> level_;
 		std::unique_ptr<TPlayer> player_;
+		std::unique_ptr<TTrainCollisionManager> collisionMananger_;
 
 		// camera related
 		std::unique_ptr<sf::View> camera_;

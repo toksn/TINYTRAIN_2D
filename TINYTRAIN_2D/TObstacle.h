@@ -6,7 +6,7 @@ namespace tinytrain
 {
 	class TTrain;
 	class GameState_Running;
-	class TObstacle : tgf::Entity
+	class TObstacle : public tgf::Entity
 	{
 	public:
 		TObstacle(GameState_Running* gs);
@@ -16,7 +16,7 @@ namespace tinytrain
 		virtual void draw(sf::RenderTarget * target) override;
 		virtual void update(float deltaTime) override;
 
-		virtual void onTriggerEnter(class Entity* a_other);
+		virtual void onTriggerEnter(Entity* a_other);
 
 		bool winningTrigger_;
 

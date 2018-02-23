@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -41,13 +41,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -133,9 +133,11 @@
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
     <ClCompile Include="TLevel.cpp" />
+    <ClCompile Include="TObstacle.cpp" />
     <ClCompile Include="TPlayer.cpp" />
     <ClCompile Include="TRailTrack.cpp" />
     <ClCompile Include="TTrain.cpp" />
+    <ClCompile Include="TTrainCollisionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h" />
@@ -146,9 +148,11 @@
     <ClInclude Include="Spline_CatmullRom.h" />
     <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TLevel.h" />
+    <ClInclude Include="TObstacle.h" />
     <ClInclude Include="TPlayer.h" />
     <ClInclude Include="TRailTrack.h" />
     <ClInclude Include="TTrain.h" />
+    <ClInclude Include="TTrainCollisionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />

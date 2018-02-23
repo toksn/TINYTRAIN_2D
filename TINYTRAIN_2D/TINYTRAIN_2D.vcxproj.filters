@@ -24,6 +24,9 @@
     <Filter Include="GameFramework\Math">
       <UniqueIdentifier>{76c04630-4c10-43ab-82fb-893bd74a4749}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TinyTrain\utils">
+      <UniqueIdentifier>{d9aa7915-909f-4863-86c2-1a2bee538bb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -55,6 +58,12 @@
     </ClCompile>
     <ClCompile Include="Spline_CatmullRom.cpp">
       <Filter>GameFramework\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="TObstacle.cpp">
+      <Filter>TinyTrain\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="TTrainCollisionManager.cpp">
+      <Filter>TinyTrain\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +99,12 @@
     </ClInclude>
     <ClInclude Include="Spline_CatmullRom.h">
       <Filter>GameFramework\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="TObstacle.h">
+      <Filter>TinyTrain\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="TTrainCollisionManager.h">
+      <Filter>TinyTrain\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

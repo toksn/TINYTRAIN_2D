@@ -11,6 +11,9 @@ namespace tinytrain
 	GameState_Running::GameState_Running(tgf::Game * game)
 	{
 		game_ = game;
+
+		collisionMananger_ = std::make_unique<TTrainCollisionManager>();
+
 		level_ = std::make_unique<TLevel>();
 		level_->load();
 
@@ -175,5 +178,10 @@ namespace tinytrain
 	void GameState_Running::lost(TTrain * train)
 	{
 		printf("you loose.\n");
+	}
+
+	TTrainCollisionManager* GameState_Running::getCollisionManager()
+	{
+		return collisionMananger_.get();
 	}
 }

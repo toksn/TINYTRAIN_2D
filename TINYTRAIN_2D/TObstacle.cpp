@@ -4,16 +4,24 @@
 
 namespace tinytrain
 {
-	TObstacle::TObstacle(GameState_Running* base)
+	TObstacle::TObstacle(GameState_Running* gs)
 	{
-		gs_ = base;
+		gs_ = gs;
 		drawCollisionShape_ = true;
 		winningTrigger_ = true;
+
+		if (gs_ && gs_->getCollisionManager())
+		{
+			auto colli = gs_->getCollisionManager();
+			colli->addToCollision(this, &TObstacle::onTriggerEnter);
+		}
 	}
 
 
 	TObstacle::~TObstacle()
 	{
+		if (gs_ && gs_->getCollisionManager())
+			gs_->getCollisionManager()->removeFromCollision(this);
 	}
 
 	void TObstacle::draw(sf::RenderTarget * target)
