@@ -8,13 +8,19 @@ namespace tinytrain
 		winningTrigger_(wintrigger)
 	{
 		gs_ = gs;
-		drawCollisionShape_ = true;
+		//drawCollisionShape_ = true;
 
-		collisionShape_ = std::make_unique<sf::FloatRect>(0.0f, 0.0f, 20.0f, 20.0f);
-		sf::RectangleShape rect(sf::Vector2f(collisionShape_->width, collisionShape_->height));
+		sf::RectangleShape rect(sf::Vector2f(20.0f, 20.0f));
 		rect.setFillColor(sf::Color::Red);
 		drawable_ = std::make_unique<sf::RectangleShape>(rect);
-		
+
+		collisionShape_ = std::make_unique<c2Poly>();
+		if (collisionShape_)
+		{
+			collisionShape_->count = 4;
+			updateCollisionShape();
+		}
+
 		//winningTrigger_ = wintrigger;
 
 		if (gs_ && gs_->getCollisionManager())
@@ -47,6 +53,21 @@ namespace tinytrain
 	{
 	}
 
+	void TObstacle::updateCollisionShape()
+	{
+		if (drawable_ && drawable_->getPointCount() == 4)
+		{
+			auto temp = drawable_->getTransform().transformPoint(drawable_->getPoint(0));
+			collisionShape_->verts[0] = { temp.x, temp.y };
+			temp = drawable_->getTransform().transformPoint(drawable_->getPoint(1));
+			collisionShape_->verts[1] = { temp.x, temp.y };
+			temp = drawable_->getTransform().transformPoint(drawable_->getPoint(2));
+			collisionShape_->verts[2] = { temp.x, temp.y };
+			temp = drawable_->getTransform().transformPoint(drawable_->getPoint(3));
+			collisionShape_->verts[3] = { temp.x, temp.y };
+		}
+	}
+
 	void TObstacle::onTriggerEnter(class Entity* other)
 	{
 		TTrain* train = dynamic_cast<TTrain*>(other);
@@ -59,5 +80,12 @@ namespace tinytrain
 			else
 				gs_->lost(train);
 		}
+	}
+	c2Shape TObstacle::getCollisionShape()
+	{
+		c2Shape s;
+		s.type_ = C2_POLY;
+		s.shape_ = collisionShape_.get();
+		return s;
 	}
 }

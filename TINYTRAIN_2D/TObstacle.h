@@ -1,5 +1,7 @@
 #pragma once
 #include "Entity.h"
+#include "tinyc2.h"
+#include "TTrainCollisionManager.h"
 #include <memory>
 
 namespace tinytrain
@@ -19,13 +21,14 @@ namespace tinytrain
 
 		virtual void onTriggerEnter(Entity* a_other);
 
+		c2Shape getCollisionShape();
+		void updateCollisionShape();
+
 		const bool winningTrigger_;
-
-		bool drawCollisionShape_;
-		std::unique_ptr<sf::FloatRect> collisionShape_;
-
+		//bool drawCollisionShape_;
 	protected:
-		std::unique_ptr<sf::Drawable> drawable_;
+		std::unique_ptr<sf::RectangleShape> drawable_;
+		std::unique_ptr<c2Poly> collisionShape_;
 		GameState_Running* gs_;
 	};
 }

@@ -3,6 +3,7 @@
 #include "TTrain.h"
 #include "TRailTrack.h"
 #include "GameState_Running.h"
+#include "TObstacle.h"
 
 namespace tinytrain
 {

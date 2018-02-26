@@ -19,7 +19,7 @@ namespace tgf
 		{
 			// save a pair of the acutal function call and the object pointer for callback deletion
 			eventCallbacks_[et].push_back
-				( std::make_pair<std::function<void(sf::Event&)>, void*>(std::bind(mf, object, std::placeholders::_1), object) );
+				( std::make_pair<std::function<void(sf::Event&)>, void*>(std::bind(mf, object, std::placeholders::_1), &*object) );
 		}
 
 		// unbinds all registered callbacks for a specific object (pointer). 

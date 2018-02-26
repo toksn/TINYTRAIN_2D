@@ -1,7 +1,7 @@
 TODO:
 - interate on the collision detection
-	- onEnter / onLeave system (not spamming the callbacks when hit in several updates)
 	- actual shapes/rectangles testing
+	- onEnter / onLeave system (not spamming the callbacks when hit in several updates)	
 - add further gamestates (mainmenu, pause, win/loose screen)
 - add drawing states to init drawing outside of the rect (drawing begins inside the rect tho)
 

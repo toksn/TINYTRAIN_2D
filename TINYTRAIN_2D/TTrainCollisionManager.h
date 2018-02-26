@@ -2,10 +2,16 @@
 #include <memory>
 #include <functional>
 #include "TTrain.h"
-#include "TObstacle.h"
+#include "tinyc2.h"
 
 namespace tinytrain
 {
+	class TObstacle;
+	struct c2Shape
+	{
+		void* shape_;
+		C2_TYPE type_;
+	};
 	class TTrainCollisionManager
 	{
 	public:

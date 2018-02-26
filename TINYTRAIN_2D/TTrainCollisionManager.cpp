@@ -1,4 +1,5 @@
 #include "TTrainCollisionManager.h"
+#include "TObstacle.h"
 
 
 namespace tinytrain
@@ -111,7 +112,55 @@ namespace tinytrain
 		bool hit = false;
 
 		// check train vs rect
-		hit = obj.obj->collisionShape_->contains(train->getPosition());
+		//c2MakePoly();
+		auto collider = obj.obj->getCollisionShape();
+		if (train->wagons_.size() && collider.shape_)
+		{
+			auto bb = train->wagons_[0].getGlobalBounds();
+			c2AABB aabb;
+			aabb.min.x = bb.left;
+			aabb.min.y = bb.top;
+			aabb.max.x = bb.left + bb.width;
+			aabb.max.y = bb.top + bb.height;
+			if (c2Collided(&aabb, NULL, C2_AABB, collider.shape_, NULL, collider.type_))
+			{
+				// train wagon AABB and obj.shape did collide
+				float rotation = train->wagons_[0].getRotation();
+				// test rotation for 0, 90, 180, 270, 360 degrees
+				rotation = fmod(rotation, 90.0f);
+				if (rotation == 0)
+				{
+					// dont have to test again because train AABB == train rect
+					hit = true;
+				}
+				else
+				{
+					// can make proper hit test now
+					c2Poly train_rect;
+					auto temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(0));
+					train_rect.verts[0] = { temp.x, temp.y };
+					temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(1));
+					train_rect.verts[1] = { temp.x, temp.y };
+					temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(2));
+					train_rect.verts[2] = { temp.x, temp.y };
+					temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(3));
+					train_rect.verts[3] = { temp.x, temp.y };
+					train_rect.count = 4;
+					hit = c2Collided(collider.shape_, NULL, collider.type_, &train_rect, NULL, C2_POLY);
+				}
+			}
+			
+		}
+		else
+		{
+			// try to fake a point with an size zero AABB (probably the fastest of the c2 shapes to test against)
+			c2AABB fake_point;
+			fake_point.min = { train->getPosition().x, train->getPosition().y };
+			fake_point.max = fake_point.min;
+
+			hit = c2Collided(collider.shape_, NULL, collider.type_, &fake_point, NULL, C2_AABB);
+		}
+			
 		
 		// call callbacks
 		if (hit)
@@ -125,10 +174,15 @@ namespace tinytrain
 	{
 		bool hit = false;
 
-		// check rect vs rect
-		hit = obj1.obj->collisionShape_->intersects(*obj2.obj->collisionShape_);
-		if (hit == false)
-			hit = obj1.obj->collisionShape_->contains(sf::Vector2f(obj2.obj->collisionShape_->top, obj2.obj->collisionShape_->left));
+		auto collider1 = obj1.obj->getCollisionShape();
+		auto collider2 = obj2.obj->getCollisionShape();
+		if(collider1.shape_ && collider2.shape_)
+			hit = c2Collided(collider1.shape_, NULL, collider1.type_, collider2.shape_, NULL, collider2.type_);
+
+		//// check rect vs rect
+		//hit = obj1.obj->collisionShape_->intersects(*obj2.obj->collisionShape_);
+		//if (hit == false)
+		//	hit = obj1.obj->collisionShape_->contains(sf::Vector2f(obj2.obj->collisionShape_->top, obj2.obj->collisionShape_->left));
 
 		// call callbacks
 		if(hit)
