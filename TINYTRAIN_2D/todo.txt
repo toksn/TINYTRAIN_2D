@@ -1,10 +1,6 @@
 TODO:
-- interate on the collision detection
-	- actual shapes/rectangles testing
-	- onEnter / onLeave system (not spamming the callbacks when hit in several updates)	
 - add further gamestates (mainmenu, pause, win/loose screen)
 - add drawing states to init drawing outside of the rect (drawing begins inside the rect tho)
-
 
 - rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
 - use last controlpoint of a track for the display as well
@@ -19,6 +15,9 @@ TODO:
 - add optional targets to score more points/objectives (passengers)
 
 DONE:
+- interate on the collision detection
+	- actual shapes/rectangles testing
+	- onEnter / onLeave system (not spamming the callbacks when hit in several updates)	
 - create collisionmanager
 	- collision channels (obstacle vs trains)
 - add obstacles to loose the game

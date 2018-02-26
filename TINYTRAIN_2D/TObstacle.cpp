@@ -9,9 +9,8 @@ namespace tinytrain
 	{
 		gs_ = gs;
 		//drawCollisionShape_ = true;
-
 		sf::RectangleShape rect(sf::Vector2f(20.0f, 20.0f));
-		rect.setFillColor(sf::Color::Red);
+		rect.setFillColor(wintrigger? sf::Color::Green : sf::Color::Red);
 		drawable_ = std::make_unique<sf::RectangleShape>(rect);
 
 		collisionShape_ = std::make_unique<c2Poly>();

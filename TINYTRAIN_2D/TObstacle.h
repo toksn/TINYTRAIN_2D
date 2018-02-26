@@ -25,9 +25,10 @@ namespace tinytrain
 		void updateCollisionShape();
 
 		const bool winningTrigger_;
+		
+		std::unique_ptr<sf::RectangleShape> drawable_;
 		//bool drawCollisionShape_;
 	protected:
-		std::unique_ptr<sf::RectangleShape> drawable_;
 		std::unique_ptr<c2Poly> collisionShape_;
 		GameState_Running* gs_;
 	};

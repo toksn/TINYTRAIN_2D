@@ -102,9 +102,13 @@ namespace tinytrain
 
 			// create obstacles for the games to be lost
 			obstacles_.push_back(std::make_unique<TObstacle>(gs, false));
+			
 
 			// create target zone for the game to be won
-			//create<TT_TargetZone>();
+			auto target_zone = std::make_unique<TObstacle>(gs, true);
+			target_zone->drawable_->setPosition(-30.0f, -30.0f);
+			target_zone->updateCollisionShape();
+			obstacles_.push_back(std::move(target_zone));			
 			/************************************************************************/
 
 			// TODO:
