@@ -52,11 +52,6 @@ namespace tinytrain
 		}
 	}
 
-	//void TTrainCollisionManager::draw(sf::RenderTarget * target)
-	//{
-	//	// maybe debug drawings of the collisions
-	//}
-
 	void TTrainCollisionManager::update()
 	{
 		// check for collisions of trains against any obstacle based entity (this is special as trains always collide with everything and have no TObstacle base)
@@ -72,7 +67,7 @@ namespace tinytrain
 		}
 		
 		// check all collider object against each other, only test for collision when they have their masks set up properly
-		for (auto category = colliders_.begin(); category != colliders_.end(); ++category)
+		for (auto& category = colliders_.cbegin(); category != colliders_.cend(); ++category)
 		{
 			//for (auto collider : category->second)
 			for (int i = 0; i < category->second.size(); i++)
@@ -89,11 +84,11 @@ namespace tinytrain
 							tryCollideObjects(collider, other);
 					}
 				}
-				/*
+				
 				// only check against all objects of the upcoming categories to prevent finding collisions twice
 				auto upcoming_category = category;
 				++upcoming_category;
-				while (upcoming_category != colliders_.end());
+				while (upcoming_category != colliders_.cend())
 				{
 					// check if this upcoming category is in the collision mask of the object
 					if (collider.collision_mask & (short)upcoming_category->first != 0)
@@ -106,7 +101,7 @@ namespace tinytrain
 						}
 					}
 					++upcoming_category;
-				} */
+				}
 			}
 		}
 	}
