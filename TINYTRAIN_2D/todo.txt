@@ -1,11 +1,10 @@
 TODO:
-- add obstacles to loose the game
-- add target zones to win the game
+- interate on the collision detection
+	- onEnter / onLeave system (not spamming the callbacks when hit in several updates)
+	- actual shapes/rectangles testing
 - add further gamestates (mainmenu, pause, win/loose screen)
 - add drawing states to init drawing outside of the rect (drawing begins inside the rect tho)
 
-- create collisionmanager running in an own thread calling callbacks on overlap
-	- collision channels (obstacle vs trains)
 
 - rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
 - use last controlpoint of a track for the display as well
@@ -16,9 +15,14 @@ TODO:
 		- moveTo/moveBy
 		- inputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
 
+- make collisionmanager running in an own thread calling callbacks on overlap ?
 - add optional targets to score more points/objectives (passengers)
 
 DONE:
+- create collisionmanager
+	- collision channels (obstacle vs trains)
+- add obstacles to loose the game
+- add target zones to win the game
 - place stuff on track < 0.0 results in pos = 0 or something off
 - smooth camera movement
 - camera focused on end of the track instead of the train (+rotation)
