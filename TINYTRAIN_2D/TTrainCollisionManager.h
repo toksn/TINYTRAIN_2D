@@ -31,11 +31,13 @@ namespace tinytrain
 		struct collidingObject
 		{
 			TObstacle* obj;
-			std::function<void(tgf::Entity*)> callback;
+			std::function<void(tgf::Entity*)> callback_enter;
+			std::function<void(tgf::Entity*)> callback_leave;
 			short collision_mask;
+			std::vector<tgf::Entity*> currentCollisions;
 		};
 
-		void addToCollision(TObstacle* const object, void(TObstacle::* const mf)(tgf::Entity*), CollisionCategory category = CollisionCategory::OBSTACLE_LOOSE, short collisionmask = (short)CollisionCategory::OBSTACLE_LOOSE);
+		void addToCollision(TObstacle* const object, void(TObstacle::* const on_enter)(tgf::Entity*), void(TObstacle::* const on_leave)(tgf::Entity*), CollisionCategory category = CollisionCategory::OBSTACLE_LOOSE, short collisionmask = (short)CollisionCategory::OBSTACLE_LOOSE);
 		void addToCollision(TTrain* train);
 
 		void removeFromCollision(void* obj);

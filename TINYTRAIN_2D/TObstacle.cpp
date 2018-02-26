@@ -27,9 +27,9 @@ namespace tinytrain
 		{
 			auto colli = gs_->getCollisionManager();
 			if(winningTrigger_)
-				colli->addToCollision(this, &TObstacle::onTriggerEnter, TTrainCollisionManager::CollisionCategory::OBSTACLE_WIN, 0);
+				colli->addToCollision(this, &TObstacle::onTriggerEnter, NULL, TTrainCollisionManager::CollisionCategory::OBSTACLE_WIN, 0);
 			else
-				colli->addToCollision(this, &TObstacle::onTriggerEnter);
+				colli->addToCollision(this, &TObstacle::onTriggerEnter, NULL);
 		}
 	}
 

@@ -14,10 +14,11 @@ namespace tinytrain
 	{
 	}
 
-	void TTrainCollisionManager::addToCollision(TObstacle* const object, void(TObstacle::* const mf)(tgf::Entity *), CollisionCategory category, short collisionmask)
+	void TTrainCollisionManager::addToCollision(TObstacle* const object, void(TObstacle::* const on_collision_enter)(tgf::Entity *), void(TObstacle::* const on_collision_leave)(tgf::Entity *), CollisionCategory category, short collisionmask)
 	{
 		collidingObject col;
-		col.callback = std::bind(mf, object, std::placeholders::_1);
+		col.callback_enter = std::bind(on_collision_enter, object, std::placeholders::_1);
+		col.callback_leave = std::bind(on_collision_leave, object, std::placeholders::_1);
 		col.obj = object;
 		col.collision_mask = collisionmask;
 		colliders_[category].push_back(col);
@@ -60,7 +61,7 @@ namespace tinytrain
 		{
 			for (auto o = colliders_.begin(); o != colliders_.end(); ++o)
 			{
-				for (auto collider : o->second)
+				for (auto& collider : o->second)
 				{
 					tryCollideTrainObject(train, collider);
 				}
@@ -68,7 +69,7 @@ namespace tinytrain
 		}
 		
 		// check all collider object against each other, only test for collision when they have their masks set up properly
-		for (auto& category = colliders_.cbegin(); category != colliders_.cend(); ++category)
+		for (auto& category = colliders_.begin(); category != colliders_.end(); ++category)
 		{
 			//for (auto collider : category->second)
 			for (int i = 0; i < category->second.size(); i++)
@@ -89,12 +90,12 @@ namespace tinytrain
 				// only check against all objects of the upcoming categories to prevent finding collisions twice
 				auto upcoming_category = category;
 				++upcoming_category;
-				while (upcoming_category != colliders_.cend())
+				while (upcoming_category != colliders_.end())
 				{
 					// check if this upcoming category is in the collision mask of the object
 					if (collider.collision_mask & (short)upcoming_category->first != 0)
 					{
-						for (auto other : upcoming_category->second)
+						for (auto& other : upcoming_category->second)
 						{
 							// check if object from the upcoming category has current category in its collision mask
 							if (other.collision_mask & (short)category->first != 0)
@@ -109,11 +110,12 @@ namespace tinytrain
 
 	void TTrainCollisionManager::tryCollideTrainObject(TTrain* train, collidingObject& obj)
 	{
-		bool hit = false;
+		if (train == nullptr)
+			return;
 
-		// check train vs rect
-		//c2MakePoly();
+		bool hit = false;
 		auto collider = obj.obj->getCollisionShape();
+
 		if (train->wagons_.size() && collider.shape_)
 		{
 			auto bb = train->wagons_[0].getGlobalBounds();
@@ -161,12 +163,26 @@ namespace tinytrain
 			hit = c2Collided(collider.shape_, NULL, collider.type_, &fake_point, NULL, C2_AABB);
 		}
 			
+		// find collisions that already took place
+		std::vector<tgf::Entity*>::iterator col = std::find(obj.currentCollisions.begin(), obj.currentCollisions.end(), (tgf::Entity*)train);
 		
 		// call callbacks
 		if (hit)
 		{
-			if (obj.callback)
-				obj.callback((tgf::Entity*)train);
+			if (col == obj.currentCollisions.end())
+			{
+				obj.currentCollisions.push_back(train);
+
+				if (obj.callback_enter)
+					obj.callback_enter((tgf::Entity*)train);
+			}				
+		}
+		else if (col != obj.currentCollisions.end())
+		{
+			obj.currentCollisions.erase(col);
+
+			if (obj.callback_leave)
+				obj.callback_leave((tgf::Entity*)train);
 		}
 	}
 
@@ -178,19 +194,51 @@ namespace tinytrain
 		auto collider2 = obj2.obj->getCollisionShape();
 		if(collider1.shape_ && collider2.shape_)
 			hit = c2Collided(collider1.shape_, NULL, collider1.type_, collider2.shape_, NULL, collider2.type_);
-
-		//// check rect vs rect
-		//hit = obj1.obj->collisionShape_->intersects(*obj2.obj->collisionShape_);
-		//if (hit == false)
-		//	hit = obj1.obj->collisionShape_->contains(sf::Vector2f(obj2.obj->collisionShape_->top, obj2.obj->collisionShape_->left));
+		
+		// find collisions that already took place
+		auto o1o2 = std::find(obj1.currentCollisions.begin(), obj1.currentCollisions.end(), obj2.obj);
+		auto o2o1 = std::find(obj2.currentCollisions.begin(), obj2.currentCollisions.end(), obj1.obj);
 
 		// call callbacks
 		if(hit)
 		{
-			if(obj1.callback)
-				obj1.callback((tgf::Entity*)obj2.obj);
-			if(obj2.callback)
-				obj2.callback((tgf::Entity*)obj1.obj);
+			if (o1o2 == obj1.currentCollisions.end())
+			{
+				if(obj1.callback_enter)
+					obj1.callback_enter((tgf::Entity*)obj2.obj);
+
+				obj1.currentCollisions.push_back(obj2.obj);
+			}
+				
+			if (o2o1 == obj2.currentCollisions.end())
+			{
+				if(obj2.callback_enter)
+					obj2.callback_enter((tgf::Entity*)obj1.obj);
+
+				obj2.currentCollisions.push_back(obj1.obj);
+			}
+		}
+		else
+		{
+			// remove from collision list
+			if (o1o2 != obj1.currentCollisions.end())
+			{
+				obj1.currentCollisions.erase(o1o2);
+
+				// callback on collision end
+				if (obj1.callback_leave)
+					obj1.callback_leave((tgf::Entity*)obj2.obj);
+			}
+				
+
+			if (o2o1 != obj2.currentCollisions.end())
+			{
+				obj2.currentCollisions.erase(o2o1);
+
+				// callback on collision end
+				if (obj2.callback_leave)
+					obj2.callback_leave((tgf::Entity*)obj1.obj);
+			}
 		}
 	}
 }
