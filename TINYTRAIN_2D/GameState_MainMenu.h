@@ -15,7 +15,7 @@ namespace tinytrain
 		virtual void onWindowSizeChanged(int w, int h) override;
 
 	protected:
-		std::vector<std::pair<std::string, tgf::GameStateBase*>> menuentries_;
+		std::vector<std::pair<sf::Text, tgf::GameStateBase*>> menuentries_;
 		sf::Font font_;
 	};
 }

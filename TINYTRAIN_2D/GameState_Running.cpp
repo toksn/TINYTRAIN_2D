@@ -96,7 +96,7 @@ namespace tinytrain
 				}
 			}			
 
-			// update player (mouse input to spline)
+			// update player (mouse input to spline, hud info)
 			if (player_)
 				player_->update(deltaTime);
 		}
