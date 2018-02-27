@@ -65,6 +65,9 @@
     <ClCompile Include="TTrainCollisionManager.cpp">
       <Filter>TinyTrain\utils</Filter>
     </ClCompile>
+    <ClCompile Include="GameState_MainMenu.cpp">
+      <Filter>TinyTrain\gamestates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -105,6 +108,9 @@
     </ClInclude>
     <ClInclude Include="TTrainCollisionManager.h">
       <Filter>TinyTrain\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_MainMenu.h">
+      <Filter>TinyTrain\gamestates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

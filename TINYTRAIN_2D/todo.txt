@@ -1,6 +1,8 @@
 TODO:
 - add further gamestates (mainmenu, pause, win/loose screen)
 - add drawing states to init drawing outside of the rect (drawing begins inside the rect tho)
+- collision manager + tobstacle into gameframework
+	- traincollisionmanager, thitzones derived from that
 
 - rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
 - use last controlpoint of a track for the display as well
