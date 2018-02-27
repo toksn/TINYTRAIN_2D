@@ -103,7 +103,7 @@ namespace tgf
 				for (auto& state : states_)
 					state->onWindowSizeChanged(size.x, size.y);
 			}
-			else
+			else if(states_.size())
 				states_.back().get()->handleInput(event);
 		}
 
