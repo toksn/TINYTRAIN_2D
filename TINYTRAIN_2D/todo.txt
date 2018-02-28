@@ -1,5 +1,5 @@
 TODO:
-- add further gamestates (pause, win/loose screen)
+- add further gamestates (win/loose screen)
 - add drawing states to init drawing outside of the rect (drawing begins inside the rect tho)
 - collision manager + tobstacle into gameframework
 	- traincollisionmanager, thitzone derived from that
@@ -17,9 +17,10 @@ TODO:
 - loading of levels from files
 	- define level saving format
 - level editor or procedural level creation?
+- add on-screen instructions (controls, goals, hints)
 
 DONE:
-- added mainmenu
+- added mainmenu, pause
 - interate on the collision detection
 	- actual shapes/rectangles testing
 	- onEnter / onLeave system (not spamming the callbacks when hit in several updates)	
