@@ -65,7 +65,6 @@ namespace tgf
 			sf::FloatRect area_;
 
 			GameStateBase* gs_;
-			//sf::Font font_;
 		};
 	}
 }

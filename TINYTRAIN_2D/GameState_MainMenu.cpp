@@ -16,10 +16,10 @@ namespace tinytrain
 		if (menu_)
 		{
 			menu_->appendItem(sf::Text("start", font_), std::bind(&GameState_MainMenu::onStart, this));
-			menu_->appendItem(sf::Text("options", font_), std::bind(&GameState_MainMenu::onStart, this));
-			menu_->appendItem(sf::Text("blabla12354789+$%\"(§", font_), std::bind(&GameState_MainMenu::onStart, this));
-			menu_->appendItem(sf::Text("thelazybrownfox", font_), std::bind(&GameState_MainMenu::onStart, this));
-			menu_->appendItem(sf::Text("jumpsovertheidontknowwhat", font_), std::bind(&GameState_MainMenu::onStart, this));
+			menu_->appendItem(sf::Text("options", font_), nullptr);
+			menu_->appendItem(sf::Text("blabla12354789+$%\"(§", font_), nullptr);
+			menu_->appendItem(sf::Text("thelazybrownfox", font_), nullptr);
+			menu_->appendItem(sf::Text("jumpsovertheidontknowwhat", font_), nullptr);
 			menu_->appendItem(sf::Text("quit", font_), std::bind(&GameState_MainMenu::onQuit, this));
 
 			bindEventCallback(sf::Event::EventType::MouseMoved, menu_.get(), &tgf::gui::TextMenu::onMouseMove);

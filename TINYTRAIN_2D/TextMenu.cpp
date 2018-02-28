@@ -11,7 +11,7 @@ namespace tgf
 		TextMenu::TextMenu()
 		{
 			selection_ = 0;
-
+			allowmouse_ = true;
 			gs_ = nullptr;
 		}
 
@@ -19,6 +19,7 @@ namespace tgf
 		TextMenu::TextMenu(GameStateBase* gs)
 		{
 			selection_ = 0;
+			allowmouse_ = true;
 			gs_ = gs;
 			
 			// do event bindings
@@ -57,10 +58,12 @@ namespace tgf
 
 		void TextMenu::appendItem(sf::Text a_text, std::function<void(void)> a_func)
 		{
+			sf::Uint8 transparency = a_func ? 255 : 128;
+
 			if (menuentries_.size() == selection_)
-				a_text.setFillColor(sf::Color::Red);
+				a_text.setFillColor(sf::Color(255, 0, 0, transparency));
 			else
-				a_text.setFillColor(sf::Color::White);
+				a_text.setFillColor(sf::Color(255, 255, 255, transparency));
 
 			menuentries_.push_back(Entry(a_text, a_func));
 		}
@@ -70,19 +73,22 @@ namespace tgf
 			if (move_by != 0)
 			{
 				// old selection white
-				menuentries_[selection_].text_.setFillColor(sf::Color::White);
+				menuentries_[selection_].text_.setFillColor(sf::Color(255, 255, 255, menuentries_[selection_].func_? 255 : 128 ));
 				// new selection red
 				selection_ = (selection_ + move_by + menuentries_.size()) % menuentries_.size();
-				menuentries_[selection_].text_.setFillColor(sf::Color::Red);
+				menuentries_[selection_].text_.setFillColor(sf::Color(255, 0, 0, menuentries_[selection_].func_ ? 255 : 128));
 			}
 		}
 
 		void TextMenu::onMouseMove(sf::Event& e)
 		{
-			// mouse move to select state
-			int i = getEntryIndexAtPosition(e.mouseMove.x, e.mouseMove.y);
-			if (i != -1)
-				moveSelection(i - selection_);
+			if (allowmouse_)
+			{
+				// mouse move to select state
+				int i = getEntryIndexAtPosition(e.mouseMove.x, e.mouseMove.y);
+				if (i != -1)
+					moveSelection(i - selection_);
+			}
 		}
 
 		void TextMenu::onKeyPressed(sf::Event& e)
@@ -103,7 +109,7 @@ namespace tgf
 		// left mouse click = use selected state
 		void TextMenu::onMousePressed(sf::Event& e)
 		{
-			if (e.mouseButton.button == sf::Mouse::Left)
+			if (allowmouse_ && e.mouseButton.button == sf::Mouse::Left)
 			{
 				int i = getEntryIndexAtPosition(e.mouseButton.x, e.mouseButton.y);
 				if (i != -1)
