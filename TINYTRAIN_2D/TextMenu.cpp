@@ -13,6 +13,8 @@ namespace tgf
 			selection_ = 0;
 			allowmouse_ = true;
 			gs_ = nullptr;
+
+			maxEntryHeight_ = -1;
 		}
 
 		// textmenu constructor within a given area and gamestate to bind to the input events.
@@ -21,6 +23,8 @@ namespace tgf
 			selection_ = 0;
 			allowmouse_ = true;
 			gs_ = gs;
+
+			maxEntryHeight_ = -1;
 			
 			// do event bindings
 			gs_->bindEventCallback(sf::Event::EventType::MouseMoved, this, &tgf::gui::TextMenu::onMouseMove);
@@ -157,6 +161,12 @@ namespace tgf
 			{
 				//calculate vertical space for each entry
 				float entryheight = area_.height / menuentries_.size();
+				float adjust_height = 0.0f;
+				if (maxEntryHeight_ > -1 && entryheight > maxEntryHeight_)
+				{
+					adjust_height = (entryheight - maxEntryHeight_)*menuentries_.size() / 2.0f;
+					entryheight = entryheight < maxEntryHeight_ ? entryheight : maxEntryHeight_;
+				}				
 
 				// set new charactersize
 				float charactersize = entryheight * 0.6f;
@@ -175,6 +185,9 @@ namespace tgf
 						e.text_.setCharacterSize(charactersize);
 						e.localbounds_ = e.text_.getLocalBounds();
 					}
+
+					adjust_height = (entryheight - charactersize/0.6f)*menuentries_.size() / 2.0f;
+					entryheight = charactersize / 0.6f;
 				}
 
 				for (int i = 0; i < menuentries_.size(); i++)
@@ -183,7 +196,7 @@ namespace tgf
 					auto& text = menuentries_[i].text_;
 					auto textSize = menuentries_[i].localbounds_;
 
-					menuentries_[i].text_.setPosition(area_.left + (area_.width - textSize.width) / 2, area_.top + entryheight * i + (entryheight - textSize.height) / 2);
+					menuentries_[i].text_.setPosition(area_.left + (area_.width - textSize.width) / 2, area_.top + adjust_height + entryheight * i + (entryheight - textSize.height) / 2);
 					menuentries_[i].globalbounds_ = menuentries_[i].text_.getGlobalBounds();
 				}
 			}

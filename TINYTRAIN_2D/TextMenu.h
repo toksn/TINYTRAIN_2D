@@ -57,9 +57,9 @@ namespace tgf
 
 			int selection_;
 			bool allowmouse_;
+			int maxEntryHeight_;
 		protected:
 			int getEntryIndexAtPosition(int x, int y);
-			
 						
 			sf::RectangleShape* background_;
 			sf::FloatRect area_;

@@ -31,6 +31,7 @@ namespace tinytrain
 
 		void won(TTrain* train);
 		void lost(TTrain* train);
+		void pause();
 
 		TTrainCollisionManager* getCollisionManager();
 

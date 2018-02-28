@@ -1,4 +1,5 @@
 #include "GameState_Running.h"
+#include "GameState_Pause.h"
 #include <algorithm>
 
 #include "TLevel.h"
@@ -183,6 +184,19 @@ namespace tinytrain
 	{
 		train->pause();
 		printf("you loose.\n");
+	}
+
+	void GameState_Running::pause()
+	{
+		if (game_)
+		{
+			auto pause = std::make_unique<GameState_Pause>(game_);
+			pause->backgroundstates_.push_back(this);
+
+			game_->pushState(std::move(pause));
+
+			printf("paused.\n");
+		}
 	}
 
 	TTrainCollisionManager* GameState_Running::getCollisionManager()

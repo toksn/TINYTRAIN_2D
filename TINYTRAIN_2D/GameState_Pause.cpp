@@ -15,6 +15,8 @@ namespace tinytrain
 
 		if (menu_)
 		{
+			menu_->maxEntryHeight_ = 100;
+
 			menu_->appendItem(sf::Text("resume", font_), std::bind(&GameState_Pause::onResume, this));
 			menu_->appendItem(sf::Text("options", font_), nullptr);
 			menu_->appendItem(sf::Text("mainmenu", font_), std::bind(&GameState_Pause::onQuitToMainMenu, this));
@@ -25,18 +27,13 @@ namespace tinytrain
 
 			if (game && game->window_)
 			{
-				//onWindowSizeChanged(game->window_->getSize().x, game->window_->getSize().y);
-				float w = game->window_->getSize().x;
-				float h = game->window_->getSize().y;
-				float heightfactor = 0.7f;
-				float widthfactor = 0.9f;
-
-				sf::FloatRect size(w*(1.0f - widthfactor) / 2.0f, h* (1.0f - heightfactor) / 2.0f, w*widthfactor, h * heightfactor);
-				menu_->setArea(size);
+				onWindowSizeChanged(game->window_->getSize().x, game->window_->getSize().y);
+				
 			}
 		}
-	}
 
+		pause_grey_.setFillColor(sf::Color(0, 0, 0, 200));
+	}
 
 	GameState_Pause::~GameState_Pause()
 	{
@@ -50,9 +47,16 @@ namespace tinytrain
 
 	void GameState_Pause::draw(sf::RenderTarget * target)
 	{
+		// draw background gamestates
+		for (auto state : backgroundstates_)
+			state->draw(target);
+
 		if (game_ && game_->window_ && menu_)
 		{
 			target->setView(*game_->guiView_);
+
+			if (backgroundstates_.size())
+				target->draw(pause_grey_);
 
 			menu_->draw(target);
 		}
@@ -69,8 +73,10 @@ namespace tinytrain
 			sf::FloatRect size(w*(1 - widthfactor) / 2, h* (1 - heightfactor) / 2, w*widthfactor, h * heightfactor);
 			menu_->setArea(size);
 		}
+
+		pause_grey_.setSize(sf::Vector2f(w, h));
 	}
-	
+		
 	void GameState_Pause::onResume()
 	{
 		if (game_)

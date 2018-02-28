@@ -1,7 +1,6 @@
 #include "TPlayer.h"
 #include "TRailTrack.h"
 #include "GameState_Running.h"
-#include "GameState_Pause.h"
 #include "Game.h"
 
 #include "tinyc2.h"
@@ -131,12 +130,7 @@ namespace tinytrain
 		if (e.key.code == sf::Keyboard::Escape )
 		{
 			inputstate_ = INPUTSTATE::IDLE;
-			if (gs_ && gs_->game_)
-			{
-				auto pause = std::make_unique<GameState_Pause>(gs_->game_);
-				
-				gs_->game_->pushState(std::move(pause));
-			}
+			gs_->pause();
 		}
 	}
 
