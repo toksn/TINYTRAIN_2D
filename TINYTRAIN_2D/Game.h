@@ -35,6 +35,9 @@ namespace tgf
 
 		bool bShowFPS_;
 		std::unique_ptr<sf::Clock> frameClock_;
+		
+		// this is necessary because the states can potentially delete themselves from the states_ vector and thus get deleted while in the middle of execution (eventloop)
+		std::vector<std::unique_ptr<GameStateBase>> removedStates_;
 
 		// this can be used to manually controlling the fps instead of using the SFML framerate
 		sf::Uint16	maxFPS_;

@@ -78,14 +78,9 @@ namespace tinytrain
 	{
 		if (game_)
 		{
-			// BUG:
-			// game->changestate can lead to a problem because it is essentially suicide for this gamestate.
-			// Combined with the fact that onStart is called in reaction to the eventcallbacks loop (GameStateBase handleInput) 
-			// the loop gets invalid and crashes after the suicide.
-			//
-			// game_->changeState(std::make_unique<tinytrain::GameState_Running>(game_));
+			game_->changeState(std::make_unique<tinytrain::GameState_Running>(game_));
 
-			game_->states_.push_back(std::make_unique<tinytrain::GameState_Running>(game_));
+			//game_->states_.push_back(std::make_unique<tinytrain::GameState_Running>(game_));
 		}
 	}
 

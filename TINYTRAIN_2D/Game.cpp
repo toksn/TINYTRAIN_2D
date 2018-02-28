@@ -26,6 +26,8 @@ namespace tgf
 	{
 		while (window_ && window_->isOpen())
 		{
+			removedStates_.clear();
+
 			handleGlobalInput();
 
 			// update the game
@@ -115,7 +117,11 @@ namespace tgf
 	void Game::changeState(std::unique_ptr<GameStateBase> state)
 	{
 		if (states_.empty() == false)
+		{
+			// dont remove it directly because the states_ may remove themselves from the vector and thus get deleted while in execution
+			removedStates_.push_back(std::move(states_.back()));
 			states_.pop_back();
+		}
 		states_.push_back(std::move(state));
 	}
 
