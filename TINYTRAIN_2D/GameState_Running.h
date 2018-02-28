@@ -25,7 +25,7 @@ namespace tinytrain
 		virtual void draw(sf::RenderTarget * target) override;
 		//virtual void handleInput(sf::Event& e) override;
 		virtual void onWindowSizeChanged(int w, int h) override;
-
+		
 		void moveCameraToLastRail();
 		void moveCameraToPoint(sf::Vector2f pos, float angle, float time);
 

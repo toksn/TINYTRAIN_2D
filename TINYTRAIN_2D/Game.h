@@ -20,13 +20,15 @@ namespace tgf
 
 		// managing states
 		void changeState(std::unique_ptr<GameStateBase> state);
-		GameStateBase* peekState();		
+		void pushState(std::unique_ptr<GameStateBase> state);
+		void popState();
+		GameStateBase* peekState();
 
 		// this can be used to manually controlling the fps instead of using the SFML framerate
 		void setMaxFPS(sf::Uint16 maxFPS);
 
 		std::unique_ptr<sf::RenderWindow> window_;
-		std::vector<std::unique_ptr<GameStateBase>> states_;
+		
 
 		// gui view that can be used by every gamestate
 		std::unique_ptr<sf::View> guiView_;
@@ -35,7 +37,8 @@ namespace tgf
 
 		bool bShowFPS_;
 		std::unique_ptr<sf::Clock> frameClock_;
-		
+		// gamestates to handle
+		std::vector<std::unique_ptr<GameStateBase>> states_;		
 		// this is necessary because the states can potentially delete themselves from the states_ vector and thus get deleted while in the middle of execution (eventloop)
 		std::vector<std::unique_ptr<GameStateBase>> removedStates_;
 

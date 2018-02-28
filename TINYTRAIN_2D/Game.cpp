@@ -44,7 +44,11 @@ namespace tgf
 
 		GameStateBase* currentState = peekState();
 		if (currentState == nullptr)
+		{
+			// no gamestate available, close game
+			window_->close();
 			return;
+		}
 
 		currentState->update(deltaTime.asSeconds());
 
@@ -116,13 +120,24 @@ namespace tgf
 
 	void Game::changeState(std::unique_ptr<GameStateBase> state)
 	{
+		popState();
+		states_.push_back(std::move(state));
+	}
+
+	void Game::pushState(std::unique_ptr<GameStateBase> state)
+	{
+		if(state)
+			states_.push_back(std::move(state));
+	}
+
+	void Game::popState()
+	{
 		if (states_.empty() == false)
 		{
-			// dont remove it directly because the states_ may remove themselves from the vector and thus get deleted while in execution
+			// dont remove it directly because the states_ may remove themselves from the vector and thus get killed while in execution
 			removedStates_.push_back(std::move(states_.back()));
 			states_.pop_back();
 		}
-		states_.push_back(std::move(state));
 	}
 
 	GameStateBase * Game::peekState()

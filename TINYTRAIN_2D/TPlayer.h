@@ -28,6 +28,7 @@ namespace tinytrain
 		//callbacks
 		void onMousePressed(sf::Event& e);
 		void onMouseReleased(sf::Event& e);
+		void onKeyPressed(sf::Event & e);
 
 		void setColor(sf::Color col);
 		

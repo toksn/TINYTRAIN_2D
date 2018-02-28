@@ -1,11 +1,11 @@
-#include "GameState_MainMenu.h"
+#include "GameState_Pause.h"
 #include "GameState_Running.h"
 #include "Game.h"
 
 
 namespace tinytrain
 {
-	GameState_MainMenu::GameState_MainMenu(tgf::Game* game)
+	GameState_Pause::GameState_Pause(tgf::Game* game)
 	{
 		game_ = game;
 
@@ -15,12 +15,9 @@ namespace tinytrain
 
 		if (menu_)
 		{
-			menu_->appendItem(sf::Text("start", font_), std::bind(&GameState_MainMenu::onStart, this));
+			menu_->appendItem(sf::Text("resume", font_), std::bind(&GameState_Pause::onResume, this));
 			menu_->appendItem(sf::Text("options", font_), nullptr);
-			menu_->appendItem(sf::Text("blabla12354789+$%\"(§", font_), nullptr);
-			menu_->appendItem(sf::Text("thelazybrownfox", font_), nullptr);
-			menu_->appendItem(sf::Text("jumpsovertheidontknowwhat", font_), nullptr);
-			menu_->appendItem(sf::Text("quit", font_), std::bind(&GameState_MainMenu::onQuit, this));
+			menu_->appendItem(sf::Text("mainmenu", font_), std::bind(&GameState_Pause::onQuitToMainMenu, this));
 
 			bindEventCallback(sf::Event::EventType::MouseMoved, menu_.get(), &tgf::gui::TextMenu::onMouseMove);
 			bindEventCallback(sf::Event::EventType::MouseButtonPressed, menu_.get(), &tgf::gui::TextMenu::onMousePressed);
@@ -41,17 +38,17 @@ namespace tinytrain
 	}
 
 
-	GameState_MainMenu::~GameState_MainMenu()
+	GameState_Pause::~GameState_Pause()
 	{
 	}
 
-	void GameState_MainMenu::update(float dt)
+	void GameState_Pause::update(float dt)
 	{
 		if(menu_)
 			menu_->update(dt);
 	}
 
-	void GameState_MainMenu::draw(sf::RenderTarget * target)
+	void GameState_Pause::draw(sf::RenderTarget * target)
 	{
 		if (game_ && game_->window_ && menu_)
 		{
@@ -61,7 +58,7 @@ namespace tinytrain
 		}
 	}
 
-	void GameState_MainMenu::onWindowSizeChanged(int w, int h)
+	void GameState_Pause::onWindowSizeChanged(int w, int h)
 	{
 		if (menu_)
 		{
@@ -74,20 +71,21 @@ namespace tinytrain
 		}
 	}
 	
-	void GameState_MainMenu::onStart()
+	void GameState_Pause::onResume()
+	{
+		if (game_)
+			game_->popState();
+	}
+
+	void GameState_Pause::onQuitToMainMenu()
 	{
 		if (game_)
 		{
-			//game_->changeState(std::make_unique<tinytrain::GameState_Running>(game_));
-
-			game_->pushState(std::make_unique<tinytrain::GameState_Running>(game_));
+			// remove pause and running state
+			// todo: remove states until mainmenu
+			game_->popState();
+			game_->popState();
 		}
-	}
-
-	void GameState_MainMenu::onQuit()
-	{
-		if (game_ && game_->window_)
-			game_->window_->close();
 	}
 
 }

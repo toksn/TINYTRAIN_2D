@@ -1,6 +1,7 @@
 #include "TPlayer.h"
 #include "TRailTrack.h"
 #include "GameState_Running.h"
+#include "GameState_Pause.h"
 #include "Game.h"
 
 #include "tinyc2.h"
@@ -17,6 +18,8 @@ namespace tinytrain
 		{
 			gs->bindEventCallback(sf::Event::MouseButtonPressed, this, &TPlayer::onMousePressed);
 			gs->bindEventCallback(sf::Event::MouseButtonReleased, this, &TPlayer::onMouseReleased);
+
+			gs->bindEventCallback(sf::Event::KeyPressed, this, &TPlayer::onKeyPressed);
 			//...
 		}
 
@@ -121,6 +124,23 @@ namespace tinytrain
 			stopDrawing();
 		}
 	}
+
+	void TPlayer::onKeyPressed(sf::Event& e)
+	{
+		// PAUSE
+		if (e.key.code == sf::Keyboard::Escape )
+		{
+			inputstate_ = INPUTSTATE::IDLE;
+			if (gs_ && gs_->game_)
+			{
+				auto pause = std::make_unique<GameState_Pause>(gs_->game_);
+				
+				gs_->game_->pushState(std::move(pause));
+			}
+		}
+	}
+
+
 
 	void TPlayer::setColor(sf::Color col)
 	{
