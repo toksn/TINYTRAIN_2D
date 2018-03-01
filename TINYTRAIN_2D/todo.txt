@@ -1,12 +1,10 @@
 TODO:
-- add further gamestates (win/loose screen)
-- add drawing states to init drawing outside of the rect (drawing begins inside the rect tho)
 - collision manager + tobstacle into gameframework
 	- traincollisionmanager, thitzone derived from that
 
 - use component based system 
 	- gameobject : entity {components_; draw/update: for(components_) c->draw()/c->update(); }
-	- component : entity {ownerobject_; draw/update: for(components_) c->draw()/c->update(); } maybe friend class?
+	- component : entity {ownerobject_; draw/update: manipulate_or_extend_ownerobject(); } maybe friend class?
 		- moveTo/moveBy (for hitzones)
 		- inputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
 			- rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
@@ -14,13 +12,19 @@ TODO:
 
 - make collisionmanager running in an own thread calling callbacks on overlap ?
 - add optional targets to score more points/objectives (passengers)
+- abstract gamestates into tgf
+	- running: load, initloadedlevel, pause, win, loose, restart
+	- pause: as is?
+	- end: as is?
+	- level_interface: load(), restart()
 - loading of levels from files
 	- define level saving format
 - level editor or procedural level creation?
 - add on-screen instructions (controls, goals, hints)
 
 DONE:
-- added mainmenu, pause
+- add drawing states to init drawing outside of the rect (drawing begins inside the rect tho)
+- added gamestates: mainmenu, pause, win/loose screen
 - interate on the collision detection
 	- actual shapes/rectangles testing
 	- onEnter / onLeave system (not spamming the callbacks when hit in several updates)	

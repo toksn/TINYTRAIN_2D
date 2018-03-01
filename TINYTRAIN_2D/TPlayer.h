@@ -6,6 +6,7 @@ namespace tinytrain
 	enum class INPUTSTATE
 	{
 		IDLE,
+		DRAWING_WAIT,
 		DRAWING
 	};
 
@@ -23,6 +24,7 @@ namespace tinytrain
 		virtual void update(float deltaTime) override;
 
 		void recalcDrawRect(int width, int height);
+		
 		void setTrack(TRailTrack* track);
 
 		//callbacks
@@ -33,6 +35,7 @@ namespace tinytrain
 		void setColor(sf::Color col);
 		
 	private:
+		void startDrawing(int x, int y);
 		void stopDrawing();
 		void addDrawnLineToRailTrack();
 

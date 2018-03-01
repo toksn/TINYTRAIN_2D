@@ -45,12 +45,16 @@ namespace tinytrain
 
 	void TPlayer::update(float deltaTime)
 	{
-		if (inputstate_ == INPUTSTATE::DRAWING && gs_ && gs_->game_)
+		if (inputstate_ != INPUTSTATE::IDLE && gs_ && gs_->game_)
 		{
 			// get current mouse location
 			auto curScreenPos = sf::Mouse::getPosition(*gs_->game_->window_);
 			if (drawingArea_.contains(curScreenPos.x, curScreenPos.y))
 			{
+				// waited for drawing to begin -> new state is DRAWING
+				if (inputstate_ == INPUTSTATE::DRAWING_WAIT)
+					startDrawing(curScreenPos.x, curScreenPos.y);
+								
 				auto size = drawnLine_.getVertexCount();
 				if (size)
 				{
@@ -58,9 +62,9 @@ namespace tinytrain
 					c2v end{ curScreenPos.x, curScreenPos.y };
 					if (c2Len(c2Sub(end, start)) > minDist_)
 						drawnLine_.append(sf::Vertex(sf::Vector2f(end.x, end.y), color_));
-				}
+				}					
 			}
-			else
+			else if(inputstate_ == INPUTSTATE::DRAWING)
 			{
 				// stop drawing
 				stopDrawing();
@@ -88,11 +92,26 @@ namespace tinytrain
 		drawingAreaShape_.setOutlineThickness(1);
 	}
 
+	void TPlayer::startDrawing(int x, int y)
+	{
+		printf("DRAWING : started at pixel %i, %i\n", x, y);
+
+		// store the initial point
+		drawnLine_.resize(1);
+		drawnLine_[0] = sf::Vertex(sf::Vector2f(x, y), color_);
+
+		inputstate_ = INPUTSTATE::DRAWING;
+	}
+
 	void TPlayer::stopDrawing()
 	{
-		printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
-		inputstate_ = INPUTSTATE::IDLE;
-		addDrawnLineToRailTrack();
+		if (inputstate_ == INPUTSTATE::DRAWING)
+		{
+			printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
+			addDrawnLineToRailTrack();
+		}
+
+		inputstate_ = INPUTSTATE::IDLE;			
 	}
 
 	void TPlayer::setTrack(TRailTrack * track)
@@ -104,15 +123,14 @@ namespace tinytrain
 
 	void TPlayer::onMousePressed(sf::Event& e)
 	{
-		if (e.mouseButton.button == sf::Mouse::Left && drawingArea_.contains(e.mouseButton.x, e.mouseButton.y))
+		if (e.mouseButton.button == sf::Mouse::Left)
 		{
-			printf("DRAWING : started at pixel %i, %i\n", e.mouseButton.x, e.mouseButton.y);
-
-			// store the initial point
-			drawnLine_.resize(1);
-			drawnLine_[0] = sf::Vertex(sf::Vector2f(e.mouseButton.x, e.mouseButton.y), color_);
-
-			inputstate_ = INPUTSTATE::DRAWING;
+			if (drawingArea_.contains(e.mouseButton.x, e.mouseButton.y))
+			{
+				startDrawing(e.mouseButton.x, e.mouseButton.y);
+			}
+			else
+				inputstate_ = INPUTSTATE::DRAWING_WAIT;			
 		}
 	}
 
