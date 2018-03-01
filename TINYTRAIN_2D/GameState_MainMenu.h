@@ -23,6 +23,5 @@ namespace tinytrain
 		void onQuit();
 
 		std::unique_ptr<tgf::gui::TextMenu> menu_;
-		sf::Font font_;
 	};
 }

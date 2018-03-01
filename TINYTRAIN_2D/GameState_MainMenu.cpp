@@ -8,25 +8,23 @@ namespace tinytrain
 	GameState_MainMenu::GameState_MainMenu(tgf::Game* game)
 	{
 		game_ = game;
-
-		font_.loadFromFile("data/fonts/pixantiqua.ttf");
 		
 		menu_ = std::make_unique<tgf::gui::TextMenu>();
 
-		if (menu_)
+		if (menu_ && game)
 		{
-			menu_->appendItem(sf::Text("start", font_), std::bind(&GameState_MainMenu::onStart, this));
-			menu_->appendItem(sf::Text("options", font_), nullptr);
-			menu_->appendItem(sf::Text("blabla12354789+$%\"(§", font_), nullptr);
-			menu_->appendItem(sf::Text("thelazybrownfox", font_), nullptr);
-			menu_->appendItem(sf::Text("jumpsovertheidontknowwhat", font_), nullptr);
-			menu_->appendItem(sf::Text("quit", font_), std::bind(&GameState_MainMenu::onQuit, this));
+			menu_->appendItem(sf::Text("start", *game_->font_), std::bind(&GameState_MainMenu::onStart, this));
+			menu_->appendItem(sf::Text("options", *game_->font_), nullptr);
+			menu_->appendItem(sf::Text("blabla12354789+$%\"(§", *game_->font_), nullptr);
+			menu_->appendItem(sf::Text("thelazybrownfox", *game_->font_), nullptr);
+			menu_->appendItem(sf::Text("jumpsovertheidontknowwhat", *game_->font_), nullptr);
+			menu_->appendItem(sf::Text("quit", *game_->font_), std::bind(&GameState_MainMenu::onQuit, this));
 
 			bindEventCallback(sf::Event::EventType::MouseMoved, menu_.get(), &tgf::gui::TextMenu::onMouseMove);
 			bindEventCallback(sf::Event::EventType::MouseButtonPressed, menu_.get(), &tgf::gui::TextMenu::onMousePressed);
 			bindEventCallback(sf::Event::EventType::KeyPressed, menu_.get(), &tgf::gui::TextMenu::onKeyPressed);
 
-			if (game && game->window_)
+			if (game->window_)
 			{
 				//onWindowSizeChanged(game->window_->getSize().x, game->window_->getSize().y);
 				float w = game->window_->getSize().x;

@@ -28,7 +28,6 @@ namespace tinytrain
 		camFlowTime_ = 1.0;
 		camCurrentTime_ = 0.0;
 
-
 		initCurrentLevel();
 	}
 

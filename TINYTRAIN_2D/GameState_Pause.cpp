@@ -8,25 +8,23 @@ namespace tinytrain
 	GameState_Pause::GameState_Pause(tgf::Game* game)
 	{
 		game_ = game;
-
-		font_.loadFromFile("data/fonts/pixantiqua.ttf");
 		
 		menu_ = std::make_unique<tgf::gui::TextMenu>();
 
-		if (menu_)
+		if (menu_ && game_)
 		{
 			menu_->maxEntryHeight_ = 100;
 
-			menu_->appendItem(sf::Text("resume", font_), std::bind(&GameState_Pause::onResume, this));
-			menu_->appendItem(sf::Text("restart", font_), std::bind(&GameState_Pause::onRestart, this));
-			menu_->appendItem(sf::Text("options", font_), nullptr);
-			menu_->appendItem(sf::Text("mainmenu", font_), std::bind(&GameState_Pause::onQuitToMainMenu, this));
+			menu_->appendItem(sf::Text("resume", *game_->font_), std::bind(&GameState_Pause::onResume, this));
+			menu_->appendItem(sf::Text("restart", *game_->font_), std::bind(&GameState_Pause::onRestart, this));
+			menu_->appendItem(sf::Text("options", *game_->font_), nullptr);
+			menu_->appendItem(sf::Text("mainmenu", *game_->font_), std::bind(&GameState_Pause::onQuitToMainMenu, this));
 
 			bindEventCallback(sf::Event::EventType::MouseMoved, menu_.get(), &tgf::gui::TextMenu::onMouseMove);
 			bindEventCallback(sf::Event::EventType::MouseButtonPressed, menu_.get(), &tgf::gui::TextMenu::onMousePressed);
 			bindEventCallback(sf::Event::EventType::KeyPressed, menu_.get(), &tgf::gui::TextMenu::onKeyPressed);
 
-			if (game && game->window_)
+			if (game->window_)
 			{
 				onWindowSizeChanged(game->window_->getSize().x, game->window_->getSize().y);
 			}

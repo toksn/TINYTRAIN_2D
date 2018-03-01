@@ -15,6 +15,9 @@ namespace tgf
 
 		frameClock_ = std::make_unique<sf::Clock>();
 		bShowFPS_ = false;
+
+		font_ = std::make_unique<sf::Font>();
+		font_->loadFromFile("data/fonts/pixantiqua.ttf");
 	}
 
 

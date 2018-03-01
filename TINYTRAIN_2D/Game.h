@@ -30,8 +30,9 @@ namespace tgf
 		std::unique_ptr<sf::RenderWindow> window_;
 		
 
-		// gui view that can be used by every gamestate
+		// gui view and font that can be used by every gamestate
 		std::unique_ptr<sf::View> guiView_;
+		std::unique_ptr<sf::Font> font_;
 	private:
 		void handleGlobalInput();
 
