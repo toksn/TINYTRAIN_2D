@@ -28,7 +28,6 @@ namespace tinytrain
 			if (game && game->window_)
 			{
 				onWindowSizeChanged(game->window_->getSize().x, game->window_->getSize().y);
-				
 			}
 		}
 

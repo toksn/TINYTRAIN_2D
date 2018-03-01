@@ -111,8 +111,7 @@ namespace tinytrain
 			obstacles_.push_back(std::move(target_zone));			
 			/************************************************************************/
 
-			// TODO:
-			// passengers to pick up
+			// TODO: passengers to pick up
 		}
 	}
 }

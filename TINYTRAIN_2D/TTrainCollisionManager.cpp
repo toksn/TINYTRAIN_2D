@@ -17,8 +17,11 @@ namespace tinytrain
 	void TTrainCollisionManager::addToCollision(TObstacle* const object, void(TObstacle::* const on_collision_enter)(tgf::Entity *), void(TObstacle::* const on_collision_leave)(tgf::Entity *), CollisionCategory category, short collisionmask)
 	{
 		collidingObject col;
-		col.callback_enter = std::bind(on_collision_enter, object, std::placeholders::_1);
-		col.callback_leave = std::bind(on_collision_leave, object, std::placeholders::_1);
+		col.callback_enter = col.callback_leave = nullptr;
+		if(on_collision_enter)
+			col.callback_enter = std::bind(on_collision_enter, object, std::placeholders::_1);
+		if(on_collision_leave)
+			col.callback_leave = std::bind(on_collision_leave, object, std::placeholders::_1);
 		col.obj = object;
 		col.collision_mask = collisionmask;
 		colliders_[category].push_back(col);

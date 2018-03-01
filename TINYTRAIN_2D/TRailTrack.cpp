@@ -58,7 +58,6 @@ namespace tinytrain
 			float current_wagon_dist = train->distance_ - i * (train->wagonsize_.x + train->wagongap_);
 			float time = current_wagon_dist / trackspline_->getLength();
 
-			//todo add hintindex
 			float angle = trackspline_->getDirectionAngleAtTime(time, hintindex, false);
 			sf::Vector2f pos = trackspline_->getLocationAtTime(time, hintindex);
 
