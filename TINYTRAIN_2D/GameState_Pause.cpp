@@ -18,6 +18,7 @@ namespace tinytrain
 			menu_->maxEntryHeight_ = 100;
 
 			menu_->appendItem(sf::Text("resume", font_), std::bind(&GameState_Pause::onResume, this));
+			menu_->appendItem(sf::Text("restart", font_), std::bind(&GameState_Pause::onRestart, this));
 			menu_->appendItem(sf::Text("options", font_), nullptr);
 			menu_->appendItem(sf::Text("mainmenu", font_), std::bind(&GameState_Pause::onQuitToMainMenu, this));
 
@@ -80,6 +81,21 @@ namespace tinytrain
 	{
 		if (game_)
 			game_->popState();
+	}
+
+	void GameState_Pause::onRestart()
+	{
+		for (auto& state : backgroundstates_)
+		{
+			auto gs = dynamic_cast<GameState_Running*>(state);
+			if (gs != nullptr)
+			{
+				gs->restart();
+			}
+		}
+
+		// resume the game
+		onResume();
 	}
 
 	void GameState_Pause::onQuitToMainMenu()

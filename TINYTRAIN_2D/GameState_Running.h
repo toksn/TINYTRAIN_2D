@@ -32,10 +32,13 @@ namespace tinytrain
 		void won(TTrain* train);
 		void lost(TTrain* train);
 		void pause();
+		void restart();
 
 		TTrainCollisionManager* getCollisionManager();
 
-	private:
+	protected:
+		void initCurrentLevel();
+
 		std::unique_ptr<TLevel> level_;
 		std::unique_ptr<TPlayer> player_;
 		std::unique_ptr<TTrainCollisionManager> collisionMananger_;

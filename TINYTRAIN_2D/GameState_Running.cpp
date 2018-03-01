@@ -27,30 +27,9 @@ namespace tinytrain
 		bRotateCameraWithTrack_ = false;
 		camFlowTime_ = 1.0;
 		camCurrentTime_ = 0.0;
-		
-		if (game && camera_ && game->window_ && player_)
-		{
-			// initial camera view matching the window in size and position (coordinate system match)
-			sf::Vector2f size = sf::Vector2f(game->window_->getSize());
-			camera_->setSize(size);
-			camera_->setCenter(size*0.5f);
 
-			// init drawrect and set railtrack for the player
-			player_->recalcDrawRect(size.x, size.y);
-			if (level_)
-			{
-				auto rail = level_->railtrack_.get();
-				player_->setTrack(rail);
 
-				if (rail)
-					rail->bindTrackChangedCallback(this, &GameState_Running::moveCameraToLastRail);
-			}
-
-			// initially move camera to end of rail
-			moveCameraToLastRail();
-		}
-		else
-			printf("GAMESTATE INITIALIZING ERROR.\n");
+		initCurrentLevel();
 	}
 
 	GameState_Running::~GameState_Running()
@@ -137,6 +116,33 @@ namespace tinytrain
 		player_->recalcDrawRect(w, h);
 	}
 
+	void GameState_Running::initCurrentLevel()
+	{
+		if (game_ && camera_ && game_->window_ && player_)
+		{
+			// initial camera view matching the window in size and position (coordinate system match)
+			sf::Vector2f size = sf::Vector2f(game_->window_->getSize());
+			camera_->setSize(size);
+			camera_->setCenter(size*0.5f);
+
+			// init drawrect and set railtrack for the player
+			player_->recalcDrawRect(size.x, size.y);
+			if (level_)
+			{
+				auto rail = level_->railtrack_.get();
+				player_->setTrack(rail);
+
+				if (rail)
+					rail->bindTrackChangedCallback(this, &GameState_Running::moveCameraToLastRail);
+			}
+
+			// initially move camera to end of rail
+			moveCameraToLastRail();
+		}
+		else
+			printf("GAMESTATE INITIALIZING ERROR.\n");
+	}
+
 	// this can be a used by a callback when the rail has been changed
 	void GameState_Running::moveCameraToLastRail()
 	{
@@ -197,6 +203,14 @@ namespace tinytrain
 
 			printf("paused.\n");
 		}
+	}
+
+	void GameState_Running::restart()
+	{
+		if(level_)
+			level_->restart(this);
+
+		initCurrentLevel();
 	}
 
 	TTrainCollisionManager* GameState_Running::getCollisionManager()

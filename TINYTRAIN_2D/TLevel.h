@@ -21,6 +21,8 @@ namespace tinytrain
 
 		// load a level from file
 		void load(GameState_Running* gs, std::string file = "");
+
+		void restart(GameState_Running* gs);
 		
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;

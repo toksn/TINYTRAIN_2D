@@ -114,4 +114,9 @@ namespace tinytrain
 			// TODO: passengers to pick up
 		}
 	}
+	void TLevel::restart(GameState_Running* gs)
+	{
+		obstacles_.clear();
+		load(gs);			//load(gs, currentLevelFile);
+	}
 }
