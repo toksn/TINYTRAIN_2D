@@ -77,6 +77,9 @@
     <ClCompile Include="GameState_Pause.cpp">
       <Filter>TinyTrain\gamestates</Filter>
     </ClCompile>
+    <ClCompile Include="GameState_End.cpp">
+      <Filter>TinyTrain\gamestates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -125,6 +128,9 @@
       <Filter>GameFramework\Gui</Filter>
     </ClInclude>
     <ClInclude Include="GameState_Pause.h">
+      <Filter>TinyTrain\gamestates</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_End.h">
       <Filter>TinyTrain\gamestates</Filter>
     </ClInclude>
   </ItemGroup>

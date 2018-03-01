@@ -1,5 +1,6 @@
 #include "GameState_Running.h"
 #include "GameState_Pause.h"
+#include "GameState_End.h"
 #include <algorithm>
 
 #include "TLevel.h"
@@ -183,11 +184,29 @@ namespace tinytrain
 	void GameState_Running::won(TTrain * train)
 	{
 		train->pause();
+
+		if (game_)
+		{
+			auto endscreen = std::make_unique<GameState_End>(game_);
+			endscreen->backgroundstates_.push_back(this);
+			endscreen->setEndText("you won!", sf::Color::Green);
+
+			game_->pushState(std::move(endscreen));
+		}
 		printf("you win.\n");
 	}
 	void GameState_Running::lost(TTrain * train)
 	{
 		train->pause();
+		if (game_)
+		{
+			auto endscreen = std::make_unique<GameState_End>(game_);
+			endscreen->backgroundstates_.push_back(this);
+			endscreen->setEndText("you lost!", sf::Color::Red);
+
+			game_->pushState(std::move(endscreen));
+		}
+
 		printf("you loose.\n");
 	}
 
