@@ -21,13 +21,16 @@
     <Filter Include="TinyTrain\controllers">
       <UniqueIdentifier>{d53cf1fd-63c3-4d5c-9452-1b9dfe53c9f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameFramework\Math">
-      <UniqueIdentifier>{76c04630-4c10-43ab-82fb-893bd74a4749}</UniqueIdentifier>
-    </Filter>
     <Filter Include="TinyTrain\utils">
       <UniqueIdentifier>{d9aa7915-909f-4863-86c2-1a2bee538bb7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameFramework\Gui">
+    <Filter Include="GameFramework\collision">
+      <UniqueIdentifier>{94fc0c26-4e70-4fc8-9d60-b2b512378e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFramework\math">
+      <UniqueIdentifier>{76c04630-4c10-43ab-82fb-893bd74a4749}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFramework\gui">
       <UniqueIdentifier>{35375093-a931-412c-855b-aef57ce930d8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -57,10 +60,10 @@
       <Filter>TinyTrain\controllers</Filter>
     </ClCompile>
     <ClCompile Include="Spline.cpp">
-      <Filter>GameFramework\Math</Filter>
+      <Filter>GameFramework\math</Filter>
     </ClCompile>
     <ClCompile Include="Spline_CatmullRom.cpp">
-      <Filter>GameFramework\Math</Filter>
+      <Filter>GameFramework\math</Filter>
     </ClCompile>
     <ClCompile Include="TObstacle.cpp">
       <Filter>TinyTrain\objects</Filter>
@@ -72,13 +75,16 @@
       <Filter>TinyTrain\gamestates</Filter>
     </ClCompile>
     <ClCompile Include="TextMenu.cpp">
-      <Filter>GameFramework\Gui</Filter>
+      <Filter>GameFramework\gui</Filter>
     </ClCompile>
     <ClCompile Include="GameState_Pause.cpp">
       <Filter>TinyTrain\gamestates</Filter>
     </ClCompile>
     <ClCompile Include="GameState_End.cpp">
       <Filter>TinyTrain\gamestates</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>GameFramework\collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,10 +116,10 @@
       <Filter>TinyTrain\controllers</Filter>
     </ClInclude>
     <ClInclude Include="Spline.h">
-      <Filter>GameFramework\Math</Filter>
+      <Filter>GameFramework\math</Filter>
     </ClInclude>
     <ClInclude Include="Spline_CatmullRom.h">
-      <Filter>GameFramework\Math</Filter>
+      <Filter>GameFramework\math</Filter>
     </ClInclude>
     <ClInclude Include="TObstacle.h">
       <Filter>TinyTrain\objects</Filter>
@@ -125,13 +131,19 @@
       <Filter>TinyTrain\gamestates</Filter>
     </ClInclude>
     <ClInclude Include="TextMenu.h">
-      <Filter>GameFramework\Gui</Filter>
+      <Filter>GameFramework\gui</Filter>
     </ClInclude>
     <ClInclude Include="GameState_Pause.h">
       <Filter>TinyTrain\gamestates</Filter>
     </ClInclude>
     <ClInclude Include="GameState_End.h">
       <Filter>TinyTrain\gamestates</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionEntity.h">
+      <Filter>GameFramework\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>GameFramework\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

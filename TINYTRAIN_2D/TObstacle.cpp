@@ -25,10 +25,14 @@ namespace tinytrain
 		if (gs_ && gs_->getCollisionManager())
 		{
 			auto colli = gs_->getCollisionManager();
-			if(winningTrigger_)
-				colli->addToCollision(this, &TObstacle::onTriggerEnter, NULL, TTrainCollisionManager::CollisionCategory::OBSTACLE_WIN, 0);
+			
+			tgf::collision::collisionCallbackFunc<TObstacle> no_callback = nullptr;
+			if (winningTrigger_)
+				// add to collision, only colliding with trains
+				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback, TTrainCollisionManager::CollisionCategory::STATIC_CATEGORY_2, 0);
 			else
-				colli->addToCollision(this, &TObstacle::onTriggerEnter, NULL);
+				// add to collision colliding with trains and dynamic_category_1
+				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback);
 		}
 	}
 
@@ -80,9 +84,9 @@ namespace tinytrain
 				gs_->lost(train);
 		}
 	}
-	c2Shape TObstacle::getCollisionShape()
+	tgf::collision::c2Shape TObstacle::getCollisionShape()
 	{
-		c2Shape s;
+		tgf::collision::c2Shape s;
 		s.type_ = C2_POLY;
 		s.shape_ = collisionShape_.get();
 		return s;

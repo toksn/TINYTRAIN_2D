@@ -14,7 +14,7 @@ namespace tinytrain
 
 		gs_ = gs;
 		if (gs_ && gs_->getCollisionManager())
-			gs_->getCollisionManager()->addToCollision(this);
+			gs_->getCollisionManager()->addTrainToCollision(this);
 	}
 
 	TTrain::~TTrain()
