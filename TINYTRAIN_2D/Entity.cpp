@@ -43,4 +43,17 @@ namespace tgf
 			return;
 		}*/
 	}
+	std::unique_ptr<Component> Entity::detachComponent(Component * a_component)
+	{
+		auto comp = std::unique_ptr<Component>();
+		
+		for (auto c = components_.begin(); c != components_.end(); ++c)
+		{
+			comp = std::move(*c);
+			components_.erase(c);
+			break;
+		}
+
+		return comp;
+	}
 }

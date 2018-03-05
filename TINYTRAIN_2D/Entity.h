@@ -22,6 +22,7 @@ namespace tgf
 
 		virtual void addComponent(std::unique_ptr<Component> a_component);
 		virtual void removeComponent(Component* a_component);
+		virtual std::unique_ptr<Component> detachComponent(Component* a_component);
 
 		template<typename T, typename... TArgs> inline T* addNewComponent(TArgs&&... args)
 		{

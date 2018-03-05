@@ -92,6 +92,9 @@
     <ClCompile Include="Entity.cpp">
       <Filter>GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>GameFramework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
