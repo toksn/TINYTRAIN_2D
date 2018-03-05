@@ -18,6 +18,7 @@ namespace tinytrain
 
 	void TLevel::draw(sf::RenderTarget * target)
 	{
+		Entity::draw(target);
 		if (train_)
 			train_->draw(target);
 		if (railtrack_)
@@ -35,6 +36,7 @@ namespace tinytrain
 
 	void TLevel::update(float deltaTime)
 	{
+		Entity::update(deltaTime);
 		if (train_)
 			train_->update(deltaTime);
 		if (railtrack_)

@@ -40,6 +40,7 @@ namespace tgf
 
 		void TextMenu::update(float dt)
 		{
+			Entity::update(dt);
 			//todo color pulsation LERP of selected entry
 
 			/*for (int i = 0; i < menuentries_.size(); i++)
@@ -53,6 +54,8 @@ namespace tgf
 
 		void TextMenu::draw(sf::RenderTarget * target)
 		{
+			Entity::draw(target);
+
 			if (background_ != nullptr)
 				target->draw(*background_);
 

@@ -24,6 +24,8 @@ namespace tgf
 
 		void Spline::draw(sf::RenderTarget * target)
 		{
+			Entity::draw(target);
+
 			if (drawControlPoints_)
 				target->draw(controlPoints_);
 
@@ -32,7 +34,7 @@ namespace tgf
 
 		void Spline::update(float deltaTime)
 		{
-			// ?
+			Entity::update(deltaTime);
 		}
 
 		sf::Vector2f Spline::getLocationAtTime(float a_time)

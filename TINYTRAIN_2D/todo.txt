@@ -8,7 +8,8 @@ TODO:
 			- use last controlpoint of a track for the display as well
 
 - make collisionmanager running in an own thread calling callbacks on overlap ?
-- add optional targets to score more points/objectives (passengers)
+- add optional targets to score more points or have an objective at all (passengers)
+	- taxi mission gta?
 - abstract gamestates into tgf
 	- running: load, initloadedlevel, pause, win, loose, restart
 	- pause: as is?

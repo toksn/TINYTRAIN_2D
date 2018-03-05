@@ -45,6 +45,7 @@ namespace tinytrain
 
 	void TObstacle::draw(sf::RenderTarget * target)
 	{
+		Entity::draw(target);
 		if(drawable_)
 			target->draw(*drawable_);
 
@@ -54,6 +55,7 @@ namespace tinytrain
 
 	void TObstacle::update(float deltaTime)
 	{
+		Entity::update(deltaTime);
 	}
 
 	void TObstacle::updateCollisionShape()

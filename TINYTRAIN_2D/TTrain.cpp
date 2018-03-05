@@ -49,6 +49,8 @@ namespace tinytrain
 
 	void TTrain::update(const float dt)
 	{
+		Entity::update(dt);
+
 		// move the wagons by speed * dt on the railtrack
 		if(isRunning_)			
 			distance_ += dt * speed_;
@@ -85,6 +87,8 @@ namespace tinytrain
 
 	void TTrain::draw(sf::RenderTarget * target)
 	{
+		Entity::draw(target);
+
 		// draw them wagons
 		for (int i = 0; i < wagons_.size(); i++)
 			target->draw(wagons_[i]);
