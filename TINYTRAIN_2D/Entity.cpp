@@ -15,7 +15,8 @@ namespace tgf
 			c->update(deltaTime);
 
 		// remove components that are marked as destroyed
-		components_.erase(std::remove_if(components_.begin(), components_.end(), [](auto& c){ return c->destroyed; }));
+		if(components_.size())
+			components_.erase(std::remove_if(components_.begin(), components_.end(), [](auto& c){ return c->destroyed; }));
 	}
 
 	void Entity::addComponent(std::unique_ptr<Component> a_component)
