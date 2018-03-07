@@ -95,6 +95,9 @@
     <ClCompile Include="Component.cpp">
       <Filter>GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="InterpolateToPoint.cpp">
+      <Filter>GameFramework\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -156,6 +159,9 @@
     </ClInclude>
     <ClInclude Include="Component.h">
       <Filter>GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="InterpolateToPoint.h">
+      <Filter>GameFramework\components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
