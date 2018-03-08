@@ -11,6 +11,7 @@ namespace tinytrain
 		//drawCollisionShape_ = true;
 		sf::RectangleShape rect(sf::Vector2f(20.0f, 20.0f));
 		rect.setFillColor(wintrigger? sf::Color::Green : sf::Color::Red);
+		rect.setOrigin(rect.getSize() * 0.5f);
 		drawable_ = std::make_unique<sf::RectangleShape>(rect);
 
 		collisionShape_ = std::make_unique<c2Poly>();
@@ -54,13 +55,7 @@ namespace tinytrain
 
 	void TObstacle::onUpdate(float deltaTime)
 	{
-		// simulate transformation change from outside
-		//drawable_->move(sf::Vector2f(20,0)* deltaTime);
-		rotate(30.0f* deltaTime);
-		//sf::Transform tffff;
-		//this->getTransform().rotate(30.0f*deltaTime, drawable_->getPosition() + drawable_->getSize()*0.5f);
-		//tffff.rotate(30.f, );
-
+		// todo: lock update behind a flag which has to be set everytime someone changes the 
 		updateCollisionShape();
 	}
 

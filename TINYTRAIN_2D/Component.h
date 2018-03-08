@@ -25,6 +25,6 @@ namespace tgf
 		// an entity with unique_ptr and therefore only exist while its owner is alive
 		
 		Entity* owner_;
-		bool destroyed = false;
+		bool destroyed_ = false;
 	};
 }

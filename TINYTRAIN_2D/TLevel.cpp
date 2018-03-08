@@ -4,6 +4,7 @@
 #include "TRailTrack.h"
 #include "GameState_Running.h"
 #include "TObstacle.h"
+#include "InterpolateToPoint.h"
 
 namespace tinytrain
 {
@@ -104,13 +105,38 @@ namespace tinytrain
 			auto zone = std::make_unique<TObstacle>(gs, false);
 			zone->drawable_->setPosition(+30.0f, +30.0f);
 			zone->updateCollisionShape();
+
+			
+
+			// create temporary component by constructor to use in copy constructor
+			tgf::components::InterpolateToPoint c(zone->getPosition(), zone->getPosition() + sf::Vector2f(50.f, 0.0f), 2.0f, tgf::components::MovementType::TwoWay, true, false);
+			c.start();
+			zone->addNewComponent<tgf::components::InterpolateToPoint>(c);
 			obstacles_.push_back(std::move(zone));
 
 			// create target zone for the game to be won
 			auto target_zone = std::make_unique<TObstacle>(gs, true);
 			target_zone->setPosition(-30.0f, -30.0f);
 			target_zone->updateCollisionShape();
-			obstacles_.push_back(std::move(target_zone));			
+			
+			// change duration and line for the target_zone
+			c.duration_ = 1.0f;
+			c.setControlPoints(target_zone->getPosition(), target_zone->getPosition() + sf::Vector2f(-30.f, -30.0f));
+			target_zone->addNewComponent<tgf::components::InterpolateToPoint>(c);
+			
+			// create movement component by variables
+			//auto movement_comp = std::make_unique<tgf::components::InterpolateToPoint>();
+			//movement_comp->setControlPoints(target_zone->getPosition(), target_zone->getPosition() + sf::Vector2f(-30.f, -30.0f));
+			//movement_comp->duration_ = 1.0f;
+			//movement_comp->type_ = tgf::components::MovementType::TwoWay;
+			//movement_comp->repeat_ = false;
+			//movement_comp->start();
+			//target_zone->addComponent(std::move(movement_comp));
+
+			obstacles_.push_back(std::move(target_zone));
+
+			
+
 			/************************************************************************/
 
 			// TODO: passengers to pick up

@@ -1,8 +1,5 @@
 TODO:
-- use component based system (unique_ptr)
-	- gameobject : entity {components_; draw/update: for(components_) c->draw()/c->update(); }
-	- component : entity {ownerobject_; draw/update: manipulate_or_extend_ownerobject(); } maybe friend class?
-		- moveTo/moveBy (for hitzones)
+
 		- processinputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
 			- rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
 			- use last controlpoint of a track for the display as well
@@ -21,6 +18,10 @@ TODO:
 - add on-screen instructions (controls, goals, hints)
 
 DONE:
+- use component based system (unique_ptr)
+	- gameobject : entity {components_; draw/update: for(components_) c->draw()/c->update(); }
+	- component : entity {ownerobject_; draw/update: manipulate_or_extend_ownerobject(); } maybe friend class?
+		- moveTo/moveBy (for hitzones)
 - abstract collisionManager + collisionEntity into gameframework
 	- traincollisionmanager, TObstacle derived from that
 - add drawing states to init drawing outside of the rect (drawing begins inside the rect tho)
