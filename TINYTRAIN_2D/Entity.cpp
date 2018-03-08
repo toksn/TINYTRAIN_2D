@@ -17,8 +17,7 @@ namespace tgf
 			c->update(deltaTime);
 
 		// remove components that are marked as destroyed
-		if(components_.size())
-			components_.erase(std::remove_if(components_.begin(), components_.end(), [](auto& c){ return c->destroyed; }));
+		components_.erase( std::remove_if(components_.begin(), components_.end(), [](auto& c) { if (c->destroyed_) { printf("component removed.\n"); } return c->destroyed_; }), components_.end() );
 
 		onUpdate(deltaTime);
 	}
@@ -36,7 +35,7 @@ namespace tgf
 		{
 			if (c.get() == a_component)
 			{
-				c->destroyed = true;
+				c->destroyed_ = true;
 				return;
 			}
 		}

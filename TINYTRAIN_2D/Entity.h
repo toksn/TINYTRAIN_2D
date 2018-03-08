@@ -29,8 +29,8 @@ namespace tgf
 			static_assert(std::is_base_of<Component, T>::value, "Object to add must be derived from 'Component'");
 			// create unique pointer by forwarding the given arguments + put it in the components vector
 			components_.emplace_back(std::make_unique<T>(std::forward<TArgs>(args)...));
-			auto uptr = (*components_.rbegin());
-			uptr->owner_ = this;
+			T* ptr = (T*) (*components_.rbegin()).get();
+			ptr->owner_ = this;
 
 			/* TODO: components grouped by type not needed yet. may be needed in the furture
 			auto ptr = (*components_.rbegin()).get();
@@ -38,7 +38,7 @@ namespace tgf
 			components_grouped_[typeid(T).hash_code()].emplace_back(ptr);*/
 			
 			// return raw pointer
-			return uptr.get();
+			return ptr;
 		}
 
 	protected:
