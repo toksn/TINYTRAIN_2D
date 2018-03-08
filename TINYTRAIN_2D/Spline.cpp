@@ -22,19 +22,16 @@ namespace tgf
 		{
 		}
 
-		void Spline::draw(sf::RenderTarget * target)
+		void Spline::onDraw(sf::RenderTarget * target)
 		{
-			Entity::draw(target);
-
 			if (drawControlPoints_)
 				target->draw(controlPoints_);
 
 			target->draw(splinePoints_);
 		}
 
-		void Spline::update(float deltaTime)
+		void Spline::onUpdate(float deltaTime)
 		{
-			Entity::update(deltaTime);
 		}
 
 		sf::Vector2f Spline::getLocationAtTime(float a_time)

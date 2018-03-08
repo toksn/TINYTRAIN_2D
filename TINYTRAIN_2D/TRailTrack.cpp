@@ -124,16 +124,13 @@ namespace tinytrain
 			f.first();
 	}
 
-	void TRailTrack::draw(sf::RenderTarget * target)
+	void TRailTrack::onDraw(sf::RenderTarget * target)
 	{
-		Entity::draw(target);
 		trackspline_->draw(target);
 	}
 
-	void TRailTrack::update(float deltaTime)
+	void TRailTrack::onUpdate(float deltaTime)
 	{
-		Entity::update(deltaTime);
-
 		// move all the trains on the track
 		for (int i = 0; i < trains_.size(); i++)
 			moveAndRotateOnRail(trains_[i]);

@@ -8,6 +8,8 @@ namespace tgf
 	{
 		for (auto& c : components_)
 			c->draw(target);
+
+		onDraw(target);
 	}
 	void Entity::update(float deltaTime)
 	{
@@ -17,6 +19,8 @@ namespace tgf
 		// remove components that are marked as destroyed
 		if(components_.size())
 			components_.erase(std::remove_if(components_.begin(), components_.end(), [](auto& c){ return c->destroyed; }));
+
+		onUpdate(deltaTime);
 	}
 
 	void Entity::addComponent(std::unique_ptr<Component> a_component)

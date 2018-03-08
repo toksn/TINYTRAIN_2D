@@ -14,10 +14,6 @@ namespace tinytrain
 
 		void initWagons(const unsigned int a_numberOfWagons);
 
-		// Inherited via Entity
-		virtual void draw(sf::RenderTarget * target) override;
-		virtual void update(const float dt) override;
-
 		sf::Vector2f getPosition();
 
 		// wagon stats
@@ -38,6 +34,10 @@ namespace tinytrain
 		void stop();
 
 	protected:
+		// Inherited via Entity
+		virtual void onDraw(sf::RenderTarget * target) override;
+		virtual void onUpdate(const float dt) override;
+
 		GameState_Running* gs_;
 		bool isRunning_;
 	};

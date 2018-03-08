@@ -16,6 +16,9 @@ namespace tgf
 		virtual std::unique_ptr<Component> detachFromOwner();
 
 	protected:
+		//virtual void onDraw(sf::RenderTarget * target) = 0;
+		//virtual void onUpdate(float deltaTime) = 0;
+
 		// make the owner a shared pointer? 
 		// std::shared_ptr<Entity> owner_;
 		// i think it is not needed in here because the components are always owned by

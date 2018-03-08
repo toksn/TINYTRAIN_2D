@@ -17,10 +17,6 @@ namespace tinytrain
 
 		void append(const sf::Vector2f & a_ctrlPt);
 
-		// Inherited via Entity
-		virtual void draw(sf::RenderTarget * target) override;
-		virtual void update(float deltaTime) override;
-
 		// functions for moving trains along the track
 		void addTrain(TTrain* a_train, float a_atDistance = 0.0f);
 		void moveAndRotateOnRail(TTrain * train);
@@ -58,7 +54,11 @@ namespace tinytrain
 		// array of trains actually driving on the track
 		std::vector<TTrain*> trains_;
 				
-	private:
+	protected:
+		// Inherited via Entity
+		virtual void onDraw(sf::RenderTarget * target) override;
+		virtual void onUpdate(float deltaTime) override;
+
 		void onSplineChanged();
 
 		std::vector<std::pair<std::function<void(void)>, void*>> trackChangedCallbacks_;

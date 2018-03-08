@@ -37,16 +37,14 @@ namespace tinytrain
 			gs_->unbindAllCallbacks(this);
 	}
 
-	void TPlayer::draw(sf::RenderTarget * target)
+	void TPlayer::onDraw(sf::RenderTarget * target)
 	{
-		Entity::draw(target);
 		target->draw(drawingAreaShape_);
 		target->draw(drawnLine_);
 	}
 
-	void TPlayer::update(float deltaTime)
+	void TPlayer::onUpdate(float deltaTime)
 	{
-		Entity::update(deltaTime);
 		if (inputstate_ != INPUTSTATE::IDLE && gs_ && gs_->game_)
 		{
 			// get current mouse location

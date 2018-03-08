@@ -11,10 +11,6 @@ namespace tgf
 			Spline();
 			~Spline();
 
-			// Inherited via Entity
-			virtual void draw(sf::RenderTarget * target) override;
-			virtual void update(float deltaTime) override;
-
 			sf::Vector2f getLocationAtTime(float a_time);
 			sf::Vector2f getLocationAtTime(float a_time, int& hintindex);
 			float getDirectionAngleAtTime(float a_time, bool a_in_radiant = true );
@@ -38,6 +34,10 @@ namespace tgf
 			bool drawControlPoints_;
 
 		protected:
+			// Inherited via Entity
+			virtual void onDraw(sf::RenderTarget * target) override;
+			virtual void onUpdate(float deltaTime) override;
+
 			int getSegmentStartIndexAtTime(float a_time, int indexHint = -1);
 			int getSegmentStartIndexAtDist(float a_dist, int indexHint = -1);
 

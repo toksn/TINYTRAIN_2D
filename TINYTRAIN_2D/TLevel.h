@@ -9,15 +9,11 @@ namespace tinytrain
 	class TObstacle;
 	class GameState_Running;
 
-	class TLevel : tgf::Entity
+	class TLevel : public tgf::Entity
 	{
 	public:
 		TLevel();
 		~TLevel();
-
-		// Inherited via Entity
-		virtual void draw(sf::RenderTarget * target) override;
-		virtual void update(float deltaTime) override;
 
 		// load a level from file
 		void load(GameState_Running* gs, std::string file = "");
@@ -27,6 +23,11 @@ namespace tinytrain
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;
 		std::vector<std::unique_ptr<TObstacle>> obstacles_;
+
+	protected:
+		// Inherited via Entity
+		virtual void onDraw(sf::RenderTarget * target) override;
+		virtual void onUpdate(float deltaTime) override;
 	};
 
 

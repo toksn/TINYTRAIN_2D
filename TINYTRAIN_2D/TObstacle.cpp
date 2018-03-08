@@ -43,9 +43,8 @@ namespace tinytrain
 			gs_->getCollisionManager()->removeFromCollision(this);
 	}
 
-	void TObstacle::draw(sf::RenderTarget * target)
+	void TObstacle::onDraw(sf::RenderTarget * target)
 	{
-		Entity::draw(target);
 		if(drawable_)
 			target->draw(*drawable_, getTransform());
 
@@ -53,13 +52,11 @@ namespace tinytrain
 		//	target->draw(*collisionShape_);
 	}
 
-	void TObstacle::update(float deltaTime)
+	void TObstacle::onUpdate(float deltaTime)
 	{
-		Entity::update(deltaTime);
-
 		// simulate transformation change from outside
 		//drawable_->move(sf::Vector2f(20,0)* deltaTime);
-		this->rotate(30.0f* deltaTime);
+		rotate(30.0f* deltaTime);
 		//sf::Transform tffff;
 		//this->getTransform().rotate(30.0f*deltaTime, drawable_->getPosition() + drawable_->getSize()*0.5f);
 		//tffff.rotate(30.f, );

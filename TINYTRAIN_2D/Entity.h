@@ -17,8 +17,8 @@ namespace tgf
 	{
 	public:
 		// drawing this entity to the target. the caller (usally a gamestate) has to make sure the target is valid. no checks will be done in the entities!
-		virtual void draw(sf::RenderTarget * target);
-		virtual void update(float deltaTime);
+		void draw(sf::RenderTarget * target);
+		void update(float deltaTime);
 
 		virtual void addComponent(std::unique_ptr<Component> a_component);
 		virtual void removeComponent(Component* a_component);
@@ -42,6 +42,9 @@ namespace tgf
 		}
 
 	protected:
+		virtual void onDraw(sf::RenderTarget * target) = 0;
+		virtual void onUpdate(float deltaTime) = 0;
+
 		//std::vector<std::unique_ptr<Component>> components_removed;
 		std::vector<std::unique_ptr<Component>> components_;
 	};

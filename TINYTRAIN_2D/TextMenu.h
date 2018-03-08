@@ -33,10 +33,6 @@ namespace tgf
 			TextMenu(GameStateBase * gs);
 			~TextMenu();
 
-			// Inherited via Entity
-			virtual void update(float dt) override;
-			virtual void draw(sf::RenderTarget * target) override;
-
 			void appendItem(sf::Text a_text, std::function<void(void)> a_func);
 
 			virtual void moveSelection(int move_by);
@@ -59,6 +55,10 @@ namespace tgf
 			bool allowmouse_;
 			int maxEntryHeight_;
 		protected:
+			// Inherited via Entity
+			virtual void onUpdate(float dt) override;
+			virtual void onDraw(sf::RenderTarget * target) override;
+
 			int getEntryIndexAtPosition(int x, int y);
 						
 			sf::RectangleShape* background_;

@@ -47,10 +47,8 @@ namespace tinytrain
 			wagons_[0].setFillColor(color_firstwagon_);
 	}
 
-	void TTrain::update(const float dt)
+	void TTrain::onUpdate(const float dt)
 	{
-		Entity::update(dt);
-
 		// move the wagons by speed * dt on the railtrack
 		if(isRunning_)			
 			distance_ += dt * speed_;
@@ -85,10 +83,8 @@ namespace tinytrain
 		reset();
 	}
 
-	void TTrain::draw(sf::RenderTarget * target)
+	void TTrain::onDraw(sf::RenderTarget * target)
 	{
-		Entity::draw(target);
-
 		// draw them wagons
 		for (int i = 0; i < wagons_.size(); i++)
 			target->draw(wagons_[i]);

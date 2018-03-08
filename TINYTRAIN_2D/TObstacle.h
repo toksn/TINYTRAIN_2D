@@ -18,9 +18,6 @@ namespace tinytrain
 		TObstacle(GameState_Running* gs, bool wintrigger = false);
 		~TObstacle();
 
-		// Inherited via CollisionEntity
-		virtual void draw(sf::RenderTarget * target) override;
-		virtual void update(float deltaTime) override;
 		virtual tgf::collision::c2Shape getCollisionShape() override;
 		virtual void updateCollisionShape() override;
 
@@ -30,6 +27,10 @@ namespace tinytrain
 		std::unique_ptr<sf::RectangleShape> drawable_;
 		//bool drawCollisionShape_;
 	protected:
+		// Inherited via CollisionEntity
+		virtual void onDraw(sf::RenderTarget * target) override;
+		virtual void onUpdate(float deltaTime) override;
+
 		std::unique_ptr<c2Poly> collisionShape_;
 		GameState_Running* gs_;
 	};

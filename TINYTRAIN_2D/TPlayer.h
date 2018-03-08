@@ -13,15 +13,11 @@ namespace tinytrain
 	class TRailTrack;
 	class GameState_Running;
 
-	class TPlayer : tgf::Entity
+	class TPlayer : public tgf::Entity
 	{
 	public:
 		TPlayer(GameState_Running* gs);
 		~TPlayer();
-
-		// Inherited via Entity
-		virtual void draw(sf::RenderTarget * target) override;
-		virtual void update(float deltaTime) override;
 
 		void recalcDrawRect(int width, int height);
 		
@@ -34,7 +30,11 @@ namespace tinytrain
 
 		void setColor(sf::Color col);
 		
-	private:
+	protected:
+		// Inherited via Entity
+		virtual void onDraw(sf::RenderTarget * target) override;
+		virtual void onUpdate(float deltaTime) override;
+
 		void startDrawing(int x, int y);
 		void stopDrawing();
 		void addDrawnLineToRailTrack();
