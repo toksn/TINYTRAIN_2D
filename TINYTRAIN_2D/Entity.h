@@ -13,7 +13,7 @@ namespace tgf
 {
 	class Component;
 
-	class Entity
+	class Entity : public sf::Transformable
 	{
 	public:
 		// drawing this entity to the target. the caller (usally a gamestate) has to make sure the target is valid. no checks will be done in the entities!

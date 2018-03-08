@@ -47,7 +47,7 @@ namespace tinytrain
 	{
 		Entity::draw(target);
 		if(drawable_)
-			target->draw(*drawable_);
+			target->draw(*drawable_, getTransform());
 
 		//if (drawCollisionShape_ && collisionShape_)
 		//	target->draw(*collisionShape_);
@@ -56,19 +56,30 @@ namespace tinytrain
 	void TObstacle::update(float deltaTime)
 	{
 		Entity::update(deltaTime);
+
+		// simulate transformation change from outside
+		//drawable_->move(sf::Vector2f(20,0)* deltaTime);
+		this->rotate(30.0f* deltaTime);
+		//sf::Transform tffff;
+		//this->getTransform().rotate(30.0f*deltaTime, drawable_->getPosition() + drawable_->getSize()*0.5f);
+		//tffff.rotate(30.f, );
+
+		updateCollisionShape();
 	}
 
 	void TObstacle::updateCollisionShape()
 	{
 		if (drawable_ && drawable_->getPointCount() == 4)
 		{
-			auto temp = drawable_->getTransform().transformPoint(drawable_->getPoint(0));
+			auto tf = getTransform() * drawable_->getTransform();
+			//auto tf = getTransform();
+			auto temp = tf.transformPoint(drawable_->getPoint(0));
 			collisionShape_->verts[0] = { temp.x, temp.y };
-			temp = drawable_->getTransform().transformPoint(drawable_->getPoint(1));
+			temp = tf.transformPoint(drawable_->getPoint(1));
 			collisionShape_->verts[1] = { temp.x, temp.y };
-			temp = drawable_->getTransform().transformPoint(drawable_->getPoint(2));
+			temp = tf.transformPoint(drawable_->getPoint(2));
 			collisionShape_->verts[2] = { temp.x, temp.y };
-			temp = drawable_->getTransform().transformPoint(drawable_->getPoint(3));
+			temp = tf.transformPoint(drawable_->getPoint(3));
 			collisionShape_->verts[3] = { temp.x, temp.y };
 		}
 	}

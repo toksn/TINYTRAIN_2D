@@ -103,12 +103,14 @@ namespace tinytrain
 			train_->initWagons(30);
 
 			// create obstacles for the games to be lost
-			obstacles_.push_back(std::make_unique<TObstacle>(gs, false));
-			
+			auto zone = std::make_unique<TObstacle>(gs, false);
+			zone->drawable_->setPosition(+30.0f, +30.0f);
+			zone->updateCollisionShape();
+			obstacles_.push_back(std::move(zone));
 
 			// create target zone for the game to be won
 			auto target_zone = std::make_unique<TObstacle>(gs, true);
-			target_zone->drawable_->setPosition(-30.0f, -30.0f);
+			target_zone->setPosition(-30.0f, -30.0f);
 			target_zone->updateCollisionShape();
 			obstacles_.push_back(std::move(target_zone));			
 			/************************************************************************/

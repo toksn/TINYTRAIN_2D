@@ -8,7 +8,7 @@ namespace tgf
 {
 	Game::Game(std::string game_name, int window_width, int window_height, int framerate_limit)
 	{
-		window_ = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height), game_name);
+		window_ = std::make_unique<sf::RenderWindow>(sf::VideoMode(window_width, window_height), game_name, sf::Style::Default);
 		window_->setFramerateLimit(framerate_limit);
 
 		guiView_ = std::make_unique<sf::View>(sf::FloatRect(0.0f, 0.0f, window_width, window_height));
