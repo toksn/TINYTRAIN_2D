@@ -1,7 +1,6 @@
 #include "TPlayer.h"
 #include "TRailTrack.h"
 #include "Game.h"
-#include "TDirectMouseToSplineInput.h"
 
 #include "tinyc2.h"
 
@@ -21,14 +20,14 @@ namespace tinytrain
 			gs->bindEventCallback(sf::Event::KeyPressed, this, &TPlayer::onKeyPressed);
 			//...
 		}
+		
+		// input options
+		input_component_ = addNewComponent<controllers::TDirectMouseToSplineInput>();
+		input_component_->bNormalizeDrawnLineSize_ = true;
+		input_component_->bNormalizeDrawnLineRotation_ = true;
 
 		color_ = sf::Color::Red;
 		setColor(color_);
-		drawnLine_.setPrimitiveType(sf::PrimitiveType::LineStrip);
-
-		// input options
-		addNewComponent<controllers::TDirectMouseToSplineInput>();
-		bNormalizeToDrawnLine_ = true;
 	}
 
 
@@ -42,7 +41,6 @@ namespace tinytrain
 	void TPlayer::onDraw(sf::RenderTarget * target)
 	{
 		target->draw(drawingAreaShape_);
-		target->draw(drawnLine_);
 	}
 
 	void TPlayer::onUpdate(float deltaTime)
@@ -89,10 +87,8 @@ namespace tinytrain
 	{
 		printf("DRAWING : started at pixel %i, %i\n", x, y);
 
-		// store the initial point
-		drawnLine_.resize(1);
-		drawnLine_[0] = sf::Vertex(sf::Vector2f(x, y), color_);
-
+		input_component_->startDrawing(x, y);
+		
 		inputstate_ = INPUTSTATE::DRAWING;
 	}
 
@@ -145,112 +141,24 @@ namespace tinytrain
 		}
 	}
 
-
-
 	void TPlayer::setColor(sf::Color col)
 	{
 		color_ = col;
 		drawingAreaShape_.setOutlineColor(color_);
-		for (int i = 0; i < drawnLine_.getVertexCount(); i++)
-			drawnLine_[i].color = color_;
-	}
-
-	void TPlayer::appendDrawnLinePoint(sf::Vector2f pt)
-	{
-		drawnLine_.append(sf::Vertex(sf::Vector2f(pt.x, pt.y), color_));
+		if(input_component_)
+			input_component_->setColor(col);
 	}
 
 	void TPlayer::addDrawnLineToRailTrack()
 	{
-		if (railtrack_ && drawnLine_.getVertexCount())
+		if (railtrack_)
 		{
-			std::vector<sf::Vector2f> splinePointsToAdd;
-			c2v lastSplinePoint, curSquarePt;
-			c2r splineDir;
-
-			sf::Vector2f start, end;
-			float angle_rad = 0.0f;
-			if (railtrack_->getLastControlPointSegmentFromTrack(start, end) == false)
-			{
-				if (railtrack_->getLastControlPointFromTrack(end) == false)
-					return;
-			}
-			else
-			{
-				c2v seg = c2Sub({ end.x,end.y }, { start.x,start.y });
-				angle_rad = atan2(seg.y, seg.x);
-			}			
-
-			// calc drawn_angle from first drawn segment
-			if (drawnLine_.getVertexCount() >= 2)
-			{
-				c2v seg = c2Sub({ drawnLine_[1].position.x,drawnLine_[1].position.y }, { drawnLine_[0].position.x,drawnLine_[0].position.y });
-				angle_rad -= atan2(seg.y, seg.x);
-			}
-			splineDir = c2Rot(angle_rad);
-
-			lastSplinePoint = { end.x, end.y };
-			
-			// *********** 1:
-			// normalize on-screen square in screenspace
-			// (2D bounding box -> longest side to be 1.0)
-			c2v min{ drawingArea_.left, drawingArea_.top };
-			c2v max{ drawingArea_.left+drawingArea_.width, drawingArea_.top+drawingArea_.height };
-			c2v DrawnLine_BoundingBox_Dimension, newSquare;
-			float squareLengthPx = 1.0;
-
-			// todo: make normalizedrawnline an on/off option
-			if (bNormalizeToDrawnLine_)
-			{
-				min = { drawnLine_[0].position.x, drawnLine_[0].position.y };
-				max = { drawnLine_[0].position.x, drawnLine_[0].position.y };
-				for (int i = 1; i < drawnLine_.getVertexCount(); i++)
-				{					
-					c2v pt{ drawnLine_[i].position.x, drawnLine_[i].position.y };
-					min = c2Minv(pt, min);
-					max = c2Maxv(pt, max);
-				}
-			}			
-			DrawnLine_BoundingBox_Dimension = c2Sub(max, min);
-			squareLengthPx = c2Max(DrawnLine_BoundingBox_Dimension.x, DrawnLine_BoundingBox_Dimension.y);
-
-			// normalize the screenpositions
-			for (int i = 0; i < drawnLine_.getVertexCount(); i++)
-			{
-				drawnLine_[i].position -= sf::Vector2f(min.x, min.y);
-				drawnLine_[i].position /= squareLengthPx;
-			}
-
-
-			// *********** 2:
-			// repos on-screen square to have origin in first linepoint
-			sf::Vector2f initPos = drawnLine_[0].position;//{ drawnLine_[0].position.x, drawnLine_[0].position.y };
-			for (int i = 0; i < drawnLine_.getVertexCount(); i++)
-				drawnLine_[i].position -= initPos;
-
-			// *********** 3:
-			// multiply with direction and position the points in relation to the lastSplinePoint
-			for (int i = 1; i < drawnLine_.getVertexCount(); i++)
-			{
-				curSquarePt.x = drawnLine_[i].position.x;
-				curSquarePt.y = drawnLine_[i].position.y;
-
-				// apply segment length scale
-				float splineSegmentLength = railtrack_->getSegmentLength();
-				curSquarePt = c2Mulvs(curSquarePt, splineSegmentLength);
-				
-				// rotate to match spline direction
-				curSquarePt = c2Mulrv(splineDir, curSquarePt);
-				
-				// position it in relation to the last square point
-				curSquarePt = c2Add(curSquarePt, lastSplinePoint);
-
-				splinePointsToAdd.push_back(sf::Vector2f(curSquarePt.x, curSquarePt.y));
-			}
+			std::vector<sf::Vector2f> splinePointsToAdd = input_component_->convertDrawnLineToRailTrack(railtrack_, drawingArea_);
 
 			railtrack_->addDrawnLinePoints(splinePointsToAdd);
 
-			if (false && gs_ && splinePointsToAdd.size())
+			bool rotateCameraWithSpline = false;
+			if (rotateCameraWithSpline && gs_ && splinePointsToAdd.size())
 			{
 				// get angle in degrees
 				float angle = 0.0f;
