@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "GameState_Running.h"
 
 namespace tinytrain
 {
@@ -11,7 +12,6 @@ namespace tinytrain
 	};
 
 	class TRailTrack;
-	class GameState_Running;
 
 	class TPlayer : public tgf::Entity
 	{
@@ -29,26 +29,27 @@ namespace tinytrain
 		void onKeyPressed(sf::Event & e);
 
 		void setColor(sf::Color col);
+		void appendDrawnLinePoint(sf::Vector2f pt);
 		
+		bool bNormalizeToDrawnLine_;
+		INPUTSTATE inputstate_;
+		sf::FloatRect drawingArea_;
+		GameState_Running* gs_;
+		sf::VertexArray drawnLine_;
 	protected:
 		// Inherited via Entity
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(float deltaTime) override;
 
+
 		void startDrawing(int x, int y);
 		void stopDrawing();
+
 		void addDrawnLineToRailTrack();
 
 		TRailTrack* railtrack_;
-		GameState_Running* gs_;
 		sf::Color color_;
-
-		INPUTSTATE inputstate_;
-		sf::FloatRect drawingArea_;
 		sf::RectangleShape drawingAreaShape_;
-
-		sf::VertexArray drawnLine_;
-		float minDist_;
 	};
 }
 

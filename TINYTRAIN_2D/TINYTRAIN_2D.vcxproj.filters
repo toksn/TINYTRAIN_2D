@@ -98,6 +98,9 @@
     <ClCompile Include="InterpolateToPoint.cpp">
       <Filter>GameFramework\components</Filter>
     </ClCompile>
+    <ClCompile Include="TDirectMouseToSplineInput.cpp">
+      <Filter>TinyTrain\controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -162,6 +165,9 @@
     </ClInclude>
     <ClInclude Include="InterpolateToPoint.h">
       <Filter>GameFramework\components</Filter>
+    </ClInclude>
+    <ClInclude Include="TDirectMouseToSplineInput.h">
+      <Filter>TinyTrain\controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

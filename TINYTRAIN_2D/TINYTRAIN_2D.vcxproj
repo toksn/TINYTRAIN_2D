@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{2606819F-C227-4529-9B24-D54BE790276B}</ProjectGuid>
     <RootNamespace>TINYTRAIN2D</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -145,6 +145,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
+    <ClCompile Include="TDirectMouseToSplineInput.cpp" />
     <ClCompile Include="TextMenu.cpp" />
     <ClCompile Include="TLevel.cpp" />
     <ClCompile Include="TObstacle.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="GameStateBase.h" />
     <ClInclude Include="Spline.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
+    <ClInclude Include="TDirectMouseToSplineInput.h" />
     <ClInclude Include="TextMenu.h" />
     <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TLevel.h" />

@@ -1,7 +1,7 @@
 #include "TPlayer.h"
 #include "TRailTrack.h"
-#include "GameState_Running.h"
 #include "Game.h"
+#include "TDirectMouseToSplineInput.h"
 
 #include "tinyc2.h"
 
@@ -22,11 +22,13 @@ namespace tinytrain
 			//...
 		}
 
-		minDist_ = 15.0f;
 		color_ = sf::Color::Red;
 		setColor(color_);
-
 		drawnLine_.setPrimitiveType(sf::PrimitiveType::LineStrip);
+
+		// input options
+		addNewComponent<controllers::TDirectMouseToSplineInput>();
+		bNormalizeToDrawnLine_ = true;
 	}
 
 
@@ -54,15 +56,6 @@ namespace tinytrain
 				// waited for drawing to begin -> new state is DRAWING
 				if (inputstate_ == INPUTSTATE::DRAWING_WAIT)
 					startDrawing(curScreenPos.x, curScreenPos.y);
-								
-				auto size = drawnLine_.getVertexCount();
-				if (size)
-				{
-					c2v start{ drawnLine_[size - 1].position.x, drawnLine_[size - 1].position.y };
-					c2v end{ curScreenPos.x, curScreenPos.y };
-					if (c2Len(c2Sub(end, start)) > minDist_)
-						drawnLine_.append(sf::Vertex(sf::Vector2f(end.x, end.y), color_));
-				}					
 			}
 			else if(inputstate_ == INPUTSTATE::DRAWING)
 			{
@@ -162,6 +155,11 @@ namespace tinytrain
 			drawnLine_[i].color = color_;
 	}
 
+	void TPlayer::appendDrawnLinePoint(sf::Vector2f pt)
+	{
+		drawnLine_.append(sf::Vertex(sf::Vector2f(pt.x, pt.y), color_));
+	}
+
 	void TPlayer::addDrawnLineToRailTrack()
 	{
 		if (railtrack_ && drawnLine_.getVertexCount())
@@ -202,8 +200,7 @@ namespace tinytrain
 			float squareLengthPx = 1.0;
 
 			// todo: make normalizedrawnline an on/off option
-			bool bNormalizeToDrawnLine = true;
-			if (bNormalizeToDrawnLine)
+			if (bNormalizeToDrawnLine_)
 			{
 				min = { drawnLine_[0].position.x, drawnLine_[0].position.y };
 				max = { drawnLine_[0].position.x, drawnLine_[0].position.y };
@@ -265,5 +262,7 @@ namespace tinytrain
 			}
 		}
 	}
+
+
 
 }
