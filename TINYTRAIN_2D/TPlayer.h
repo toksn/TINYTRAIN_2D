@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include "GameState_Running.h"
-#include "TPolyLineInputComponent.h"
+#include "TLineInputInterface.h"
 
 namespace tinytrain
 {
@@ -11,7 +11,6 @@ namespace tinytrain
 		DRAWING_WAIT,
 		DRAWING
 	};
-
 	class TRailTrack;
 
 	class TPlayer : public tgf::Entity
@@ -50,7 +49,7 @@ namespace tinytrain
 		std::vector<sf::Vector2f> convertLineToRailTrack(std::vector<sf::Vector2f>& line);
 
 		TRailTrack* railtrack_;
-		controllers::TPolyLineInputComponent* input_component_;
+		controllers::TLineInputInterface* input_component_;
 		sf::Color color_;
 		sf::RectangleShape drawingAreaShape_;
 	};

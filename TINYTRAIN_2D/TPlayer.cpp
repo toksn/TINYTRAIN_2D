@@ -1,5 +1,7 @@
 #include "TPlayer.h"
 #include "TRailTrack.h"
+#include "TSingleLineInputComponent.h"
+#include "TPolyLineInputComponent.h"
 #include "Game.h"
 
 #include "tinyc2.h"
@@ -22,9 +24,14 @@ namespace tinytrain
 		}
 		
 		// input options
-		input_component_ = addNewComponent<controllers::TPolyLineInputComponent>();
-		bNormalizeDrawnLineSize_ = true;
-		bNormalizeDrawnLineRotation_ = true;
+		//input_component_ = addNewComponent<controllers::TPolyLineInputComponent>();
+		//bNormalizeDrawnLineSize_ = true;
+		//bNormalizeDrawnLineRotation_ = true;
+		
+		
+		input_component_ = addNewComponent<controllers::TSingleLineInputComponent>();
+		bNormalizeDrawnLineSize_ = false;
+		bNormalizeDrawnLineRotation_ = false;
 
 		color_ = sf::Color::Red;
 		setColor(color_);
@@ -191,6 +198,10 @@ namespace tinytrain
 			else
 			{
 				c2v seg = c2Sub({ end.x,end.y }, { start.x,start.y });
+
+				// correct SFML to mathematical coordinate system by rotating 90degrees
+				seg = c2Skew(seg);
+
 				angle_rad = atan2(seg.y, seg.x);
 			}
 
@@ -198,6 +209,10 @@ namespace tinytrain
 			if (bNormalizeDrawnLineRotation_ && line.size() >= 2)
 			{
 				c2v seg = c2Sub({ line[1].x,line[1].y }, { line[0].x,line[0].y });
+
+				// correct SFML to mathematical coordinate system by rotating 90degrees
+				seg = c2Skew(seg);
+
 				angle_rad -= atan2(seg.y, seg.x);
 			}
 			splineDir = c2Rot(angle_rad);

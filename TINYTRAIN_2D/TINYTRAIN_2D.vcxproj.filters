@@ -101,6 +101,12 @@
     <ClCompile Include="TPolyLineInputComponent.cpp">
       <Filter>TinyTrain\controllers</Filter>
     </ClCompile>
+    <ClCompile Include="TSingleLineInputComponent.cpp">
+      <Filter>TinyTrain\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="TLineInputInterface.cpp">
+      <Filter>TinyTrain\controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -167,6 +173,12 @@
       <Filter>GameFramework\components</Filter>
     </ClInclude>
     <ClInclude Include="TPolyLineInputComponent.h">
+      <Filter>TinyTrain\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="TSingleLineInputComponent.h">
+      <Filter>TinyTrain\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="TLineInputInterface.h">
       <Filter>TinyTrain\controllers</Filter>
     </ClInclude>
   </ItemGroup>

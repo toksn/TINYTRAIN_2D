@@ -1,4 +1,4 @@
-#include "TPolyLineInputComponent.h"
+#include "TSingleLineInputComponent.h"
 #include "TPlayer.h"
 #include "Game.h"
 #include "TRailTrack.h"
@@ -8,23 +8,23 @@ namespace tinytrain
 {
 	namespace controllers
 	{
-		TPolyLineInputComponent::TPolyLineInputComponent()
+		TSingleLineInputComponent::TSingleLineInputComponent()
 		{
-			minDist_ = 15.0f;
+			validDist_ = 15.0f;
 			inputLine_.setPrimitiveType(sf::PrimitiveType::LineStrip);
 			player_ = nullptr;
 		}
 
-		TPolyLineInputComponent::~TPolyLineInputComponent()
+		TSingleLineInputComponent::~TSingleLineInputComponent()
 		{
 		}
 
-		void TPolyLineInputComponent::draw(sf::RenderTarget * target)
+		void TSingleLineInputComponent::draw(sf::RenderTarget * target)
 		{
 			target->draw(inputLine_);
 		}
 
-		void TPolyLineInputComponent::update(float deltaTime)
+		void TSingleLineInputComponent::update(float deltaTime)
 		{
 			//if(player_ == nullptr && owner_ != nullptr)
 			if (player_ != owner_)
@@ -39,16 +39,18 @@ namespace tinytrain
 					if (player_->drawingArea_.contains(curScreenPos.x, curScreenPos.y))
 					{
 						auto size = inputLine_.getVertexCount();
-						if (size)
-						{
-							c2v start{ inputLine_[size - 1].position.x, inputLine_[size - 1].position.y };
-							c2v end{ curScreenPos.x, curScreenPos.y };
-							if (c2Len(c2Sub(end, start)) > minDist_)
-								inputLine_.append(sf::Vertex(sf::Vector2f(end.x, end.y), color_));
-						}
+						if (size == 0)
+							inputLine_.append(sf::Vertex(sf::Vector2f(curScreenPos.x, curScreenPos.y), color_));
 						else
 						{
-							inputLine_.append(sf::Vertex(sf::Vector2f(curScreenPos.x, curScreenPos.y), color_));
+							c2v start{ inputLine_[0].position.x, inputLine_[0].position.y };
+							c2v end{ curScreenPos.x, curScreenPos.y };
+
+							if (c2Len(c2Sub(end, start)) > validDist_)
+							{
+								inputLine_.resize(2);
+								inputLine_[1] = sf::Vertex( sf::Vector2f{ end.x, end.y }, color_ );
+							}
 						}
 					}
 				}
