@@ -12,7 +12,7 @@ namespace tinytrain
 			//friend class TPlayer;
 
 			// this could be in the tinytrain_input_component_interface
-			virtual std::vector<sf::Vector2f> getInputLine();
+			virtual std::vector<sf::Vector2f> getInputLine(bool reset_line = false);
 			virtual void resetInputLine(int x, int y);
 			virtual void setColor(sf::Color color);
 

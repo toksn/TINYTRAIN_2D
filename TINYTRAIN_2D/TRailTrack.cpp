@@ -127,6 +127,10 @@ namespace tinytrain
 	void TRailTrack::onDraw(sf::RenderTarget * target)
 	{
 		trackspline_->draw(target);
+
+		sf::Vertex line[2];
+		if (trackspline_->getLastControlPointSegment(line[0].position, line[1].position))
+			target->draw(line, 2, sf::PrimitiveType::LineStrip);
 	}
 
 	void TRailTrack::onUpdate(float deltaTime)

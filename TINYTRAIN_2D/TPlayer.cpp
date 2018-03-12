@@ -30,7 +30,7 @@ namespace tinytrain
 		
 		
 		input_component_ = addNewComponent<controllers::TSingleLineInputComponent>();
-		bNormalizeDrawnLineSize_ = false;
+		bNormalizeDrawnLineSize_ = true;
 		bNormalizeDrawnLineRotation_ = false;
 
 		color_ = sf::Color::Red;
@@ -161,7 +161,7 @@ namespace tinytrain
 		if (railtrack_)
 		{
 			//std::vector<sf::Vector2f> splinePointsToAdd = input_component_->convertDrawnLineToRailTrack(railtrack_, drawingArea_);
-			std::vector<sf::Vector2f> splinePointsToAdd = convertLineToRailTrack(input_component_->getInputLine());
+			std::vector<sf::Vector2f> splinePointsToAdd = convertLineToRailTrack(input_component_->getInputLine(true));
 
 			railtrack_->addDrawnLinePoints(splinePointsToAdd);
 

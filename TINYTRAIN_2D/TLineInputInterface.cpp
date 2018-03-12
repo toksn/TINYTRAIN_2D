@@ -4,12 +4,15 @@ namespace tinytrain
 {
 	namespace controllers
 	{
-		std::vector<sf::Vector2f> TLineInputInterface::getInputLine()
+		std::vector<sf::Vector2f> TLineInputInterface::getInputLine(bool reset_line)
 		{
 			std::vector<sf::Vector2f> inputLine;
 
 			for (int i = 0; i < inputLine_.getVertexCount(); i++)
 				inputLine.push_back(inputLine_[i].position);
+
+			if (reset_line)
+				inputLine_.resize(0);
 
 			return inputLine;
 		}
