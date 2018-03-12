@@ -22,9 +22,9 @@ namespace tinytrain
 		}
 		
 		// input options
-		input_component_ = addNewComponent<controllers::TDirectMouseToSplineInput>();
-		input_component_->bNormalizeDrawnLineSize_ = true;
-		input_component_->bNormalizeDrawnLineRotation_ = true;
+		input_component_ = addNewComponent<controllers::TPolyLineInputComponent>();
+		bNormalizeDrawnLineSize_ = true;
+		bNormalizeDrawnLineRotation_ = true;
 
 		color_ = sf::Color::Red;
 		setColor(color_);
@@ -87,7 +87,7 @@ namespace tinytrain
 	{
 		printf("DRAWING : started at pixel %i, %i\n", x, y);
 
-		input_component_->startDrawing(x, y);
+		input_component_->resetInputLine(x, y);
 		
 		inputstate_ = INPUTSTATE::DRAWING;
 	}
@@ -97,7 +97,7 @@ namespace tinytrain
 		if (inputstate_ == INPUTSTATE::DRAWING)
 		{
 			printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
-			addDrawnLineToRailTrack();
+			addInputLineToRailTrack();
 		}
 
 		inputstate_ = INPUTSTATE::IDLE;			
@@ -149,11 +149,12 @@ namespace tinytrain
 			input_component_->setColor(col);
 	}
 
-	void TPlayer::addDrawnLineToRailTrack()
+	void TPlayer::addInputLineToRailTrack()
 	{
 		if (railtrack_)
 		{
-			std::vector<sf::Vector2f> splinePointsToAdd = input_component_->convertDrawnLineToRailTrack(railtrack_, drawingArea_);
+			//std::vector<sf::Vector2f> splinePointsToAdd = input_component_->convertDrawnLineToRailTrack(railtrack_, drawingArea_);
+			std::vector<sf::Vector2f> splinePointsToAdd = convertLineToRailTrack(input_component_->getInputLine());
 
 			railtrack_->addDrawnLinePoints(splinePointsToAdd);
 
@@ -171,6 +172,96 @@ namespace tinytrain
 		}
 	}
 
+	std::vector<sf::Vector2f> TPlayer::convertLineToRailTrack(std::vector<sf::Vector2f>& line)
+	{
+		std::vector<sf::Vector2f> splinePointsToAdd;
+		if (railtrack_ && line.size())
+		{
+			c2v lastSplinePoint, curSquarePt;
+			c2r splineDir;
 
+			sf::Vector2f start, end;
+			float angle_rad = 0.0f;
+			if (railtrack_->getLastControlPointSegmentFromTrack(start, end) == false)
+			{
+				// at least one point is needed to continue
+				if (railtrack_->getLastControlPointFromTrack(end) == false)
+					return splinePointsToAdd;
+			}
+			else
+			{
+				c2v seg = c2Sub({ end.x,end.y }, { start.x,start.y });
+				angle_rad = atan2(seg.y, seg.x);
+			}
+
+			// normalize rotation: calc drawn_angle from first drawn segment
+			if (bNormalizeDrawnLineRotation_ && line.size() >= 2)
+			{
+				c2v seg = c2Sub({ line[1].x,line[1].y }, { line[0].x,line[0].y });
+				angle_rad -= atan2(seg.y, seg.x);
+			}
+			splineDir = c2Rot(angle_rad);
+
+			lastSplinePoint = { end.x, end.y };
+
+			// *********** 1:
+			// normalize on-screen square in screenspace
+			// (2D bounding box -> longest side to be 1.0)
+			c2v min{ drawingArea_.left, drawingArea_.top };
+			c2v max{ drawingArea_.left + drawingArea_.width, drawingArea_.top + drawingArea_.height };
+			c2v lineBoundingBox_Dimension, newSquare;
+			float squareLengthPx = 1.0;
+
+			if (bNormalizeDrawnLineSize_)
+			{
+				min = { line[0].x, line[0].y };
+				max = { line[0].x, line[0].y };
+				for (int i = 1; i < line.size(); i++)
+				{
+					c2v pt{ line[i].x, line[i].y };
+					min = c2Minv(pt, min);
+					max = c2Maxv(pt, max);
+				}
+			}
+			lineBoundingBox_Dimension = c2Sub(max, min);
+			squareLengthPx = c2Max(lineBoundingBox_Dimension.x, lineBoundingBox_Dimension.y);
+
+			// normalize the screenpositions
+			for (int i = 0; i < line.size(); i++)
+			{
+				line[i] -= sf::Vector2f(min.x, min.y);
+				line[i] /= squareLengthPx;
+			}
+
+
+			// *********** 2:
+			// repos on-screen square to have origin in first linepoint
+			sf::Vector2f initPos = line[0];
+			for (int i = 0; i < line.size(); i++)
+				line[i] -= initPos;
+
+			// *********** 3:
+			// multiply with direction and position the points in relation to the lastSplinePoint
+			for (int i = 1; i < line.size(); i++)
+			{
+				curSquarePt.x = line[i].x;
+				curSquarePt.y = line[i].y;
+
+				// apply segment length scale
+				float splineSegmentLength = railtrack_->getSegmentLength();
+				curSquarePt = c2Mulvs(curSquarePt, splineSegmentLength);
+
+				// rotate to match spline direction
+				curSquarePt = c2Mulrv(splineDir, curSquarePt);
+
+				// position it in relation to the last square point
+				curSquarePt = c2Add(curSquarePt, lastSplinePoint);
+
+				splinePointsToAdd.push_back(sf::Vector2f(curSquarePt.x, curSquarePt.y));
+			}
+		}
+	
+		return splinePointsToAdd;
+	}
 
 }

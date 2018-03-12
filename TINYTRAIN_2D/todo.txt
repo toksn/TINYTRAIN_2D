@@ -1,21 +1,23 @@
 TODO:
 
-		- processinputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
-			- rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
-			- use last controlpoint of a track for the display as well
+- processinputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
+	- rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
+	- use last controlpoint of a track for the display as well
 
 - make collisionmanager running in an own thread calling callbacks on overlap ?
+- add on-screen instructions (controls, goals, hints)
+- train vs train collision
+- check all wagons of a train for collision
 - add optional targets to score more points or have an objective at all (passengers)
 	- taxi mission gta?
-- abstract gamestates into tgf
-	- running: load, initloadedlevel, pause, win, loose, restart
-	- pause: as is?
-	- end: as is?
-	- level_interface: load(), restart()
 - loading of levels from files
 	- define level saving format
 - level editor or procedural level creation?
-- add on-screen instructions (controls, goals, hints)
+(- abstract gamestates into tgf
+	- running: load, initloadedlevel, pause, win, loose, restart
+	- pause: as is?
+	- end: as is?
+	- level_interface: load(), restart())
 
 DONE:
 - use component based system (unique_ptr)

@@ -145,7 +145,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
-    <ClCompile Include="TDirectMouseToSplineInput.cpp" />
+    <ClCompile Include="TPolyLineInputComponent.cpp" />
     <ClCompile Include="TextMenu.cpp" />
     <ClCompile Include="TLevel.cpp" />
     <ClCompile Include="TObstacle.cpp" />
@@ -168,7 +168,7 @@
     <ClInclude Include="GameStateBase.h" />
     <ClInclude Include="Spline.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
-    <ClInclude Include="TDirectMouseToSplineInput.h" />
+    <ClInclude Include="TPolyLineInputComponent.h" />
     <ClInclude Include="TextMenu.h" />
     <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TLevel.h" />

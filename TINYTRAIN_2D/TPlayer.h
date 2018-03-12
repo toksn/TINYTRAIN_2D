@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include "GameState_Running.h"
-#include "TDirectMouseToSplineInput.h"
+#include "TPolyLineInputComponent.h"
 
 namespace tinytrain
 {
@@ -34,7 +34,9 @@ namespace tinytrain
 		INPUTSTATE inputstate_;
 		sf::FloatRect drawingArea_;
 		GameState_Running* gs_;
-		//sf::VertexArray drawnLine_;
+
+		bool bNormalizeDrawnLineSize_;
+		bool bNormalizeDrawnLineRotation_;
 	protected:
 		// Inherited via Entity
 		virtual void onDraw(sf::RenderTarget * target) override;
@@ -44,10 +46,11 @@ namespace tinytrain
 		void startDrawing(int x, int y);
 		void stopDrawing();
 
-		void addDrawnLineToRailTrack();
+		void addInputLineToRailTrack();
+		std::vector<sf::Vector2f> convertLineToRailTrack(std::vector<sf::Vector2f>& line);
 
 		TRailTrack* railtrack_;
-		controllers::TDirectMouseToSplineInput* input_component_;
+		controllers::TPolyLineInputComponent* input_component_;
 		sf::Color color_;
 		sf::RectangleShape drawingAreaShape_;
 	};
