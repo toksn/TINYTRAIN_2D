@@ -149,6 +149,8 @@ namespace tgf
 			controlPoints_.append(sf::Vertex(a_pt, colorControlPts_));
 
 			onControlPointsAdded(size_before);
+			// passing 0 causes the whole spline to recalc
+			// onControlPointsAdded(0);
 		}
 
 		bool Spline::getLastControlPoint(sf::Vector2f & a_pt)

@@ -13,6 +13,7 @@ namespace tinytrain
 		trackspline_ = std::make_unique<tgf::math::Spline_CatmullRom>();
 		trackspline_->type_ = tgf::math::Spline_CatmullRom::CatmullRomType::Chordal;
 		trackspline_->drawControlPoints_ = false;
+		trackspline_->interpolateControlPointEnds_ = true;
 	}
 
 	TRailTrack::~TRailTrack()
@@ -128,9 +129,10 @@ namespace tinytrain
 	{
 		trackspline_->draw(target);
 
-		sf::Vertex line[2];
-		if (trackspline_->getLastControlPointSegment(line[0].position, line[1].position))
-			target->draw(line, 2, sf::PrimitiveType::LineStrip);
+		// this can be used to draw the last control point segment
+		//sf::Vertex line[2];
+		//if (trackspline_->getLastControlPointSegment(line[0].position, line[1].position))
+		//	target->draw(line, 2, sf::PrimitiveType::LineStrip);
 	}
 
 	void TRailTrack::onUpdate(float deltaTime)

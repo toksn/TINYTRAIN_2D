@@ -23,6 +23,13 @@ namespace tgf
 
 			CatmullRomType type_;
 
+			// a catmull rom spline needs 4 points (pt0, pt1, pt2, pt3) to create a segment from pt1 to pt2. 
+			// therefore, naturally the first and last control point are never hit by the spline.
+			// To interpolate all given control points, the first and last control points have to be used twice in calculation of the spline.
+			//
+			// Note: This leads to changes in the last two spline segments when a new control point is appended!
+			bool interpolateControlPointEnds_;
+
 		protected:
 			// Inherited via Spline
 			virtual void onControlPointsAdded(int a_startindex = 0) override;

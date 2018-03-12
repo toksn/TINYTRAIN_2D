@@ -9,6 +9,8 @@ namespace tgf
 		{
 			pointsPerSegment_ = 20;
 			type_ = CatmullRomType::Centripetal;
+
+			interpolateControlPointEnds_ = false;
 		}
 
 		Spline_CatmullRom::~Spline_CatmullRom()
@@ -17,27 +19,78 @@ namespace tgf
 
 		void Spline_CatmullRom::onControlPointsAdded(int a_startindex)
 		{
-			if (controlPoints_.getVertexCount() < 4)
+			int controlPointCount = controlPoints_.getVertexCount();
+			int min_start_index = 3;
+			if (interpolateControlPointEnds_)
+			{
+				controlPointCount++;
+				min_start_index--;
+			}				
+			
+			if (controlPointCount < 4)
 			{
 				return;
 			}
 
-			while (a_startindex <= controlPoints_.getVertexCount()-1)
+
+			if (a_startindex < min_start_index)
+				a_startindex = min_start_index;
+
+			// remove spline points that already exist but are after the current startindex
+			// this enable recalculation of the spline from startindex on
+			int expected_spline_point_count = pointsPerSegment_ * (a_startindex- min_start_index);
+			if (splinePoints_.getVertexCount() > expected_spline_point_count)
+			{
+				splinePointsLengths_.resize(expected_spline_point_count);
+				splinePoints_.resize(expected_spline_point_count);
+			}
+
+			sf::Vector2f pts[4];
+			while (a_startindex <= controlPointCount-1)
 			{
 				int new_control_point_index = a_startindex++;
-				int pt = new_control_point_index - 2;
-				for (int i = 0; i <= pointsPerSegment_; i++)
+				int pt = new_control_point_index - 2;				
+				
+				if (interpolateControlPointEnds_ == false)
+				{
+					pts[0] = controlPoints_[pt - 1].position;
+					pts[1] = controlPoints_[pt].position;
+					pts[2] = controlPoints_[pt + 1].position;
+					pts[3] = controlPoints_[pt + 2].position;
+				}
+				else
+				{
+					if (pt - 1 < 0)
+					{
+						c2v pt = c2Lerp(c2v{ controlPoints_[0].position.x,controlPoints_[0].position.y }, c2v{ controlPoints_[1].position.x,controlPoints_[1].position.y }, -1.0f);
+						pts[0] = { pt.x, pt.y };
+					}
+					else
+						pts[0] = controlPoints_[pt - 1].position;
+					pts[1] = controlPoints_[pt].position;
+					pts[2] = controlPoints_[pt + 1].position;
+					if (pt + 2 > controlPoints_.getVertexCount() - 1)
+					{
+						int lastindex = controlPoints_.getVertexCount() - 1;
+						c2v pt = c2Lerp(c2v{ controlPoints_[lastindex - 1].position.x,controlPoints_[lastindex - 1].position.y }, c2v{ controlPoints_[lastindex].position.x,controlPoints_[lastindex].position.y }, 2.0f);
+						pts[3] = { pt.x, pt.y };
+					}
+					else
+						pts[3] = controlPoints_[pt + 2].position;
+				}				
+
+				for (int i = 0; i < pointsPerSegment_; i++)
 				{
 					if (type_ == CatmullRomType::Uniform)
 					{
-						float u = (float)i / (float)pointsPerSegment_;
-						appendSplinePoint(interpolateUniform(u, controlPoints_[pt - 1].position, controlPoints_[pt].position, controlPoints_[pt + 1].position, controlPoints_[pt + 2].position));
+						float u = (float)i / (float)(pointsPerSegment_-1);
+						appendSplinePoint(interpolateUniform(u, pts[0], pts[1], pts[2], pts[3]));
 					}
 					else
 					{
 						// for this calculation, see Definition section of https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rospline_
-						float* x = new float[4]{ controlPoints_[pt - 1].position.x, controlPoints_[pt].position.x, controlPoints_[pt+1].position.x, controlPoints_[pt+2].position.x };
-						float* y = new float[4]{ controlPoints_[pt - 1].position.y, controlPoints_[pt].position.y, controlPoints_[pt+1].position.y, controlPoints_[pt+2].position.y };
+						float* x = new float[4]{ pts[0].x, pts[1].x, pts[2].x, pts[3].x };
+						float* y = new float[4]{ pts[0].y, pts[1].y, pts[2].y, pts[3].y };
 						float* time = new float[4]{ 0, 1, 2, 3 };
 
 						float tstart = 1.0f;
@@ -57,9 +110,9 @@ namespace tgf
 						tstart = time[1];
 						tend = time[2];
 
-						float u = tstart + (i * (tend - tstart)) / pointsPerSegment_;
+						float u = tstart + (i * (tend - tstart)) / (float)(pointsPerSegment_-1);
 						//float u = (float)i / (float)pointsPerSegment_;
-						appendSplinePoint(interpolate(u, controlPoints_[pt - 1].position, controlPoints_[pt].position, controlPoints_[pt + 1].position, controlPoints_[pt + 2].position, time));
+						appendSplinePoint(interpolate(u, pts[0], pts[1], pts[2], pts[3], time));
 						delete[] x;
 						delete[] y;
 						delete[] time;
