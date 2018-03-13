@@ -113,7 +113,7 @@ namespace tgf
 				{
 					if (type_ == CatmullRomType::Uniform)
 					{
-						float u = (float)i / (float)(pointsPerSegment_-1);
+						float u = (float)i / (float)(pointsPerSegment_);
 						appendSplinePoint(interpolateUniform(u, pts[0], pts[1], pts[2], pts[3]));
 					}
 					else
@@ -140,8 +140,7 @@ namespace tgf
 						tstart = time[1];
 						tend = time[2];
 
-						float u = tstart + (i * (tend - tstart)) / (float)(pointsPerSegment_-1);
-						//float u = (float)i / (float)pointsPerSegment_;
+						float u = tstart + (i * (tend - tstart)) / (float)(pointsPerSegment_);
 						appendSplinePoint(interpolate(u, pts[0], pts[1], pts[2], pts[3], time));
 
 						// todo: optimize that interpolate and tangent dont do the same equations again
