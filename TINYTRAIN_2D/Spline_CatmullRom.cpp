@@ -67,6 +67,14 @@ namespace tgf
 					normals_.resize(expected_spline_point_count);
 			}
 
+			// check for all vectors to be the same size
+			if (calcNormals_ && normals_.size() != splinePoints_.getVertexCount())
+			{
+				// recalc whole spline to get the normals as well, this should only happen when calcNormals_ is activated with an already existing spline
+				normals_.resize(splinePoints_.getVertexCount());
+				a_startindex = min_start_index;
+			}
+
 			sf::Vector2f pts[4];
 			while (a_startindex <= controlPointCount-1)
 			{

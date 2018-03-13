@@ -31,8 +31,11 @@ namespace tgf
 			sf::Color getColor_controlPts();
 			void setColor_controlPts(sf::Color a_color, bool recolor_existing = true);
 
-			bool drawControlPoints_;
 
+			sf::VertexArray controlPoints_;
+			sf::VertexArray splinePoints_;
+
+			bool drawControlPoints_;
 		protected:
 			// Inherited via Entity
 			virtual void onDraw(sf::RenderTarget * target) override;
@@ -46,10 +49,6 @@ namespace tgf
 
 			void appendSplinePoint(sf::Vector2f a_pt);
 
-			// controlpoints
-			sf::VertexArray controlPoints_;
-			// spline
-			sf::VertexArray splinePoints_;
 			std::vector<float> splinePointsLengths_;
 			int pointsPerSegment_;
 

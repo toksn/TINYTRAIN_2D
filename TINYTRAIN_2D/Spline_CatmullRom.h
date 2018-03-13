@@ -29,6 +29,9 @@ namespace tgf
 			//
 			// Note: This leads to changes in the last two spline segments when a new control point is appended!
 			bool interpolateControlPointEnds_;
+
+			// normals
+			std::vector<sf::Vector2f> normals_;
 			bool calcNormals_;
 			bool drawNormals_;
 
@@ -40,8 +43,6 @@ namespace tgf
 			sf::Vector2f interpolateUniform(float u, sf::Vector2f pt0, sf::Vector2f pt1, sf::Vector2f pt2, sf::Vector2f pt3);
 			sf::Vector2f interpolate(float u, sf::Vector2f pt0, sf::Vector2f pt1, sf::Vector2f pt2, sf::Vector2f pt3, float* time);
 			sf::Vector2f tangent(float u, sf::Vector2f pt0, sf::Vector2f pt1, sf::Vector2f pt2, sf::Vector2f pt3, float * time);
-
-			std::vector<sf::Vector2f> normals_;
 		};
 	}
 }
