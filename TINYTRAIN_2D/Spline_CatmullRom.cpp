@@ -7,14 +7,34 @@ namespace tgf
 	{
 		Spline_CatmullRom::Spline_CatmullRom()
 		{
-			pointsPerSegment_ = 20;
+			pointsPerSegment_ = 15;
 			type_ = CatmullRomType::Centripetal;
 
 			interpolateControlPointEnds_ = false;
+			calcNormals_ = true;
+			drawNormals_ = false;
 		}
 
 		Spline_CatmullRom::~Spline_CatmullRom()
 		{
+		}
+
+		void Spline_CatmullRom::onDraw(sf::RenderTarget* target)
+		{
+			Spline::onDraw(target);
+
+			if (drawNormals_ && normals_.size() == splinePoints_.getVertexCount())
+			{
+				sf::Vertex* t = new sf::Vertex[normals_.size()*2];
+				for (int i = 0; i < normals_.size(); i++)
+				{
+					t[2 * i].position = splinePoints_[i].position - normals_[i] * 7.0f;
+					t[2 * i + 1].position = splinePoints_[i].position + normals_[i] * 7.0f;
+				}
+
+				target->draw(t, normals_.size()*2, sf::PrimitiveType::Lines);
+				delete[] t;
+			}
 		}
 
 		void Spline_CatmullRom::onControlPointsAdded(int a_startindex)
@@ -43,6 +63,8 @@ namespace tgf
 			{
 				splinePointsLengths_.resize(expected_spline_point_count);
 				splinePoints_.resize(expected_spline_point_count);
+				if (calcNormals_)
+					normals_.resize(expected_spline_point_count);
 			}
 
 			sf::Vector2f pts[4];
@@ -88,7 +110,7 @@ namespace tgf
 					}
 					else
 					{
-						// for this calculation, see Definition section of https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rospline_
+						// for this calculation, see Definition section of https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline
 						float* x = new float[4]{ pts[0].x, pts[1].x, pts[2].x, pts[3].x };
 						float* y = new float[4]{ pts[0].y, pts[1].y, pts[2].y, pts[3].y };
 						float* time = new float[4]{ 0, 1, 2, 3 };
@@ -113,6 +135,17 @@ namespace tgf
 						float u = tstart + (i * (tend - tstart)) / (float)(pointsPerSegment_-1);
 						//float u = (float)i / (float)pointsPerSegment_;
 						appendSplinePoint(interpolate(u, pts[0], pts[1], pts[2], pts[3], time));
+
+						// todo: optimize that interpolate and tangent dont do the same equations again
+						if (calcNormals_)
+						{
+							sf::Vector2f tan = tangent(u, pts[0], pts[1], pts[2], pts[3], time);
+							// normalize and skew tangent to get the normal at that point
+							c2v norm = c2Skew(c2Norm({ tan.x, tan.y }));
+							normals_.push_back({norm.x, norm.y});
+						}
+							
+
 						delete[] x;
 						delete[] y;
 						delete[] time;
@@ -158,6 +191,39 @@ namespace tgf
 			float yC12 = yL012 * (time[2] - u) / (time[2] - time[1]) + yL123 * (u - time[1]) / (time[2] - time[1]);
 
 			return sf::Vector2f(C12, yC12);
+		}
+
+		// tangential calculation is based on http://denkovacs.com/2016/02/catmull-rom-spline-derivatives/
+		//
+		// param: float* time is a float array of 4 entries, memory managment outside, no checks will be done in this func!
+		sf::Vector2f Spline_CatmullRom::tangent(float u, sf::Vector2f pt0, sf::Vector2f pt1, sf::Vector2f pt2, sf::Vector2f pt3, float* time)
+		{
+			float A1 = pt0.x * (time[1] - u) / (time[1] - time[0]) + pt1.x * (u - time[0]) / (time[1] - time[0]);
+			float A2 = pt1.x * (time[2] - u) / (time[2] - time[1]) + pt2.x * (u - time[1]) / (time[2] - time[1]);
+			float A3 = pt2.x * (time[3] - u) / (time[3] - time[2]) + pt3.x * (u - time[2]) / (time[3] - time[2]);
+			float B1 = A1 * (time[2] - u) / (time[2] - time[0]) + A2 * (u - time[0]) / (time[2] - time[0]);
+			float B2 = A2 * (time[3] - u) / (time[3] - time[1]) + A3 * (u - time[1]) / (time[3] - time[1]);
+			float yA1 = pt0.y * (time[1] - u) / (time[1] - time[0]) + pt1.y * (u - time[0]) / (time[1] - time[0]);
+			float yA2 = pt1.y * (time[2] - u) / (time[2] - time[1]) + pt2.y * (u - time[1]) / (time[2] - time[1]);
+			float yA3 = pt2.y * (time[3] - u) / (time[3] - time[2]) + pt3.y * (u - time[2]) / (time[3] - time[2]);
+			float yB1 = yA1 * (time[2] - u) / (time[2] - time[0]) + yA2 * (u - time[0]) / (time[2] - time[0]);
+			float yB2 = yA2 * (time[3] - u) / (time[3] - time[1]) + yA3 * (u - time[1]) / (time[3] - time[1]);
+
+			float dA1 = 1 / (time[1] - time[0]) * (pt1.x - pt0.x);
+			float dA2 = 1 / (time[2] - time[1]) * (pt2.x - pt1.x);
+			float dA3 = 1 / (time[3] - time[2]) * (pt3.x - pt2.x);
+			float dB1 = 1 / (time[2] - time[0]) * (A2 - A1) + (time[2] - u) / (time[2] - time[0])*dA1 + (u - time[0]) / (time[2] - time[0]) * dA2;
+			float dB2 = 1 / (time[3] - time[1]) * (A3 - A2) + (time[3] - u) / (time[3] - time[1])*dA2 + (u - time[1]) / (time[3] - time[1]) * dA3;
+			float dC = 1 / (time[2] - time[1]) * (B2 - B1) + (time[2] - u) / (time[2] - time[1])*dB1 + (u - time[1]) / (time[2] - time[1]) * dB2;
+
+			float ydA1 = 1 / (time[1] - time[0]) * (pt1.y - pt0.y);
+			float ydA2 = 1 / (time[2] - time[1]) * (pt2.y - pt1.y);
+			float ydA3 = 1 / (time[3] - time[2]) * (pt3.y - pt2.y);
+			float ydB1 = 1 / (time[2] - time[0]) * (yA2 - yA1) + (time[2] - u) / (time[2] - time[0])*ydA1 + (u - time[0]) / (time[2] - time[0]) * ydA2;
+			float ydB2 = 1 / (time[3] - time[1]) * (yA3 - yA2) + (time[3] - u) / (time[3] - time[1])*ydA2 + (u - time[1]) / (time[3] - time[1]) * ydA3;
+			float ydC = 1 / (time[2] - time[1]) * (yB2 - yB1) + (time[2] - u) / (time[2] - time[1])*ydB1 + (u - time[1]) / (time[2] - time[1]) * ydB2;
+
+			return sf::Vector2f(dC, ydC);
 		}
 	}
 }

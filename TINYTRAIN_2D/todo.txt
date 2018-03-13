@@ -1,9 +1,5 @@
 TODO:
-
-- processinputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
-	- rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
-	- use last controlpoint of a track for the display as well
-
+- use catmullrom normals to generate a vertexbuffer with texture bending in railtrack
 - make collisionmanager running in an own thread calling callbacks on overlap ?
 - add on-screen instructions (controls, goals, hints)
 - train vs train collision
@@ -20,6 +16,10 @@ TODO:
 	- level_interface: load(), restart())
 
 DONE:
+- added option to calculate normals in catmullrom spline
+- processinputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
+	- rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
+	- use last controlpoint of a track for the display as well
 - use component based system (unique_ptr)
 	- gameobject : entity {components_; draw/update: for(components_) c->draw()/c->update(); }
 	- component : entity {ownerobject_; draw/update: manipulate_or_extend_ownerobject(); } maybe friend class?
