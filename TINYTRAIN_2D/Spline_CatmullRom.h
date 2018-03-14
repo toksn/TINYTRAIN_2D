@@ -35,6 +35,9 @@ namespace tgf
 			bool calcNormals_;
 			bool drawNormals_;
 
+			// index of the spline point thats marks the start of the most recent spline update
+			int startIndex_lastUpdate_;
+
 		protected:
 			// Inherited via Spline
 			virtual void onControlPointsAdded(int a_startindex = 0) override;

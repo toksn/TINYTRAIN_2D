@@ -1,6 +1,7 @@
 #pragma once
 #include "Entity.h"
-#include "Spline_CatmullRom.h"
+//#include "Spline_CatmullRom.h"
+#include "SplineTexture.h"
 #include <memory>
 #include <functional>
 #include <SFML\Graphics.hpp>
@@ -63,6 +64,7 @@ namespace tinytrain
 
 		std::vector<std::pair<std::function<void(void)>, void*>> trackChangedCallbacks_;
 		float segLength_;
-		std::unique_ptr<tgf::math::Spline_CatmullRom> trackspline_;
+		//std::unique_ptr<tgf::math::Spline_CatmullRom> trackspline_;
+		std::unique_ptr<tgf::utilities::SplineTexture> track_;
 	};
 }

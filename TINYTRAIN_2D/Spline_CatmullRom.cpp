@@ -13,6 +13,8 @@ namespace tgf
 			interpolateControlPointEnds_ = false;
 			calcNormals_ = true;
 			drawNormals_ = false;
+
+			startIndex_lastUpdate_ = 0;
 		}
 
 		Spline_CatmullRom::~Spline_CatmullRom()
@@ -74,6 +76,9 @@ namespace tgf
 				normals_.resize(splinePoints_.getVertexCount());
 				a_startindex = min_start_index;
 			}
+
+
+			int spline_pts_before = splinePoints_.getVertexCount();
 
 			sf::Vector2f pts[4];
 			while (a_startindex <= controlPointCount-1)
@@ -159,6 +164,14 @@ namespace tgf
 					}
 				}
 			}
+
+			// update start index of last update if splinepoints were added/removed
+			if (splinePoints_.getVertexCount() != spline_pts_before)
+			{
+				startIndex_lastUpdate_ = spline_pts_before;
+						if(startIndex_lastUpdate_ > splinePoints_.getVertexCount())
+							startIndex_lastUpdate_ = splinePoints_.getVertexCount() -1;
+			}				
 		}
 
 		sf::Vector2f Spline_CatmullRom::interpolateUniform(float u, sf::Vector2f pt0, sf::Vector2f pt1, sf::Vector2f pt2, sf::Vector2f pt3)

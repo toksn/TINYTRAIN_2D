@@ -1,5 +1,6 @@
 TODO:
 - use catmullrom normals to generate a vertexbuffer with texture bending in railtrack
+
 - make collisionmanager running in an own thread calling callbacks on overlap ?
 - add on-screen instructions (controls, goals, hints)
 - train vs train collision

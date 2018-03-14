@@ -19,10 +19,10 @@ namespace tinytrain
 
 	void TLevel::onDraw(sf::RenderTarget * target)
 	{
-		if (train_)
-			train_->draw(target);
 		if (railtrack_)
 			railtrack_->draw(target);
+		if (train_)
+			train_->draw(target);
 
 		for (int i = obstacles_.size() - 1; i >= 0; i--)
 		{

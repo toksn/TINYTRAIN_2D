@@ -144,6 +144,7 @@
     <ClCompile Include="GameState_Running.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Spline.cpp" />
+    <ClCompile Include="SplineTexture.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
     <ClCompile Include="TLineInputInterface.cpp" />
     <ClCompile Include="TPolyLineInputComponent.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="GameState_Running.h" />
     <ClInclude Include="GameStateBase.h" />
     <ClInclude Include="Spline.h" />
+    <ClInclude Include="SplineTexture.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
     <ClInclude Include="TLineInputInterface.h" />
     <ClInclude Include="TPolyLineInputComponent.h" />

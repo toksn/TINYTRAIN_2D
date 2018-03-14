@@ -44,7 +44,7 @@ namespace tgf
 			int getSegmentStartIndexAtTime(float a_time, int indexHint = -1);
 			int getSegmentStartIndexAtDist(float a_dist, int indexHint = -1);
 
-			// OVERRIDE THIS FOR A NEW SPLINE
+			// OVERRIDE THIS FOR A NEW SPLINE CLASS
 			virtual void onControlPointsAdded(int a_startindex) = 0;
 
 			void appendSplinePoint(sf::Vector2f a_pt);

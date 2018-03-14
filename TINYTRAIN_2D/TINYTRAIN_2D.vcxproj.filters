@@ -36,6 +36,9 @@
     <Filter Include="GameFramework\components">
       <UniqueIdentifier>{feae4ce5-0fea-49cf-9830-7bd36c688aef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameFramework\utilities">
+      <UniqueIdentifier>{180eee21-b337-4b4a-a106-05db9e9b9206}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -106,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="TLineInputInterface.cpp">
       <Filter>TinyTrain\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="SplineTexture.cpp">
+      <Filter>GameFramework\utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +186,9 @@
     </ClInclude>
     <ClInclude Include="TLineInputInterface.h">
       <Filter>TinyTrain\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="SplineTexture.h">
+      <Filter>GameFramework\utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

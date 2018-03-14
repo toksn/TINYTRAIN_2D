@@ -10,10 +10,12 @@ namespace tinytrain
 	{
 		segLength_ = 100.0f;
 
-		trackspline_ = std::make_unique<tgf::math::Spline_CatmullRom>();
-		trackspline_->type_ = tgf::math::Spline_CatmullRom::CatmullRomType::Chordal;
-		trackspline_->drawControlPoints_ = false;
-		trackspline_->interpolateControlPointEnds_ = true;
+		track_ = std::make_unique<tgf::utilities::SplineTexture>();
+		track_->width_ = 32.0f;
+
+		track_->spline_->type_ = tgf::math::Spline_CatmullRom::CatmullRomType::Chordal;
+		track_->spline_->drawControlPoints_ = false;
+		track_->spline_->interpolateControlPointEnds_ = true;
 	}
 
 	TRailTrack::~TRailTrack()
@@ -22,14 +24,14 @@ namespace tinytrain
 	
 	void TRailTrack::append(const sf::Vector2f& a_ctrlPt)
 	{
-		if (trackspline_)
-			trackspline_->appendControlPoint(a_ctrlPt);
+		if (track_->spline_)
+			track_->spline_->appendControlPoint(a_ctrlPt);
 	}
 
 	void TRailTrack::addTrain(TTrain * a_train, float a_atDistance)
 	{
 		trains_.push_back(a_train);
-		if (a_atDistance >= 0.0f && a_atDistance < trackspline_->getLength())
+		if (a_atDistance >= 0.0f && a_atDistance < track_->spline_->getLength())
 			a_train->distance_ = a_atDistance;
 		else
 			a_train->distance_ = 0.0f;
@@ -38,7 +40,7 @@ namespace tinytrain
 	void TRailTrack::moveAndRotateOnRail(TTrain* train)
 	{
 		// max dist to travel on the railtrack
-		float maxdist = trackspline_->getLength();
+		float maxdist = track_->spline_->getLength();
 
 		if (train->distance_ > maxdist)
 		{
@@ -57,10 +59,10 @@ namespace tinytrain
 		{
 			// calc position of the current wagon
 			float current_wagon_dist = train->distance_ - i * (train->wagonsize_.x + train->wagongap_);
-			float time = current_wagon_dist / trackspline_->getLength();
+			float time = current_wagon_dist / track_->spline_->getLength();
 
-			float angle = trackspline_->getDirectionAngleAtTime(time, hintindex, false);
-			sf::Vector2f pos = trackspline_->getLocationAtTime(time, hintindex);
+			float angle = track_->spline_->getDirectionAngleAtTime(time, hintindex, false);
+			sf::Vector2f pos = track_->spline_->getLocationAtTime(time, hintindex);
 
 			//hintindex = getSegmentStartIndexAtDist(...)
 			//setPositionAndRotationFromRail(current_wagon_dist, hintindex, &train->wagons_[i]);
@@ -83,16 +85,16 @@ namespace tinytrain
 
 	bool TRailTrack::getLastControlPointFromTrack(sf::Vector2f & a_pt)
 	{
-		if (trackspline_)
-			return trackspline_->getLastControlPoint(a_pt);
+		if (track_->spline_)
+			return track_->spline_->getLastControlPoint(a_pt);
 
 		return false;
 	}
 
 	bool TRailTrack::getLastControlPointSegmentFromTrack(sf::Vector2f & a_start, sf::Vector2f & a_end)
 	{
-		if (trackspline_)
-			return trackspline_->getLastControlPointSegment(a_start, a_end);
+		if (track_->spline_)
+			return track_->spline_->getLastControlPointSegment(a_start, a_end);
 
 		return false;
 	}
@@ -104,19 +106,19 @@ namespace tinytrain
 		{
 			// check wether to skip the first new point because it is the same as the previous last point on the spline
 			sf::Vector2f end;
-			if(trackspline_->getLastControlPoint(end) && end == a_points[0])
+			if(track_->spline_->getLastControlPoint(end) && end == a_points[0])
 				i++;
 		}
 
 		for (; i < a_points.size(); i++)
-			trackspline_->appendControlPoint(a_points[i]);
+			track_->spline_->appendControlPoint(a_points[i]);
 
 		onSplineChanged();
 	}
 
 	tgf::math::Spline_CatmullRom * TRailTrack::getTrackSpline()
 	{
-		return trackspline_.get();
+		return track_->spline_.get();
 	}
 
 	void TRailTrack::onSplineChanged()
@@ -127,16 +129,18 @@ namespace tinytrain
 
 	void TRailTrack::onDraw(sf::RenderTarget * target)
 	{
-		trackspline_->draw(target);
-
+		track_->draw(target);
+		
 		// this can be used to draw the last control point segment
 		//sf::Vertex line[2];
-		//if (trackspline_->getLastControlPointSegment(line[0].position, line[1].position))
+		//if (track_->spline_->getLastControlPointSegment(line[0].position, line[1].position))
 		//	target->draw(line, 2, sf::PrimitiveType::LineStrip);
 	}
 
 	void TRailTrack::onUpdate(float deltaTime)
 	{
+		track_->update(deltaTime);
+
 		// move all the trains on the track
 		for (int i = 0; i < trains_.size(); i++)
 			moveAndRotateOnRail(trains_[i]);
