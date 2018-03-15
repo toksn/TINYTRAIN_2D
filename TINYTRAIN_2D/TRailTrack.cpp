@@ -11,7 +11,7 @@ namespace tinytrain
 		segLength_ = 100.0f;
 
 		track_ = std::make_unique<tgf::utilities::SplineTexture>();
-		track_->width_ = 32.0f;
+		track_->width_ = 20.0f;
 
 		track_->spline_->type_ = tgf::math::Spline_CatmullRom::CatmullRomType::Chordal;
 		track_->spline_->drawControlPoints_ = false;
