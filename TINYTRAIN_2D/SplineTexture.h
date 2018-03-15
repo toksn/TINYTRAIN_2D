@@ -24,6 +24,8 @@ namespace tgf
 			// Inherited via Entity
 			virtual void onDraw(sf::RenderTarget * target) override;
 			virtual void onUpdate(float deltaTime) override;
+
+			void createTriangleStripFromSpline(int startindex = 0);
 		};
 	}
 }

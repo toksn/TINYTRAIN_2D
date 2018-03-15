@@ -34,6 +34,7 @@ namespace tgf
 
 			sf::VertexArray controlPoints_;
 			sf::VertexArray splinePoints_;
+			std::vector<float> splinePointsLengths_;
 
 			bool drawControlPoints_;
 		protected:
@@ -49,7 +50,6 @@ namespace tgf
 
 			void appendSplinePoint(sf::Vector2f a_pt);
 
-			std::vector<float> splinePointsLengths_;
 			int pointsPerSegment_;
 
 			// colors
