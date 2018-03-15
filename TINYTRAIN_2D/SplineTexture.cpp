@@ -9,9 +9,10 @@ namespace tgf
 		{
 			spline_ = std::make_unique<Spline_CatmullRom>();
 			
-			//texture_.loadFromFile("data/images/Train/images/track_05.png");
+			texture_.loadFromFile("data/images/track/track_05.png");
+			//texture_.loadFromFile("data/images/track/railtrack_marked.png");
 			width_ = texture_.getSize().x;
-			texture_.loadFromFile("data/images/railtrack_marked.png");
+			
 
 			triangles_.setPrimitiveType(sf::PrimitiveType::TrianglesStrip);
 			last_processed_startindex_ = -1;
@@ -43,7 +44,7 @@ namespace tgf
 					startindex = spline_->startIndex_lastUpdate_;
 
 				// create new triangles
-				createTriangleStripFromSpline(/*startindex*/ 0);
+				createTriangleStripFromSpline(startindex);
 			
 				// update last processed startindex
 				last_processed_startindex_ = spline_->startIndex_lastUpdate_;
@@ -70,11 +71,15 @@ namespace tgf
 			// **********************************************************
 			// SETTINGS
 			// **********************************************************
+			c2v lastSplinePt = { spline_->splinePoints_[startindex].position.x, spline_->splinePoints_[startindex].position.y };
 			sf::Vector2f texturePos(0.0f, 0.0f);
 			bool forward = true;
 			if (startindex > 0)
 			{
 				sf::Vertex lastVert = triangles_[(startindex - 1) * 2];
+
+				lastSplinePt = { spline_->splinePoints_[startindex-1].position.x, spline_->splinePoints_[startindex-1].position.y };
+
 				texturePos.y = lastVert.texCoords.y;
 				if (lastVert.texCoords.y == 0.0f)
 					forward = true;
@@ -103,8 +108,6 @@ namespace tgf
 
 			float adjuster_base = 0.0f;
 			
-
-			c2v lastSplinePt = { spline_->splinePoints_[startindex].position.x, spline_->splinePoints_[startindex].position.y };
 			for (int i = startindex; i < spline_->splinePoints_.getVertexCount(); i++)
 			{
 				if (useSplineptsForTextureSplitting)

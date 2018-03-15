@@ -96,7 +96,8 @@
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY $(ProjectDir)resources\fonts\pixantiqua.ttf $(OutputPath)data\fonts\ /Y</Command>
+      <Command>XCOPY $(ProjectDir)resources\fonts\pixantiqua.ttf $(OutputPath)data\fonts\ /Y
+XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -128,7 +129,8 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY $(ProjectDir)resources\fonts\pixantiqua.ttf $(OutputPath)data\fonts\ /Y</Command>
+      <Command>XCOPY $(ProjectDir)resources\fonts\pixantiqua.ttf $(OutputPath)data\fonts\ /Y
+XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
