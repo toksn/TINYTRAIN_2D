@@ -72,9 +72,6 @@ namespace tgf
 			bool forward = true;
 			if (startindex > 0)
 			{
-				
-				//sf::Vertex lastVert2 = triangles_[(startindex - 1) * 2 + 1];
-
 				lastSplinePt = { spline_->splinePoints_[startindex-1].position.x, spline_->splinePoints_[startindex-1].position.y };
 
 				// find tri_index to start from
@@ -112,10 +109,6 @@ namespace tgf
 					{
 						printf("todo: rest_len calc is probably wrong. rest: %f\n", rest_len);
 					}
-					//if (forward)
-					//	printf("adding texture going forward!\n");
-					//else
-					//	printf("adding texture going backward!\n");
 				}
 
 				tri_index++;
@@ -129,9 +122,8 @@ namespace tgf
 			}
 			else
 			{
-				if (startindex != tri_index)
-					printf("tri_index = %i, start_index = %i\n", tri_index, startindex);
-				//float seglen = spline_->getLength() / spline_->splinePoints_.getVertexCount();
+				//if (startindex != tri_index)
+				//	printf("tri_index = %i, start_index = %i\n", tri_index, startindex);
 				triangles_.resize((spline_->splinePoints_.getVertexCount() + tri_index - startindex)* 2);
 				trianglesLengths_.resize((spline_->splinePoints_.getVertexCount() + tri_index - startindex) * 2);
 			}
