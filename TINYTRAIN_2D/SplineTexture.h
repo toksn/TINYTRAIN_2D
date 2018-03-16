@@ -27,6 +27,8 @@ namespace tgf
 			virtual void onUpdate(float deltaTime) override;
 
 			void createTriangleStripFromSpline(int startindex = 0);
+			void createTriangleStrip_splitTextureByLength(int startindex);
+			void createTriangleStrip_splitTextureByPoints(int startindex);
 		};
 	}
 }

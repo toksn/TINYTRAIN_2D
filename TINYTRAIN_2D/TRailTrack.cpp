@@ -130,6 +130,8 @@ namespace tinytrain
 	void TRailTrack::onDraw(sf::RenderTarget * target)
 	{
 		track_->draw(target);
+
+		//track_->spline_->draw(target);
 		
 		// this can be used to draw the last control point segment
 		//sf::Vertex line[2];
