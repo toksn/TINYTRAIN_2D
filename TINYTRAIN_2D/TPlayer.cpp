@@ -92,7 +92,7 @@ namespace tinytrain
 
 	void TPlayer::startDrawing(int x, int y)
 	{
-		printf("DRAWING : started at pixel %i, %i\n", x, y);
+		//printf("DRAWING : started at pixel %i, %i\n", x, y);
 
 		input_component_->resetInputLine(x, y);
 		
@@ -103,7 +103,7 @@ namespace tinytrain
 	{
 		if (inputstate_ == INPUTSTATE::DRAWING)
 		{
-			printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
+			//printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
 			addInputLineToRailTrack();
 		}
 

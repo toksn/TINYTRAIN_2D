@@ -19,6 +19,7 @@ namespace tgf
 		protected:
 			sf::Texture texture_;
 			sf::VertexArray triangles_;
+			std::vector<float> trianglesLengths_;
 			int last_processed_startindex_;
 
 			// Inherited via Entity

@@ -9,6 +9,7 @@ namespace tgf
 		{
 			spline_ = std::make_unique<Spline_CatmullRom>();
 			
+			// todo: make texture available from outside
 			texture_.loadFromFile("data/images/track/track_05.png");
 			//texture_.loadFromFile("data/images/track/railtrack_marked.png");
 			width_ = texture_.getSize().x;
@@ -44,7 +45,7 @@ namespace tgf
 					startindex = spline_->startIndex_lastUpdate_;
 
 				// create new triangles
-				createTriangleStripFromSpline(/*startindex*/0);
+				createTriangleStripFromSpline(startindex);
 			
 				// update last processed startindex
 				last_processed_startindex_ = spline_->startIndex_lastUpdate_;
@@ -56,19 +57,10 @@ namespace tgf
 			auto size = texture_.getSize();
 			float tex_scale = width_ / size.x;
 			float rest_len = 0.0f;
+			int tri_index = startindex;
 			//size.x = width_;
 
-			bool useSplineptsForTextureSplitting = false;
-			if(useSplineptsForTextureSplitting)
-				triangles_.resize(spline_->splinePoints_.getVertexCount() * 2);
-			else
-			{
-				float seglen = spline_->getLength() / spline_->splinePoints_.getVertexCount();
-				triangles_.resize(spline_->splinePoints_.getVertexCount() * 2);
-			}
-				
-			
-
+			bool useSplineptsForTextureSplitting = false;				
 			//sf::Color cols[3] = { sf::Color::Red, sf::Color::Green, sf::Color::Blue };
 			
 			// **********************************************************
@@ -76,38 +68,74 @@ namespace tgf
 			// **********************************************************
 			c2v lastSplinePt = { spline_->splinePoints_[startindex].position.x, spline_->splinePoints_[startindex].position.y };
 			sf::Vector2f texturePos(0.0f, 0.0f);
+			
 			bool forward = true;
 			if (startindex > 0)
 			{
-				sf::Vertex lastVert = triangles_[(startindex - 1) * 2];
+				
 				//sf::Vertex lastVert2 = triangles_[(startindex - 1) * 2 + 1];
 
 				lastSplinePt = { spline_->splinePoints_[startindex-1].position.x, spline_->splinePoints_[startindex-1].position.y };
 
+				// find tri_index to start from
+				float startlen = spline_->splinePointsLengths_[startindex-1];
+				for (; tri_index*2 < trianglesLengths_.size(); tri_index++)
+				{
+					//if(trianglesLengths_[tri_index * 2] == startlen)
+
+
+					if (trianglesLengths_[tri_index * 2] > startlen)
+					{
+						break;
+					}
+						
+				}
+				tri_index--;
+				sf::Vertex lastVert = triangles_[(tri_index)*2];
 				texturePos.y = lastVert.texCoords.y;
-
-				// todo: calc rest_len from lastVert
-				//sf::Vector2f lastPosOnSpline = (lastVert2.position - lastVert.position)*0.5f;
-
 				if (lastVert.texCoords.y == 0.0f)
 				{
-					forward = true;				
-					
+					forward = true;
+					rest_len = startlen - trianglesLengths_[(tri_index )* 2];
 				}
 				else if (lastVert.texCoords.y == size.y)
 				{
 					forward = false;
+					rest_len = startlen - trianglesLengths_[(tri_index) * 2];
 				}
 				else if (startindex > 1)
 				{
-					forward = lastVert.texCoords.y > triangles_[(startindex - 2) * 2].texCoords.y;
+					forward = lastVert.texCoords.y > triangles_[(tri_index - 1) * 2].texCoords.y;
+
+					rest_len = startlen - trianglesLengths_[(tri_index) * 2];
+					if (rest_len != 0.0f)
+					{
+						printf("todo: rest_len calc is probably wrong. rest: %f\n", rest_len);
+					}
 					//if (forward)
 					//	printf("adding texture going forward!\n");
 					//else
 					//	printf("adding texture going backward!\n");
-				}					
+				}
+
+				tri_index++;
 			}
 				
+
+			if (useSplineptsForTextureSplitting)
+			{
+				triangles_.resize(spline_->splinePoints_.getVertexCount() * 2);
+				trianglesLengths_.resize(spline_->splinePoints_.getVertexCount() * 2);
+			}
+			else
+			{
+				if (startindex != tri_index)
+					printf("tri_index = %i, start_index = %i\n", tri_index, startindex);
+				//float seglen = spline_->getLength() / spline_->splinePoints_.getVertexCount();
+				triangles_.resize((spline_->splinePoints_.getVertexCount() + tri_index - startindex)* 2);
+				trianglesLengths_.resize((spline_->splinePoints_.getVertexCount() + tri_index - startindex) * 2);
+			}
+
 			// **********************************************************
 			// **********************************************************
 			// using splinepoints for uniform texture splitting
@@ -115,7 +143,7 @@ namespace tgf
 			sf::Vector2f texture_seg_size((float)size.x / texture_cuts.x, (float)size.y / texture_cuts.y);
 			// **********************************************************
 			// using spline segment length for texture splitting
-			int tri_index = startindex;
+			
 			// **********************************************************
 			
 			for (int i = startindex; i < spline_->splinePoints_.getVertexCount(); i++)
@@ -186,6 +214,8 @@ namespace tgf
 						triangles_[tri_index * 2 + 1].texCoords = triangles_[tri_index * 2].texCoords = texturePos;
 						triangles_[tri_index * 2 + 1].texCoords.x += texture_seg_size.x;
 
+						trianglesLengths_[tri_index * 2] = trianglesLengths_[tri_index * 2 + 1] = spline_->splinePointsLengths_[i];
+
 						tri_index++;
 					}
 					// texture pos exceeded the given texture. create triangle point on spline at max texture size - remember rest
@@ -206,6 +236,8 @@ namespace tgf
 								texturePos.y = 0.0f;
 
 							rest_len = fabs(tempPos - texturePos.y);
+							
+							trianglesLengths_[tri_index * 2] = trianglesLengths_[tri_index * 2 + 1] = spline_->splinePointsLengths_[i] - rest_len;
 							float timeatendoftexture = (spline_->splinePointsLengths_[i - 1] + len_until_texture_end*tex_scale) / spline_->getLength();
 
 
@@ -227,6 +259,7 @@ namespace tgf
 							{
 								tempPos = rest_len - texturePos.y;
 								triangles_.resize(triangles_.getVertexCount() + 2);
+								trianglesLengths_.resize(triangles_.getVertexCount() + 2);
 							}
 						} while (rest_len >= size.y); // input another triangle when rest_len reached the texture size						
 					}
@@ -237,6 +270,14 @@ namespace tgf
 
 
 			}
-		}
+		
+			if (rest_len > 0.0f)
+			{
+				// todo: insert another triangle to reach the last spline point
+				// this does not matter too much for the calculation because the end is removed at the next input anyway.
+				// it will only miss the rest_len for drawing
+				printf("todo: insert another triangle to reach the last spline point. rest_len: %f.\n", rest_len);
+			}
+}
 	}
 }
