@@ -1,22 +1,39 @@
 TODO:
-- use catmullrom normals to generate a vertexbuffer with texture bending in railtrack
 
-- make collisionmanager running in an own thread calling callbacks on overlap ?
-- add on-screen instructions (controls, goals, hints)
-- train vs train collision
-- check all wagons of a train for collision
-- add optional targets to score more points or have an objective at all (passengers)
-	- taxi mission gta?
+- add un-do of spline
+	- use controlpoints (tags) for undo/redo. when undo happend, just cut the spline at the calculated pointcount.
+	- when undo happened, redo is possible until a new controlpoint was appended
+	- use right click for undo, apply time penalty to input component
+	- optional: copy removed triangles vertices and apply them to another texture of a construction site
+
 - loading of levels from files
 	- define level saving format
+
+- add on-screen instructions (controls, goals, hints)
+	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
+
+- train vs train collision
+- check all wagons of a train for collision
+
+- add optional targets to score more points or have an objective at all (passengers)
+	- taxi mission gta?
+
 - level editor or procedural level creation?
-(- abstract gamestates into tgf
+	- level1: reach target zone
+	- level2: reach target zone in time
+	- level3: do 3 passengers (in time)
+	- level4: collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
+
+QUESTIONABLE:
+- make collisionmanager running in an own thread calling callbacks on overlap ?
+- abstract gamestates into tgf
 	- running: load, initloadedlevel, pause, win, loose, restart
 	- pause: as is?
 	- end: as is?
-	- level_interface: load(), restart())
+	- level_interface: load(), restart()
 
 DONE:
+- splineTexture: use catmullrom normals to generate a vertexbuffer with texture bending in railtrack
 - added option to calculate normals in catmullrom spline
 - processinputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
 	- rework catmull-rom spline to be more curvy: maybe restrict in input controlpoints or downsample the points, use chordal
