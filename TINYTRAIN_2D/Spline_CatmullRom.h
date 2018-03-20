@@ -21,6 +21,8 @@ namespace tgf
 			Spline_CatmullRom();
 			~Spline_CatmullRom();
 
+			bool cutSplineAtIndex(int spline_index);
+
 			CatmullRomType type_;
 
 			// a catmull rom spline needs 4 points (pt0, pt1, pt2, pt3) to create a segment from pt1 to pt2. 

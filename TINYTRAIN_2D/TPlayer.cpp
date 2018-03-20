@@ -128,6 +128,13 @@ namespace tinytrain
 			else
 				inputstate_ = INPUTSTATE::DRAWING_WAIT;			
 		}
+		else if(e.mouseButton.button == sf::Mouse::Right)
+		{
+			if (railtrack_ && railtrack_->undo())
+			{
+				// apply input penalty (probably not here but in player class)
+			}
+		}
 	}
 
 	void TPlayer::onMouseReleased(sf::Event& e)

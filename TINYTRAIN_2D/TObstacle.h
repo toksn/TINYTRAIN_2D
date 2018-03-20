@@ -11,10 +11,6 @@ namespace tinytrain
 	class TObstacle : public tgf::collision::CollisionEntity
 	{
 	public:
-		// todo: is there a workaround for this callback func typedef? 
-		// it has to be redefined in every collisionentry derived class for now
-		//typedef void(TObstacle::* collisionCallbackFunc)(tgf::Entity*);
-
 		TObstacle(GameState_Running* gs, bool wintrigger = false);
 		~TObstacle();
 

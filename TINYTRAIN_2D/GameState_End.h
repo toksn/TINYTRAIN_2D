@@ -20,7 +20,7 @@ namespace tinytrain
 
 		void setEndText(std::string a_, sf::Color a_color = sf::Color::White);
 		
-		// states to be drawn in the background, this has to be handled manually (remove from vector when gamestate is destroyed)
+		// states to be drawn in the background, this has to be handled manually (remove from vector when gamestate in the vector is destroyed)
 		// (todo: use shared_ptr in tgf::Game for the states to be shared here)
 		std::vector<tgf::GameStateBase*> backgroundstates_;
 		

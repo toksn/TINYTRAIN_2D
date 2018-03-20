@@ -21,6 +21,20 @@ namespace tgf
 		{
 		}
 
+		bool Spline_CatmullRom::cutSplineAtIndex(int spline_index)
+		{
+			bool rc = false;
+			if (spline_index < splinePoints_.getVertexCount() && spline_index >= 0)
+			{
+				splinePoints_.resize(spline_index);
+				splinePointsLengths_.resize(spline_index);
+				if (calcNormals_)
+					normals_.resize(spline_index);
+				rc = true;
+			}
+			return rc;
+		}
+
 		void Spline_CatmullRom::onDraw(sf::RenderTarget* target)
 		{
 			Spline::onDraw(target);
@@ -59,15 +73,9 @@ namespace tgf
 				a_startindex = min_start_index;
 
 			// remove spline points that already exist but are after the current startindex
-			// this enable recalculation of the spline from startindex on
+			// this enables recalculation of the spline from startindex on
 			int expected_spline_point_count = pointsPerSegment_ * (a_startindex- min_start_index);
-			if (splinePoints_.getVertexCount() > expected_spline_point_count)
-			{
-				splinePointsLengths_.resize(expected_spline_point_count);
-				splinePoints_.resize(expected_spline_point_count);
-				if (calcNormals_)
-					normals_.resize(expected_spline_point_count);
-			}
+			cutSplineAtIndex(expected_spline_point_count);
 
 			// check for all vectors to be the same size
 			if (calcNormals_ && normals_.size() != splinePoints_.getVertexCount())
@@ -168,6 +176,7 @@ namespace tgf
 			// update start index of last update if splinepoints were added/removed
 			if (splinePoints_.getVertexCount() != spline_pts_before)
 			{
+				printf("startindex_lastupdate=%i\n", spline_pts_before);
 				startIndex_lastUpdate_ = spline_pts_before;
 						if(startIndex_lastUpdate_ > splinePoints_.getVertexCount())
 							startIndex_lastUpdate_ = splinePoints_.getVertexCount() -1;

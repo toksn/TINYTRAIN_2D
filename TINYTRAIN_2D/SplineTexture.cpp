@@ -13,7 +13,7 @@ namespace tgf
 			texture_.loadFromFile("data/images/track/track_05.png");
 			//texture_.loadFromFile("data/images/track/railtrack_marked.png");
 			width_ = texture_.getSize().x;
-			
+			useSplineptsForTextureSplitting_ = false;
 
 			triangles_.setPrimitiveType(sf::PrimitiveType::TrianglesStrip);
 			last_processed_startindex_ = -1;
@@ -21,6 +21,39 @@ namespace tgf
 
 		SplineTexture::~SplineTexture()
 		{
+		}
+
+		int SplineTexture::calcTriangleIndexAtSplinePt(int spline_pt_index)
+		{
+			int tri_index = spline_pt_index;
+			
+			if (useSplineptsForTextureSplitting_ == false)
+			{
+				if (spline_ && spline_->splinePointsLengths_.size() >= spline_pt_index && spline_pt_index > 1)
+				{
+					float startlen = spline_->splinePointsLengths_[spline_pt_index - 1];
+					for (; tri_index * 2 < trianglesLengths_.size(); tri_index++)
+					{
+						if (trianglesLengths_[tri_index * 2] > startlen)
+							break;
+					}
+				}
+			}
+
+			return tri_index*2;
+		}
+
+		// remove all triangles from and including the given triangle_index
+		bool SplineTexture::cutTrianglesAtIndex(int triangle_index)
+		{
+			bool rc = false;
+			if (triangle_index < triangles_.getVertexCount() && triangle_index >= 0)
+			{
+				trianglesLengths_.resize(triangle_index);
+				triangles_.resize(triangle_index);
+				rc = true;
+			}
+			return rc;
 		}
 
 		void SplineTexture::onDraw(sf::RenderTarget * target)
@@ -54,8 +87,7 @@ namespace tgf
 
 		void SplineTexture::createTriangleStripFromSpline(int startindex)
 		{
-			bool useSplineptsForTextureSplitting = false;
-			if (useSplineptsForTextureSplitting)
+			if (useSplineptsForTextureSplitting_)
 				createTriangleStrip_splitTextureByPoints(startindex);
 			else
 				createTriangleStrip_splitTextureByLength(startindex);
@@ -85,12 +117,13 @@ namespace tgf
 				lastSplinePt = { spline_->splinePoints_[startindex - 1].position.x, spline_->splinePoints_[startindex - 1].position.y };
 
 				// find tri_index to start from
+				tri_index = calcTriangleIndexAtSplinePt(startindex) / 2;
 				float startlen = spline_->splinePointsLengths_[startindex - 1];
-				for (; tri_index * 2 < trianglesLengths_.size(); tri_index++)
-				{
-					if (trianglesLengths_[tri_index * 2] > startlen)
-						break;
-				}
+				//for (; tri_index * 2 < trianglesLengths_.size(); tri_index++)
+				//{
+				//	if (trianglesLengths_[tri_index * 2] > startlen)
+				//		break;
+				//}
 				tri_index--;
 				sf::Vertex lastVert = triangles_[(tri_index) * 2];
 				texturePos.y = lastVert.texCoords.y;
@@ -227,6 +260,7 @@ namespace tgf
 			c2v lastSplinePt = { spline_->splinePoints_[startindex].position.x, spline_->splinePoints_[startindex].position.y };
 			if (startindex > 0)
 				lastSplinePt = { spline_->splinePoints_[startindex - 1].position.x, spline_->splinePoints_[startindex - 1].position.y };
+
 			triangles_.resize(spline_->splinePoints_.getVertexCount() * 2);
 			
 			// **********************************************************

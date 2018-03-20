@@ -29,6 +29,9 @@ namespace tinytrain
 		bool getLastControlPointFromTrack(sf::Vector2f& a_pt);
 		bool getLastControlPointSegmentFromTrack(sf::Vector2f& a_start, sf::Vector2f& a_end);
 		void addDrawnLinePoints(std::vector<sf::Vector2f> a_points);
+		void addLastControlPointToHistory();
+		bool undo();
+		bool redo();
 
 		tgf::math::Spline_CatmullRom* getTrackSpline();
 
@@ -66,5 +69,7 @@ namespace tinytrain
 		float segLength_;
 		//std::unique_ptr<tgf::math::Spline_CatmullRom> trackspline_;
 		std::unique_ptr<tgf::utilities::SplineTexture> track_;
+		std::vector<int> ctrlpt_history_;
+		int ctrlpt_history_index_;
 	};
 }

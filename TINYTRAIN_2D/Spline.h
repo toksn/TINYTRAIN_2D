@@ -37,6 +37,7 @@ namespace tgf
 			std::vector<float> splinePointsLengths_;
 
 			bool drawControlPoints_;
+			int pointsPerSegment_;
 		protected:
 			// Inherited via Entity
 			virtual void onDraw(sf::RenderTarget * target) override;
@@ -49,9 +50,7 @@ namespace tgf
 			virtual void onControlPointsAdded(int a_startindex) = 0;
 
 			void appendSplinePoint(sf::Vector2f a_pt);
-
-			int pointsPerSegment_;
-
+			
 			// colors
 			sf::Color colorControlPts_;
 			sf::Color color_;

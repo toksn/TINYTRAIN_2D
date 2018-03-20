@@ -26,6 +26,8 @@ namespace tinytrain
 	{
 		if (track_->spline_)
 			track_->spline_->appendControlPoint(a_ctrlPt);
+
+		//addLastControlPointToHistory();
 	}
 
 	void TRailTrack::addTrain(TTrain * a_train, float a_atDistance)
@@ -108,10 +110,12 @@ namespace tinytrain
 			sf::Vector2f end;
 			if(track_->spline_->getLastControlPoint(end) && end == a_points[0])
 				i++;
-		}
 
-		for (; i < a_points.size(); i++)
-			track_->spline_->appendControlPoint(a_points[i]);
+			for (; i < a_points.size(); i++)
+				track_->spline_->appendControlPoint(a_points[i]);
+
+			addLastControlPointToHistory();
+		}
 
 		onSplineChanged();
 	}
@@ -131,7 +135,7 @@ namespace tinytrain
 	{
 		track_->draw(target);
 
-		//track_->spline_->draw(target);
+		track_->spline_->draw(target);
 		
 		// this can be used to draw the last control point segment
 		//sf::Vertex line[2];
@@ -146,5 +150,71 @@ namespace tinytrain
 		// move all the trains on the track
 		for (int i = 0; i < trains_.size(); i++)
 			moveAndRotateOnRail(trains_[i]);
+	}
+
+	void TRailTrack::addLastControlPointToHistory()
+	{
+		if (track_ && track_->spline_ && track_->spline_->controlPoints_.getVertexCount())
+		{
+			ctrlpt_history_index_++;
+			ctrlpt_history_.resize(ctrlpt_history_index_ + 1);
+			ctrlpt_history_[ctrlpt_history_index_] = track_->spline_->controlPoints_.getVertexCount() - 1;
+		}
+	}
+
+	bool TRailTrack::undo()
+	{
+		bool rc = false;
+		int history_index = ctrlpt_history_index_- 1;
+
+		// calc splinepoint and triangle index for given ctrl pt index
+		int c_index = ctrlpt_history_[history_index];
+		if (track_->spline_->interpolateControlPointEnds_ == false)
+			c_index--;
+
+		if (c_index >= 0)
+		{
+			int spline_index = track_->spline_->pointsPerSegment_ * c_index;
+			int tri_index = track_->calcTriangleIndexAtSplinePt(spline_index);
+
+			// check for train pos < splinept index len
+			bool any_train_blocking = false;
+			for (auto& t : trains_)
+			{
+				if (t->distance_ > track_->spline_->splinePointsLengths_[spline_index])
+				{
+					any_train_blocking = true;
+					break;
+				}
+			}
+			
+			if (any_train_blocking == false)
+			{
+				// cut spline and trianglestrip at those indices
+				track_->cutTrianglesAtIndex(tri_index + 2);
+				track_->spline_->cutSplineAtIndex(spline_index + 1);
+
+				// cut controlpoints
+				track_->spline_->controlPoints_.resize(ctrlpt_history_[history_index]+1);
+
+				// todo: save controlpoints that are cut away (for redo)
+
+				rc = true;
+				ctrlpt_history_index_ = history_index;
+			}
+		}
+
+		return rc;
+	}
+
+	// todo: implement redo
+	bool TRailTrack::redo()
+	{
+		bool rc = false;
+
+		//if(ctrlpt_history_.size() > ctrlpt_history_index_+1)
+		//	ctrlpt_history_index_++;
+
+		return rc;
 	}
 }

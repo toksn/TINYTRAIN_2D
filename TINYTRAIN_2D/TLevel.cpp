@@ -98,6 +98,7 @@ namespace tinytrain
 				railtrack_->append(sf::Vector2f(end.x, end.y));
 			}
 
+			railtrack_->addLastControlPointToHistory();
 			railtrack_->addTrain(train_.get());
 			train_->initWagons(30);
 
