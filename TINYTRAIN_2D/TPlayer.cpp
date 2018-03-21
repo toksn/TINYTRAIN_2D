@@ -132,7 +132,8 @@ namespace tinytrain
 		{
 			if (railtrack_ && railtrack_->undo())
 			{
-				// apply input penalty (probably not here but in player class)
+				// apply penalty:
+				// todo: speed up the train for a second
 			}
 		}
 	}

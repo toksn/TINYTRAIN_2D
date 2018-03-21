@@ -135,7 +135,7 @@ namespace tinytrain
 	{
 		track_->draw(target);
 
-		track_->spline_->draw(target);
+		//track_->spline_->draw(target);
 		
 		// this can be used to draw the last control point segment
 		//sf::Vertex line[2];
@@ -200,8 +200,13 @@ namespace tinytrain
 				// todo: save controlpoints that are cut away (for redo)
 
 				rc = true;
-				ctrlpt_history_index_ = history_index;
 			}
+		}
+
+		if (rc)
+		{
+			ctrlpt_history_index_ = history_index;
+			onSplineChanged();
 		}
 
 		return rc;
