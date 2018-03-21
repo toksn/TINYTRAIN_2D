@@ -175,7 +175,6 @@ namespace tinytrain
 		if (c_index >= 0)
 		{
 			int spline_index = track_->spline_->pointsPerSegment_ * c_index;
-			int tri_index = track_->calcTriangleIndexAtSplinePt(spline_index);
 
 			// check for train pos < splinept index len
 			bool any_train_blocking = false;
@@ -191,7 +190,8 @@ namespace tinytrain
 			if (any_train_blocking == false)
 			{
 				// cut spline and trianglestrip at those indices
-				track_->cutTrianglesAtIndex(tri_index + 2);
+				//track_->cutTrianglesAtIndex(tri_index + 2);
+				track_->cutTrianglesAtSplineIndex(spline_index + 1);
 				track_->spline_->cutSplineAtIndex(spline_index + 1);
 
 				// cut controlpoints

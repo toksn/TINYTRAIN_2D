@@ -15,6 +15,7 @@ namespace tgf
 			~SplineTexture();
 
 			int calcTriangleIndexAtSplinePt(int spline_pt_index);
+			bool cutTrianglesAtSplineIndex(int spline_index);
 			bool cutTrianglesAtIndex(int triangle_index);
 
 			std::unique_ptr<Spline_CatmullRom> spline_;

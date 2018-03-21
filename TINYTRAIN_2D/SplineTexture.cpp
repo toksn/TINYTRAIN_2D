@@ -43,6 +43,18 @@ namespace tgf
 			return tri_index*2;
 		}
 
+		// remove all triangles from and including the given spline_index
+		bool SplineTexture::cutTrianglesAtSplineIndex(int spline_index)
+		{
+			int tri_index = calcTriangleIndexAtSplinePt(spline_index);
+			bool rc = cutTrianglesAtIndex(tri_index);
+			
+			if(rc)
+				last_processed_startindex_ = spline_index - 1;
+
+			return rc;
+		}
+
 		// remove all triangles from and including the given triangle_index
 		bool SplineTexture::cutTrianglesAtIndex(int triangle_index)
 		{

@@ -30,6 +30,9 @@ namespace tgf
 				splinePointsLengths_.resize(spline_index);
 				if (calcNormals_)
 					normals_.resize(spline_index);
+
+				// change the startindex_lastupdate, so a splinetexture can actually know when a cut happened
+				startIndex_lastUpdate_ = spline_index - 1;
 				rc = true;
 			}
 			return rc;
