@@ -11,6 +11,12 @@ namespace tinytrain
 		segLength_ = 100.0f;
 
 		track_ = std::make_unique<tgf::utilities::SplineTexture>();
+		texture_ = std::make_unique<sf::Texture>();
+		
+		texture_->loadFromFile("data/images/track/track_05.png");
+		//texture_.loadFromFile("data/images/track/railtrack_marked.png");
+
+		track_->setTexture(texture_.get());
 		track_->width_ = 32.0f;
 
 		track_->spline_->type_ = tgf::math::Spline_CatmullRom::CatmullRomType::Chordal;

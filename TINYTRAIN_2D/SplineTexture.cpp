@@ -9,10 +9,7 @@ namespace tgf
 		{
 			spline_ = std::make_unique<Spline_CatmullRom>();
 			
-			// todo: make texture available from outside
-			texture_.loadFromFile("data/images/track/track_05.png");
-			//texture_.loadFromFile("data/images/track/railtrack_marked.png");
-			width_ = texture_.getSize().x;
+			width_ = -1.0f;
 			useSplineptsForTextureSplitting_ = false;
 
 			triangles_.setPrimitiveType(sf::PrimitiveType::TrianglesStrip);
@@ -21,6 +18,18 @@ namespace tgf
 
 		SplineTexture::~SplineTexture()
 		{
+		}
+
+		void SplineTexture::setTexture(sf::Texture * texture)
+		{
+			texture_ = texture;
+			if (texture)
+				width_ = texture->getSize().x;
+		}
+
+		sf::Texture * SplineTexture::getTexture()
+		{
+			return texture_;
 		}
 
 		int SplineTexture::calcTriangleIndexAtSplinePt(int spline_pt_index)
@@ -71,7 +80,7 @@ namespace tgf
 		void SplineTexture::onDraw(sf::RenderTarget * target)
 		{	
 			sf::RenderStates state;
-			state.texture = &texture_;
+			state.texture = texture_;
 			target->draw(triangles_, state);
 			//target->draw(bent_texture);
 		}
@@ -115,7 +124,7 @@ namespace tgf
 		//	...
 		void SplineTexture::createTriangleStrip_splitTextureByLength(int startindex)
 		{
-			auto size = texture_.getSize();
+			auto size = texture_->getSize();
 			float tex_scale = width_ / size.x;
 			float rest_len = 0.0f;
 			int tri_index = startindex;
@@ -267,7 +276,7 @@ namespace tgf
 		//	...
 		void SplineTexture::createTriangleStrip_splitTextureByPoints(int startindex)
 		{
-			auto size = texture_.getSize();
+			auto size = texture_->getSize();
 			sf::Vector2f texturePos(0.0f, 0.0f);
 			c2v lastSplinePt = { spline_->splinePoints_[startindex].position.x, spline_->splinePoints_[startindex].position.y };
 			if (startindex > 0)

@@ -69,6 +69,7 @@ namespace tinytrain
 		float segLength_;
 		//std::unique_ptr<tgf::math::Spline_CatmullRom> trackspline_;
 		std::unique_ptr<tgf::utilities::SplineTexture> track_;
+		std::unique_ptr<sf::Texture> texture_;
 		std::vector<int> ctrlpt_history_;
 		int ctrlpt_history_index_;
 	};

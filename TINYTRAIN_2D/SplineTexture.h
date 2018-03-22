@@ -14,6 +14,9 @@ namespace tgf
 			SplineTexture();
 			~SplineTexture();
 
+			void setTexture(sf::Texture* texture);
+			sf::Texture* getTexture();
+
 			int calcTriangleIndexAtSplinePt(int spline_pt_index);
 			bool cutTrianglesAtSplineIndex(int spline_index);
 			bool cutTrianglesAtIndex(int triangle_index);
@@ -23,7 +26,7 @@ namespace tgf
 			// todo: use enum type instead of bool
 			bool useSplineptsForTextureSplitting_;
 		protected:
-			sf::Texture texture_;
+			sf::Texture* texture_;
 			sf::VertexArray triangles_;
 			std::vector<float> trianglesLengths_;
 			int last_processed_startindex_;
