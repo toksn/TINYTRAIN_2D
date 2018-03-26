@@ -113,6 +113,9 @@
     <ClCompile Include="SplineTexture.cpp">
       <Filter>GameFramework\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="CityGenerator.cpp">
+      <Filter>GameFramework\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -188,6 +191,9 @@
       <Filter>TinyTrain\controllers</Filter>
     </ClInclude>
     <ClInclude Include="SplineTexture.h">
+      <Filter>GameFramework\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="CityGenerator.h">
       <Filter>GameFramework\utilities</Filter>
     </ClInclude>
   </ItemGroup>
