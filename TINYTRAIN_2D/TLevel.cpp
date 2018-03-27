@@ -62,8 +62,11 @@ namespace tinytrain
 			SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
 			***************************************************************************/
 			tgf::utilities::CityGenerator city;
+			auto t1 = std::clock();
 			city.generate();
 			roads_ = city.road_segments_;
+			int time = std::clock() - t1;
+			printf("road generation took %i ms. %i segments placed making %fms per segment\n", time, city.road_segments_.getVertexCount()/2, (float)time/ (float)(city.road_segments_.getVertexCount() / 2));
 
 
 			// create train for the player

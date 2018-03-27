@@ -58,6 +58,8 @@ namespace tgf
 			start.angle = 270.0f;
 			road_candidates_.push_back(start);
 
+			road_crossings_.push_back(settings_.road_startingPoint);
+
 			while (road_candidates_.size())
 			{
 				auto possible_segment = road_candidates_.front();
@@ -84,8 +86,8 @@ namespace tgf
 				float chance_to_split = 1.0f - distance / settings_.road_chanceToSplitRadius;
 				float chance_to_continue = 1.0f - distance / settings_.road_chanceToContinueRadius;
 
-				//if (chance_to_split < 0.0f)
-					chance_to_split = 0.10f;
+				if (chance_to_split < 0.0f)
+					chance_to_split = 0.0f;
 				if (chance_to_continue < 0.0f)
 					chance_to_continue = 0.0f;
 
@@ -102,13 +104,18 @@ namespace tgf
 				// check to split (left right extension)
 				if (do_split < chance_to_split)
 				{
-					// splitting road may only create one new candidate (random direction)
-					int direction_first = (rand() % 2)*2 - 1;
-					int direction_second = (rand() % 2) * 2 - 1;
-					
-					advanceRoadCandidate(seg, 90.0f * direction_first);
-					if(direction_first != direction_second)
-						advanceRoadCandidate(seg, 90.0f * direction_second);
+					if (checkForCrossingInRadius(seg.b, settings_.road_crossingMinDist) == false)
+					{
+						road_crossings_.push_back(seg.b);
+
+						// splitting road may only create one new candidate (random direction)
+						int direction_first = (rand() % 2) * 2 - 1;
+						int direction_second = (rand() % 2) * 2 - 1;
+
+						advanceRoadCandidate(seg, 90.0f * direction_first);
+						if (direction_first != direction_second)
+							advanceRoadCandidate(seg, 90.0f * direction_second);
+					}
 				}
 			}
 		}
@@ -138,6 +145,17 @@ namespace tgf
 			nextsegment.b.y += settings_.road_segLength * sin(nextsegment.angle * DEG_TO_RAD);
 
 			road_candidates_.push_back(nextsegment);
+		}
+
+		bool CityGenerator::checkForCrossingInRadius(sf::Vector2f& pt, float radius)
+		{
+			for (auto& crossing : road_crossings_)
+			{
+				if (c2Len(c2Sub({ pt.x, pt.y }, { crossing.x, crossing.y })) < radius)
+					return true;
+			}
+
+			return false;
 		}
 	}
 }

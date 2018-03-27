@@ -10,9 +10,10 @@ namespace tgf
 		struct cgSettings
 		{
 			int road_segAngleRange = 10;						//possible angle in both directions. so -anglerange/2 to + angleRange/2
-			float road_segLength = 50.0f;
+			float road_segLength = 10.0f;
 			float road_chanceToSplitRadius = 1000.0f;		// to generate crossings
 			float road_chanceToContinueRadius = 1000.f;		// to stop at maximum 1000.0f (+1*seglen)
+			float road_crossingMinDist = 40.0f;
 			
 			sf::Vector2f road_startingPoint;
 		};
@@ -44,6 +45,7 @@ namespace tgf
 			void processRoadSegment(roadsegment_candidate & seg);
 
 			void advanceRoadCandidate(roadsegment_candidate & seg, float additional_angle = 0.0f);
+			bool checkForCrossingInRadius(sf::Vector2f & pt, float radius);
 
 			cgSettings settings_;
 			c2v mid_;
