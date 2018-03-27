@@ -5,6 +5,7 @@
 #include "GameState_Running.h"
 #include "TObstacle.h"
 #include "InterpolateToPoint.h"
+#include "CityGenerator.h"
 
 namespace tinytrain
 {
@@ -19,11 +20,13 @@ namespace tinytrain
 
 	void TLevel::onDraw(sf::RenderTarget * target)
 	{
+		target->draw(roads_);
+
 		if (railtrack_)
 			railtrack_->draw(target);
 		if (train_)
 			train_->draw(target);
-
+		
 		for (int i = obstacles_.size() - 1; i >= 0; i--)
 		{
 			auto o = obstacles_[i].get();
@@ -58,6 +61,11 @@ namespace tinytrain
 			/**************************************************************************
 			SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
 			***************************************************************************/
+			tgf::utilities::CityGenerator city;
+			city.generate();
+			roads_ = city.road_segments_;
+
+
 			// create train for the player
 			train_ = std::make_unique<TTrain>(gs);
 			train_->play();
@@ -76,7 +84,7 @@ namespace tinytrain
 			float dist = 10.0f;
 			int angle_range = 20;
 			angle_range *= 100;
-
+			/*
 			c2v seg = c2Sub(end, start);
 			// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
 			float angle = atan2(seg.y, seg.x) * RAD_TO_DEG;
@@ -97,10 +105,10 @@ namespace tinytrain
 				
 				railtrack_->append(sf::Vector2f(end.x, end.y));
 			}
-
+			*/
 			railtrack_->addLastControlPointToHistory();
 			railtrack_->addTrain(train_.get());
-			train_->initWagons(30);
+			train_->initWagons(1);
 
 			// create obstacles for the games to be lost
 			auto zone = std::make_unique<TObstacle>(gs, false);

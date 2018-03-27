@@ -28,6 +28,8 @@ namespace tinytrain
 		// Inherited via Entity
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(float deltaTime) override;
+
+		sf::VertexArray roads_;
 	};
 
 

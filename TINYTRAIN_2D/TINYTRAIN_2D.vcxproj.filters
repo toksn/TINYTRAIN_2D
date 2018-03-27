@@ -196,6 +196,9 @@
     <ClInclude Include="CityGenerator.h">
       <Filter>GameFramework\utilities</Filter>
     </ClInclude>
+    <ClInclude Include="tgfdefines.h">
+      <Filter>GameFramework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt">

@@ -176,6 +176,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="Spline.h" />
     <ClInclude Include="SplineTexture.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
+    <ClInclude Include="tgfdefines.h" />
     <ClInclude Include="TLineInputInterface.h" />
     <ClInclude Include="TPolyLineInputComponent.h" />
     <ClInclude Include="TextMenu.h" />
