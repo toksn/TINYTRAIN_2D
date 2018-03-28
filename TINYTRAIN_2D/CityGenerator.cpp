@@ -71,12 +71,17 @@ namespace tgf
 			}
 		}
 
+		// applying local contraints, to generate new crossings/connections:
+		//		- check for intersections with existing roads
+		//		- chekc for close existing crossings to connect to
+		//		- check for close existing roads to extend to
+		//		- check for close starting points of other segment candidates to connect them
+		//
+		// return true when the candidate may be processed normally
+		// return false when the candidate was processed by local constraints already or is invalid to further process
 		bool CityGenerator::applyLocalContraintsToSegmentCandidate(roadsegment_candidate& seg)
 		{
-			float close = settings_.road_segLength / 3.0f;
-			// todo: check existing road crossings that are close to simply connect seg.b to that point
-
-			// check existing road segments for an intersection of the candidate
+			// 1: check existing road segments for an intersection of the candidate
 			sf::Vector2f intersection;
 			int i = checkForIntersection(seg, intersection);
 			if (i >= 0)
@@ -107,10 +112,15 @@ namespace tgf
 				return false;
 			}
 
-			// todo: check for existing road segments that are close
+
+
+			float close = settings_.road_segLength / 3.0f;
+			// todo: 2: check existing road crossings that are close to simply connect seg.b to that point
+
+			// todo: 3: check for existing road segments that are close
 			// https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
 
-			// todo: check other candidate STARTING points that are close
+			// todo: 4: check other candidate STARTING points that are close (to possibly connect two close loose line endings)
 			
 			return true;
 		}
