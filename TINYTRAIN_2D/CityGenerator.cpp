@@ -115,16 +115,55 @@ namespace tgf
 
 
 			float close = settings_.road_segLength / 3.0f;
-			// todo: 2: check existing road crossings that are close to simply connect seg.b to that point
+			// 2: check existing road crossings that are close to simply connect seg.b to that point
+			sf::Vector2f crossing;
+			if (checkForCrossingInRadius(seg.b, close, &crossing))
+			{
+				//todo: check for crossing to be full (4 pieces) already
+				seg.b = crossing;
 
-			// todo: 3: check for existing road segments that are close
-			// https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+				// add new candidate
+				road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+				road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
+
+				return false;
+			}
+
+			// 3: check for existing road segments that are close
+			i = extendSegmentOntoExistingRoadSegment(seg, close, intersection);
+			if (i >= 0)
+			{
+				// check wether a new crossing is possible
+				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist) == false)
+				{
+					//create new 3 way crossing (oldseg.a > intersection; intersection > oldseg.b; seg.a > intersection)
+					//createCrossingAtExistingRoadSegment(i, seg);
+					//createCrossingAtExistingRoadSegment(i, seg.a, intersection);
+
+
+					// split existing road segment at intersection, cut candidate at intersection
+					sf::Vector2f oldseg_b = road_segments_[i + 1].position;
+					seg.b = road_segments_[i + 1].position = intersection;
+
+					// re-create second part of the old segment
+					road_segments_.append(sf::Vertex(seg.b, sf::Color::Red));
+					road_segments_.append(sf::Vertex(oldseg_b, sf::Color::Green));
+
+					// add new candidate
+					road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+					road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
+
+					// save crossing
+					road_crossings_.push_back(seg.b);
+				}
+				return false;
+			}
 
 			// todo: 4: check other candidate STARTING points that are close (to possibly connect two close loose line endings)
 			
 			return true;
 		}
-
+		
 		int CityGenerator::checkForIntersection(roadsegment_candidate& seg, sf::Vector2f& intersecting_pt)
 		{
 			c2v s1_a, s1_b, s2_a, s2_b, intersection;
@@ -150,6 +189,33 @@ namespace tgf
 			}
 
 			// no intersection found
+			return -1;
+		}
+
+		int CityGenerator::extendSegmentOntoExistingRoadSegment(roadsegment_candidate& seg, float maxdist, sf::Vector2f& intersecting_pt)
+		{
+			c2v s1_a, s1_b, s2_a, s2_b, intersection;
+			s1_a = { seg.a.x, seg.a.y };
+			s1_b = { seg.b.x, seg.b.y };
+			c2v dir = c2Sub(s1_b, s1_a);
+
+			// check for intersections
+			for (int i = 0; i < road_segments_.getVertexCount(); i += 2)
+			{
+				s2_a = { road_segments_[i].position.x, road_segments_[i].position.y };
+				s2_b = { road_segments_[i + 1].position.x, road_segments_[i + 1].position.y };
+
+				if (MathHelper2D::ray_to_segment_intersection(s1_a, dir, s2_a, s2_b, &intersection))
+				{
+					if (c2Distance(s1_b, intersection) < maxdist)
+					{
+						// todo: continue to find closest
+						intersecting_pt = { intersection.x, intersection.y };
+						return i;
+					}
+				}
+			}
+
 			return -1;
 		}
 
@@ -231,12 +297,19 @@ namespace tgf
 			road_candidates_.push_back(nextsegment);
 		}
 
-		bool CityGenerator::checkForCrossingInRadius(sf::Vector2f& pt, float radius)
+		bool CityGenerator::checkForCrossingInRadius(sf::Vector2f& pt, float radius, sf::Vector2f* crossing)
 		{
-			for (auto& crossing : road_crossings_)
+			for (auto& c : road_crossings_)
 			{
-				if (c2Len(c2Sub({ pt.x, pt.y }, { crossing.x, crossing.y })) < radius)
+				if (c2Len(c2Sub({ pt.x, pt.y }, { c.x, c.y })) < radius)
+				{
+					if (crossing)
+					{
+						crossing->x = c.x;
+						crossing->y = c.y;
+					}						
 					return true;
+				}
 			}
 
 			return false;

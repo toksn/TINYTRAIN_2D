@@ -156,5 +156,47 @@ namespace tgf
 
 			return true;
 		}
+
+		/*
+		float MathHelper2D::point_to_segment_distance(c2v pt, c2v s_a, c2v s_b, c2v* on_seg_projection)
+		{
+			// Return minimum distance between line segment a,b and pt
+			//c2Dot
+			c2v t = c2Sub(s_b, s_a);
+			const float l2 = c2Dot(t,t);  // i.e. |w-v|^2 -  avoid a sqrt
+			if (l2 == 0.0) return c2Distance(pt, s_a);   // s_a == s_b case
+													
+													// Consider the line extending the segment, parameterized as v + t (w - v).
+													// We find projection of point p onto the line. 
+													// It falls where t = [(p-v) . (w-v)] / |w-v|^2
+													// We clamp t from [0,1] to handle points outside the segment vw.
+			const float t = c2Max(0, c2Min(1, dot(pt - s_a, s_b - s_a) / l2));
+			*on_seg_projection = v + t * (w - v);  // Projection falls on the segment
+			return c2Distance(p, *on_seg_projection);
+		}*/
+
+		// https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
+		bool MathHelper2D::ray_to_segment_intersection(c2v rayOrigin, c2v rayDirection, c2v s_a, c2v s_b, c2v* intersection)
+		{
+			c2v v1 = c2Sub(rayOrigin, s_a);
+			c2v v2 = c2Sub(s_b, s_a);
+			c2v v3 = c2Skew(rayDirection);
+
+			float dot = c2Dot(v2, v3);
+			
+			if (c2Abs(dot) < 0.000001)
+				return false;
+
+			float t1 = c2Det2(v2, v1) / dot;
+			float t2 = c2Dot(v1, v3) / dot;
+
+			if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0))
+			{
+				if(intersection)
+					*intersection = c2Add(rayOrigin, c2Mulvs(rayDirection, t1));
+				return true;
+			}
+			return false;
+		}
 	}
 }
