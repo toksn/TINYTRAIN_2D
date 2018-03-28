@@ -116,6 +116,9 @@
     <ClCompile Include="CityGenerator.cpp">
       <Filter>GameFramework\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="MathHelper2D.cpp">
+      <Filter>GameFramework\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -198,6 +201,9 @@
     </ClInclude>
     <ClInclude Include="tgfdefines.h">
       <Filter>GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="MathHelper2D.h">
+      <Filter>GameFramework\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

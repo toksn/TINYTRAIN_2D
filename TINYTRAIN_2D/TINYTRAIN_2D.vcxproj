@@ -146,6 +146,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="GameState_Pause.cpp" />
     <ClCompile Include="GameState_Running.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathHelper2D.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineTexture.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
@@ -173,6 +174,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="GameState_Pause.h" />
     <ClInclude Include="GameState_Running.h" />
     <ClInclude Include="GameStateBase.h" />
+    <ClInclude Include="MathHelper2D.h" />
     <ClInclude Include="Spline.h" />
     <ClInclude Include="SplineTexture.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
