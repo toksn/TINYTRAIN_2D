@@ -2,6 +2,8 @@
 #include "tgfdefines.h"
 #include <random>
 
+using namespace tgf::math;
+
 namespace tgf
 {
 	namespace utilities
@@ -69,10 +71,82 @@ namespace tgf
 			}
 		}
 
+		bool CityGenerator::applyLocalContraintsToSegmentCandidate(roadsegment_candidate& seg)
+		{
+			float close = settings_.road_segLength / 3.0f;
+			// todo: check existing road crossings that are close to simply connect seg.b to that point
+
+			// check existing road segments for an intersection of the candidate
+			sf::Vector2f intersection;
+			int i = checkForIntersection(seg, intersection);
+			if (i >= 0)
+			{
+				// check wether a new crossing is possible
+				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist) == false)
+				{
+					//create new 3 way crossing (oldseg.a > intersection; intersection > oldseg.b; seg.a > intersection)
+					//createCrossingAtExistingRoadSegment(i, seg);
+					//createCrossingAtExistingRoadSegment(i, seg.a, intersection);
+					
+
+					// split existing road segment at intersection, cut candidate at intersection
+					sf::Vector2f oldseg_b = road_segments_[i + 1].position;
+					seg.b = road_segments_[i + 1].position = intersection;
+
+					// re-create second part of the old segment
+					road_segments_.append(sf::Vertex(seg.b, sf::Color::Red));
+					road_segments_.append(sf::Vertex(oldseg_b, sf::Color::Green));
+
+					// add new candidate
+					road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+					road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
+
+					// save crossing
+					road_crossings_.push_back(seg.b);
+				}
+				return false;
+			}
+
+			// todo: check for existing road segments that are close
+			// https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+
+			// todo: check other candidate STARTING points that are close
+			
+			return true;
+		}
+
+		int CityGenerator::checkForIntersection(roadsegment_candidate& seg, sf::Vector2f& intersecting_pt)
+		{
+			c2v s1_a, s1_b, s2_a, s2_b, intersection;
+			s1_a = { seg.a.x, seg.a.y };
+			s1_b = { seg.b.x, seg.b.y };
+			// check for intersections
+			for (int i = 0; i < road_segments_.getVertexCount(); i += 2)
+			{
+				s2_a = { road_segments_[i].position.x, road_segments_[i].position.y };
+				s2_b = { road_segments_[i + 1].position.x, road_segments_[i + 1].position.y };
+
+				// ignore intersections when the points match exactly (they are probably from the same crossing)
+				// todo: check if they are from the same crossing before continue
+				if (c2Equal(s1_a, s2_a) || c2Equal(s1_a, s2_b) || c2Equal(s1_b, s2_a) || c2Equal(s1_b, s2_b))
+					continue;
+
+				//if (MathHelper2D::segment_segment_intersect(s1_a, s1_b, s2_a, s2_b))
+				if (MathHelper2D::segment_segment_intersection(s1_a, s1_b, s2_a, s2_b, &intersection) > 0)
+				{
+					intersecting_pt = { intersection.x, intersection.y };
+					return i;
+				}
+			}
+
+			// no intersection found
+			return -1;
+		}
+
 		void CityGenerator::processRoadSegment(roadsegment_candidate& seg)
 		{
 			// check wether placement is possible
-			bool valid_placement = true;
+			bool valid_placement = applyLocalContraintsToSegmentCandidate(seg);
 
 			if (valid_placement)
 			{
@@ -119,7 +193,7 @@ namespace tgf
 				}
 			}
 		}
-
+		
 		void CityGenerator::advanceRoadCandidate(roadsegment_candidate& seg, float additional_angle)
 		{
 			// copy current segment

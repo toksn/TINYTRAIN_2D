@@ -179,7 +179,7 @@ namespace tgf
 			// update start index of last update if splinepoints were added/removed
 			if (splinePoints_.getVertexCount() != spline_pts_before)
 			{
-				printf("startindex_lastupdate=%i\n", spline_pts_before);
+				//printf("startindex_lastupdate=%i\n", spline_pts_before);
 				startIndex_lastUpdate_ = spline_pts_before;
 						if(startIndex_lastUpdate_ > splinePoints_.getVertexCount())
 							startIndex_lastUpdate_ = splinePoints_.getVertexCount() -1;
