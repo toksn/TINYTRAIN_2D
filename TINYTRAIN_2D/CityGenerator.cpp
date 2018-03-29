@@ -300,9 +300,11 @@ namespace tgf
 						float mindist = c2Distance(c2V(closest->b.x, closest->b.y),pt_a);
 
 						// check for roadcandidates from a crossing -> choose the best candidate to replace						
+						bool noCrossing = true;
 						++iter;
 						while (iter != road_candidates_.end() && iter->a == candidate.a)
 						{
+							noCrossing = false;
 							dist = c2Distance(c2V(iter->b.x, iter->b.y), pt_a);
 							if (dist < mindist)
 							{
@@ -328,7 +330,11 @@ namespace tgf
 							//if(c2Abs(angle-closest->angle) > 140.0f && c2Abs(angle - closest->angle) < 220.0f)
 							road_candidates_.erase(closest);
 						else
+						{
 							printf("kept deadend candidate\n");
+							if (noCrossing)
+								road_crossings_.push_back(seg.b);
+						}
 						return true;
 					}
 				}
