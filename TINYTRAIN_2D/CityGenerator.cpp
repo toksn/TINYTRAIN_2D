@@ -76,23 +76,23 @@ namespace tgf
 		//		- check for intersections with existing roads
 		//		- chekc for close existing crossings to connect to
 		//		- check for close existing roads to extend to
-		//		- check for close starting points of other segment candidates to connect them
+		//		- check for close deadends
 		//
 		// return true when the candidate may be processed normally
 		// return false when the candidate was processed by local constraints already or is invalid to further process
 		bool CityGenerator::applyLocalContraintsToSegmentCandidate(roadsegment_candidate& seg)
 		{
-			//float close = settings_.road_segLength / 2.0f;
-			float close = settings_.road_crossingMinDist / 2.0f;
+			float close = settings_.road_segLength / 2.0f;
+			//float close = settings_.road_crossingMinDist / 2.0f;
 			if (connectToExistingRoadSeg_intersecting(seg))
 				return false;
 			if (connectToDeadEndInRadius(seg, close))
 				return false;
 
-			//if (connectToExistingRoadSeg_extending(seg, close))
-			//	return false;
-			//if (connectToExistingCrossing(seg, close))
-			//	return false;
+			if (connectToExistingRoadSeg_extending(seg, close))
+				return false;
+			if (connectToExistingCrossing(seg, close))
+				return false;
 			
 			return true;
 		}
@@ -191,8 +191,6 @@ namespace tgf
 				{
 					if (checkForCrossingInRadius(seg.b, settings_.road_crossingMinDist) == false)
 					{
-						road_crossings_.push_back(seg.b);
-
 						// splitting road may only create one new candidate (random direction)
 						int direction_first = (rand() % 2) * 2 - 1;
 						int direction_second = (rand() % 2) * 2 - 1;
@@ -203,7 +201,10 @@ namespace tgf
 						{
 							advanceRoadCandidate(seg, 90.0f * direction_second);
 							advanced++;
-						}		
+						}
+
+						if(advanced>=2)
+							road_crossings_.push_back(seg.b);
 					}
 				}
 
@@ -269,7 +270,7 @@ namespace tgf
 
 			// add new candidate
 			road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
-			road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
+			road_segments_.append(sf::Vertex(seg.b, sf::Color::Blue));
 
 			// save crossing
 			road_crossings_.push_back(seg.b);
@@ -286,12 +287,17 @@ namespace tgf
 			for (auto iter = road_candidates_.begin(); iter != road_candidates_.end(); ++iter)
 			{
 				auto candidate = *iter;
-				if (candidate.a != seg.a || candidate.b != seg.b || candidate.angle != seg.angle || candidate.constAngle != seg.constAngle)
+				//if (candidate.a != seg.a || candidate.b != seg.b || candidate.angle != seg.angle || candidate.constAngle != seg.constAngle)
+				if (candidate.a == seg.a && candidate.b == seg.b)
+					printf("error\n");
+				else
 				//if(&candidate != &seg)
 				{
 					if (c2Distance({ candidate.a.x, candidate.a.y }, pt) < radius)
 					{
 						seg.b = candidate.a;
+						road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+						road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
 						road_candidates_.erase(iter);
 						return true;
 					}
@@ -303,6 +309,10 @@ namespace tgf
 				if (c2Distance({ (*end).x, (*end).y }, pt) < radius)
 				{
 					seg.b = *end;
+
+					road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+					road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
+
 					road_deadends_.erase(end);
 					return true;
 				}
@@ -319,8 +329,14 @@ namespace tgf
 			if (i >= 0)
 			{
 				// check wether a new crossing is possible
-				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist))
+				sf::Vector2f crossing;
+				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist, &crossing))
+				{
 					road_deadends_.push_back(seg.a);
+					//seg.b = crossing;
+					//road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+					//road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
+				}
 				else
 					insertCrossingAtExistingRoadSegment(i, seg, intersection);
 
@@ -360,7 +376,7 @@ namespace tgf
 
 				// add new candidate
 				road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
-				road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
+				road_segments_.append(sf::Vertex(seg.b, sf::Color::White));
 
 				return true;
 			}
