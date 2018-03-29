@@ -318,10 +318,9 @@ namespace tgf
 						road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
 
 
-						// angle of new seg vs angle of closest candidate
+						// angle of new seg vs angle of closest candidate (should differ about 180° +- tolerance (65 in this case))
 						c2v t = c2Sub(c2V(seg.b.x, seg.b.y), c2V(seg.a.x, seg.a.y));
-						//t = c2Skew(t);
-						// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
+
 						float angle = atan2(t.y, t.x) * RAD_TO_DEG;
 						float angle_diff = fmod(c2Abs(angle - closest->angle), 360.0f);
 						if (c2Abs(angle_diff - 180.0f) < 65.0f)
