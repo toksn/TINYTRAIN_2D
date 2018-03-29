@@ -88,7 +88,6 @@ namespace tgf
 				return false;
 			if (connectToDeadEndInRadius(seg, close))
 				return false;
-
 			if (connectToExistingRoadSeg_extending(seg, close))
 				return false;
 			if (connectToExistingCrossing(seg, close))
@@ -160,7 +159,7 @@ namespace tgf
 			if (valid_placement)
 			{
 				// add road candidate to road_segments
-				road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+				road_segments_.append(sf::Vertex(seg.a, sf::Color::Green));
 				road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
 
 
@@ -191,7 +190,7 @@ namespace tgf
 				{
 					if (checkForCrossingInRadius(seg.b, settings_.road_crossingMinDist) == false)
 					{
-						// splitting road may only create one new candidate (random direction)
+						// splitting road may only create one new candidate (random direction) (+1 or -1)
 						int direction_first = (rand() % 2) * 2 - 1;
 						int direction_second = (rand() % 2) * 2 - 1;
 
@@ -265,12 +264,12 @@ namespace tgf
 			seg.b = road_segments_[roadseg_startindex + 1].position = intersection;
 
 			// re-create second part of the old segment
-			road_segments_.append(sf::Vertex(seg.b, sf::Color::Red));
+			road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
 			road_segments_.append(sf::Vertex(oldseg_b, sf::Color::Green));
 
 			// add new candidate
-			road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
-			road_segments_.append(sf::Vertex(seg.b, sf::Color::Blue));
+			road_segments_.append(sf::Vertex(seg.a, sf::Color::Green));
+			road_segments_.append(sf::Vertex(seg.b, sf::Color::Red));
 
 			// save crossing
 			road_crossings_.push_back(seg.b);
@@ -293,12 +292,44 @@ namespace tgf
 				else
 				//if(&candidate != &seg)
 				{
-					if (c2Distance({ candidate.a.x, candidate.a.y }, pt) < radius)
+					float dist = c2Distance({ candidate.a.x, candidate.a.y }, pt);
+					if (dist < radius)
 					{
+						auto closest = iter;
+						c2v pt_a = { seg.a.x, seg.a.y };
+						float mindist = c2Distance(c2V(closest->b.x, closest->b.y),pt_a);
+
+						// check for roadcandidates from a crossing -> choose the best candidate to replace						
+						++iter;
+						while (iter != road_candidates_.end() && iter->a == candidate.a)
+						{
+							dist = c2Distance(c2V(iter->b.x, iter->b.y), pt_a);
+							if (dist < mindist)
+							{
+								mindist = dist;
+								closest = iter;
+							}
+							++iter;
+						}
+						//--iter;
+
 						seg.b = candidate.a;
-						road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+						road_segments_.append(sf::Vertex(seg.a, sf::Color::White));
 						road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
-						road_candidates_.erase(iter);
+
+
+						// angle of new seg vs angle of closest candidate
+						c2v t = c2Sub(c2V(seg.b.x, seg.b.y), c2V(seg.a.x, seg.a.y));
+						//t = c2Skew(t);
+						// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
+						float angle = atan2(t.y, t.x) * RAD_TO_DEG;
+						float angle_diff = fmod(c2Abs(angle - closest->angle), 360.0f);
+						if (c2Abs(angle_diff - 180.0f) < 65.0f)
+							//if(c2Abs(c2Abs(angle - closest->angle) - 180.0f)<65.0f)
+							//if(c2Abs(angle-closest->angle) > 140.0f && c2Abs(angle - closest->angle) < 220.0f)
+							road_candidates_.erase(closest);
+						else
+							printf("kept deadend candidate\n");
 						return true;
 					}
 				}
@@ -310,7 +341,7 @@ namespace tgf
 				{
 					seg.b = *end;
 
-					road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
+					road_segments_.append(sf::Vertex(seg.a, sf::Color::Magenta));
 					road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
 
 					road_deadends_.erase(end);
@@ -375,8 +406,8 @@ namespace tgf
 				seg.b = crossing;
 
 				// add new candidate
-				road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
-				road_segments_.append(sf::Vertex(seg.b, sf::Color::White));
+				road_segments_.append(sf::Vertex(seg.a, sf::Color::Blue));
+				road_segments_.append(sf::Vertex(seg.b, sf::Color::Blue));
 
 				return true;
 			}
