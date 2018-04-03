@@ -12,7 +12,12 @@ namespace tgf
 			width_ = -1.0f;
 			useSplineptsForTextureSplitting_ = false;
 
-			triangles_.setPrimitiveType(sf::PrimitiveType::Triangles);
+			// spline texture can deal with sf::PrimitiveType::Triangles and sf::PrimitiveType::TriangleStrip
+			//
+			// sf::PrimitiveType::TriangleStrip is more efficient, however in some situations it may be 
+			// desired to generate sf::PrimitiveType::Triangles data. 
+			// (for example to include the data in another bigger structure, based on Triangles)
+			triangles_.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
 			last_processed_startindex_ = -1;
 		}
 
@@ -34,51 +39,41 @@ namespace tgf
 
 		int SplineTexture::calcTriangleIndexAtSplinePt(int spline_pt_index)
 		{
-			if (triangles_.getPrimitiveType() == sf::PrimitiveType::TriangleStrip)
+			int index_multi = 2;
+			if (triangles_.getPrimitiveType() == sf::PrimitiveType::Triangles)
+				index_multi = 6;
+			
+			int tri_index = spline_pt_index * index_multi + 1;
+
+			if (useSplineptsForTextureSplitting_ == false)
 			{
-				int tri_index = spline_pt_index;
-				if (useSplineptsForTextureSplitting_ == false)
+				if (spline_ && spline_->splinePointsLengths_.size() >= spline_pt_index && spline_pt_index > 1)
 				{
-					if (spline_ && spline_->splinePointsLengths_.size() >= spline_pt_index && spline_pt_index > 1)
+					float startlen = spline_->splinePointsLengths_[spline_pt_index - 1];
+					for (; tri_index < trianglesLengths_.size(); tri_index+= index_multi)
 					{
-						float startlen = spline_->splinePointsLengths_[spline_pt_index - 1];
-						for (; tri_index * 2 < trianglesLengths_.size(); tri_index++)
-						{
-							if (trianglesLengths_[tri_index * 2] > startlen)
-								break;
-						}
+						if (trianglesLengths_[tri_index] > startlen)
+							break;
 					}
 				}
-
-				return tri_index * 2;
-			}
-			else if (triangles_.getPrimitiveType() == sf::PrimitiveType::Triangles)
-			{
-				int tri_index = spline_pt_index * 6 + 1;
-
-				if (useSplineptsForTextureSplitting_ == false)
-				{
-					if (spline_ && spline_->splinePointsLengths_.size() >= spline_pt_index && spline_pt_index > 1)
-					{
-						float startlen = spline_->splinePointsLengths_[spline_pt_index - 1];
-						for (; tri_index < trianglesLengths_.size(); tri_index+= 6)
-						{
-							if (trianglesLengths_[tri_index] > startlen)
-								break;
-						}
-					}
-				}
-
-				return tri_index;
 			}
 
-			return 0;
+			return tri_index;			
 		}
 
 		// remove all triangles from and including the given spline_index
 		bool SplineTexture::cutTrianglesAtSplineIndex(int spline_index)
 		{
 			int tri_index = calcTriangleIndexAtSplinePt(spline_index);
+
+			if (triangles_.getPrimitiveType() == sf::PrimitiveType::TriangleStrip)
+				tri_index -= 1;
+			else if (triangles_.getPrimitiveType() == sf::PrimitiveType::Triangles)
+				tri_index -= 4;
+
+			if (tri_index < 0)
+				tri_index = 0;
+
 			bool rc = cutTrianglesAtIndex(tri_index);
 			
 			if(rc)
@@ -401,23 +396,25 @@ namespace tgf
 				tri_index = calcTriangleIndexAtSplinePt(startindex);
 				float startlen = spline_->splinePointsLengths_[startindex - 1];
 
-				sf::Vertex lastVert = triangles_[tri_index];
+				int lastvert_index = tri_index - index_multi;
+
+				sf::Vertex lastVert = triangles_[lastvert_index];
 				texturePos.y = lastVert.texCoords.y;
 				if (lastVert.texCoords.y == 0.0f)
 				{
 					forward = true;
-					rest_len = startlen - trianglesLengths_[tri_index];
+					rest_len = startlen - trianglesLengths_[lastvert_index];
 				}
 				else if (lastVert.texCoords.y == size.y)
 				{
 					forward = false;
-					rest_len = startlen - trianglesLengths_[tri_index];
+					rest_len = startlen - trianglesLengths_[lastvert_index];
 				}
 				else if (startindex > 1)
 				{
-					forward = lastVert.texCoords.y > triangles_[tri_index - index_multi].texCoords.y;
+					forward = lastVert.texCoords.y > triangles_[lastvert_index - index_multi].texCoords.y;
 
-					rest_len = startlen - trianglesLengths_[tri_index];
+					rest_len = startlen - trianglesLengths_[lastvert_index];
 					if (rest_len != 0.0f)
 					{
 						printf("todo: rest_len calc is probably wrong. rest: %f\n", rest_len);
@@ -426,9 +423,7 @@ namespace tgf
 
 			}
 
-
 			tri_index /= index_multi;
-
 			int diff = tri_index - startindex;
 			if (diff)
 				printf("tri_index = %i, start_index = %i\n", tri_index, startindex);
