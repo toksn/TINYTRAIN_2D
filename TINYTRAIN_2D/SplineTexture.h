@@ -34,10 +34,12 @@ namespace tgf
 			// Inherited via Entity
 			virtual void onDraw(sf::RenderTarget * target) override;
 			virtual void onUpdate(float deltaTime) override;
-
-			void createTriangleStripFromSpline(int startindex = 0);
-			void createTriangleStrip_splitTextureByLength(int startindex);
-			void createTriangleStrip_splitTextureByPoints(int startindex);
+			
+			void createTrianglesFromSpline(int startindex);
+			void createTriangles_splitTextureByLength(int startindex);
+			void createTriangles_splitTextureByPoints(int startindex);
+			bool fillTriangleData(int tri_index, int i, sf::Vector2f texturePos);
+			bool fillTriangleData_manual(int tri_index, sf::Vector2f pos, sf::Vector2f normal, float len, sf::Vector2f texturePos);
 		};
 	}
 }

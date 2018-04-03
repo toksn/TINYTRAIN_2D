@@ -12,7 +12,14 @@ namespace tgf
 			width_ = -1.0f;
 			useSplineptsForTextureSplitting_ = false;
 
-			triangles_.setPrimitiveType(sf::PrimitiveType::TrianglesStrip);
+			// spline texture can deal with sf::PrimitiveType::Triangles and sf::PrimitiveType::TriangleStrip
+			//
+			// sf::PrimitiveType::TriangleStrip is more efficient, however in some situations it may be 
+			// desired to generate sf::PrimitiveType::Triangles data. 
+			// (for example to include the data in another bigger structure, based on Triangles)
+			triangles_.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
+			//triangles_.setPrimitiveType(sf::PrimitiveType::Triangles);
+
 			last_processed_startindex_ = -1;
 		}
 
@@ -34,28 +41,41 @@ namespace tgf
 
 		int SplineTexture::calcTriangleIndexAtSplinePt(int spline_pt_index)
 		{
-			int tri_index = spline_pt_index;
+			int index_multi = 2;
+			if (triangles_.getPrimitiveType() == sf::PrimitiveType::Triangles)
+				index_multi = 6;
 			
+			int tri_index = spline_pt_index * index_multi + 1;
+
 			if (useSplineptsForTextureSplitting_ == false)
 			{
 				if (spline_ && spline_->splinePointsLengths_.size() >= spline_pt_index && spline_pt_index > 1)
 				{
 					float startlen = spline_->splinePointsLengths_[spline_pt_index - 1];
-					for (; tri_index * 2 < trianglesLengths_.size(); tri_index++)
+					for (; tri_index < trianglesLengths_.size(); tri_index+= index_multi)
 					{
-						if (trianglesLengths_[tri_index * 2] > startlen)
+						if (trianglesLengths_[tri_index] > startlen)
 							break;
 					}
 				}
 			}
 
-			return tri_index*2;
+			return tri_index;			
 		}
 
 		// remove all triangles from and including the given spline_index
 		bool SplineTexture::cutTrianglesAtSplineIndex(int spline_index)
 		{
 			int tri_index = calcTriangleIndexAtSplinePt(spline_index);
+
+			if (triangles_.getPrimitiveType() == sf::PrimitiveType::TriangleStrip)
+				tri_index -= 1;
+			else if (triangles_.getPrimitiveType() == sf::PrimitiveType::Triangles)
+				tri_index -= 4;
+
+			if (tri_index < 0)
+				tri_index = 0;
+
 			bool rc = cutTrianglesAtIndex(tri_index);
 			
 			if(rc)
@@ -99,19 +119,19 @@ namespace tgf
 					startindex = spline_->startIndex_lastUpdate_;
 
 				// create new triangles
-				createTriangleStripFromSpline(startindex);
+				createTrianglesFromSpline(startindex);
 			
 				// update last processed startindex
 				last_processed_startindex_ = spline_->startIndex_lastUpdate_;
 			}
 		}
 
-		void SplineTexture::createTriangleStripFromSpline(int startindex)
+		void SplineTexture::createTrianglesFromSpline(int startindex)
 		{
 			if (useSplineptsForTextureSplitting_)
-				createTriangleStrip_splitTextureByPoints(startindex);
+				createTriangles_splitTextureByPoints(startindex);
 			else
-				createTriangleStrip_splitTextureByLength(startindex);
+				createTriangles_splitTextureByLength(startindex);
 		}
 
 		// the texture will get split depending on the spline segment lengths.
@@ -122,8 +142,11 @@ namespace tgf
 		//	width_ = output width of the texture that is following the spline.
 		//				the height will get scaled accordingly to maintain the correct texture aspect ratio.
 		//	...
-		void SplineTexture::createTriangleStrip_splitTextureByLength(int startindex)
+		void SplineTexture::createTriangles_splitTextureByLength(int startindex)
 		{
+			if (spline_ == nullptr || spline_->splinePoints_.getVertexCount() == 0 || startindex >= spline_->splinePoints_.getVertexCount())
+				return;
+
 			auto size = texture_->getSize();
 			float tex_scale = width_ / size.x;
 			float rest_len = 0.0f;
@@ -133,54 +156,64 @@ namespace tgf
 			sf::Vector2f texturePos(0.0f, 0.0f);
 
 			bool forward = true;
+			int index_multi = 2;
+			if (triangles_.getPrimitiveType() == sf::PrimitiveType::Triangles)
+				index_multi = 6;
+
 			if (startindex > 0)
 			{
 				lastSplinePt = { spline_->splinePoints_[startindex - 1].position.x, spline_->splinePoints_[startindex - 1].position.y };
 
 				// find tri_index to start from
-				tri_index = calcTriangleIndexAtSplinePt(startindex) / 2;
+				tri_index = calcTriangleIndexAtSplinePt(startindex);
 				float startlen = spline_->splinePointsLengths_[startindex - 1];
-				//for (; tri_index * 2 < trianglesLengths_.size(); tri_index++)
-				//{
-				//	if (trianglesLengths_[tri_index * 2] > startlen)
-				//		break;
-				//}
-				tri_index--;
-				sf::Vertex lastVert = triangles_[(tri_index) * 2];
+
+				int lastvert_index = tri_index - index_multi;
+
+				sf::Vertex lastVert = triangles_[lastvert_index];
 				texturePos.y = lastVert.texCoords.y;
 				if (lastVert.texCoords.y == 0.0f)
 				{
 					forward = true;
-					rest_len = startlen - trianglesLengths_[(tri_index) * 2];
+					rest_len = startlen - trianglesLengths_[lastvert_index];
 				}
 				else if (lastVert.texCoords.y == size.y)
 				{
 					forward = false;
-					rest_len = startlen - trianglesLengths_[(tri_index) * 2];
+					rest_len = startlen - trianglesLengths_[lastvert_index];
 				}
 				else if (startindex > 1)
 				{
-					forward = lastVert.texCoords.y > triangles_[(tri_index - 1) * 2].texCoords.y;
+					forward = lastVert.texCoords.y > triangles_[lastvert_index - index_multi].texCoords.y;
 
-					rest_len = startlen - trianglesLengths_[(tri_index) * 2];
+					rest_len = startlen - trianglesLengths_[lastvert_index];
 					if (rest_len != 0.0f)
 					{
 						printf("todo: rest_len calc is probably wrong. rest: %f\n", rest_len);
 					}
 				}
 
-				tri_index++;
 			}
 
-			//if (startindex != tri_index)
-			//	printf("tri_index = %i, start_index = %i\n", tri_index, startindex);
-			triangles_.resize((spline_->splinePoints_.getVertexCount() + tri_index - startindex) * 2);
-			trianglesLengths_.resize((spline_->splinePoints_.getVertexCount() + tri_index - startindex) * 2);
+			tri_index /= index_multi;
+			int diff = tri_index - startindex;
+			if (diff)
+				printf("tri_index = %i, start_index = %i\n", tri_index, startindex);
+
+			int triangles_to_generate = calcTriangleIndexAtSplinePt(spline_->splinePoints_.getVertexCount()-1);
+			// add length difference triangles
+			triangles_to_generate += diff * index_multi;
+
+			// tri index to size
+			triangles_to_generate++;
+
+			triangles_.resize(triangles_to_generate);
+			trianglesLengths_.resize(triangles_to_generate);
+			//replaced: trianglesLengths_.resize((spline_->splinePoints_.getVertexCount() + tri_index - startindex) * index_multi);
 
 			// use spline segment len for texturesplitting
 			for (int i = startindex; i < spline_->splinePoints_.getVertexCount(); i++)
 			{
-
 				// measure current spline segment and add existing rest_len
 				c2v curSplinePt = { spline_->splinePoints_[i].position.x, spline_->splinePoints_[i].position.y };
 				float len = rest_len + c2Len(c2Sub(curSplinePt, lastSplinePt)) / tex_scale;
@@ -198,16 +231,7 @@ namespace tgf
 					rest_len = 0.0f;
 					texturePos.y = tempPos;
 
-					triangles_[tri_index * 2 + 1].position = spline_->splinePoints_[i].position;
-					triangles_[tri_index * 2].position = spline_->splinePoints_[i].position;
-
-					triangles_[tri_index * 2].position += spline_->normals_[i] * width_ / 2.0f;
-					triangles_[tri_index * 2 + 1].position -= spline_->normals_[i] * width_ / 2.0f;
-
-					triangles_[tri_index * 2 + 1].texCoords = triangles_[tri_index * 2].texCoords = texturePos;
-					triangles_[tri_index * 2 + 1].texCoords.x += size.x;
-
-					trianglesLengths_[tri_index * 2] = trianglesLengths_[tri_index * 2 + 1] = spline_->splinePointsLengths_[i];
+					fillTriangleData(tri_index, i, texturePos);
 
 					tri_index++;
 				}
@@ -220,7 +244,7 @@ namespace tgf
 						float len_until_texture_end = size.y - texturePos.y - rest_len;
 						if (forward == false)
 							len_until_texture_end = texturePos.y - rest_len;
-						
+
 						if (forward)
 							texturePos.y = size.y;
 						else
@@ -228,29 +252,20 @@ namespace tgf
 
 						rest_len = fabs(tempPos - texturePos.y);
 
-						trianglesLengths_[tri_index * 2] = trianglesLengths_[tri_index * 2 + 1] = spline_->splinePointsLengths_[i] - rest_len;
-						float timeatendoftexture = (spline_->splinePointsLengths_[i - 1] + len_until_texture_end*tex_scale) / spline_->getLength();
-
-
-
-						triangles_[tri_index * 2 + 1].position = spline_->getLocationAtTime(timeatendoftexture);
-						triangles_[tri_index * 2].position = triangles_[tri_index * 2 + 1].position;
-
-						// todo: get normal at time
-						triangles_[tri_index * 2].position += spline_->normals_[i] * width_ / 2.0f;
-						triangles_[tri_index * 2 + 1].position -= spline_->normals_[i] * width_ / 2.0f;
-
-						triangles_[tri_index * 2 + 1].texCoords = triangles_[tri_index * 2].texCoords = texturePos;
-						triangles_[tri_index * 2 + 1].texCoords.x += size.x;
-
+						float timeatendoftexture = (spline_->splinePointsLengths_[i - 1] + len_until_texture_end * tex_scale) / spline_->getLength();
+						auto pos = spline_->getLocationAtTime(timeatendoftexture);
+						auto normal = spline_->normals_[i] * width_ / 2.0f;
+						auto len = spline_->splinePointsLengths_[i] - rest_len;
+						fillTriangleData_manual(tri_index, pos, normal, len, texturePos);
+												
 						forward = !forward;
 						tri_index++;
 
 						if (rest_len >= size.y)
 						{
 							tempPos = rest_len - texturePos.y;
-							triangles_.resize(triangles_.getVertexCount() + 2);
-							trianglesLengths_.resize(triangles_.getVertexCount() + 2);
+							triangles_.resize(triangles_.getVertexCount() + index_multi);
+							trianglesLengths_.resize(triangles_.getVertexCount() + index_multi);
 						}
 					} while (rest_len >= size.y); // input another triangle when rest_len reached the texture size						
 				}
@@ -274,7 +289,7 @@ namespace tgf
 		//	options:
 		//	cuts.y - number of spline pts that include one full texture height
 		//	...
-		void SplineTexture::createTriangleStrip_splitTextureByPoints(int startindex)
+		void SplineTexture::createTriangles_splitTextureByPoints(int startindex)
 		{
 			auto size = texture_->getSize();
 			sf::Vector2f texturePos(0.0f, 0.0f);
@@ -282,8 +297,8 @@ namespace tgf
 			if (startindex > 0)
 				lastSplinePt = { spline_->splinePoints_[startindex - 1].position.x, spline_->splinePoints_[startindex - 1].position.y };
 
-			triangles_.resize(spline_->splinePoints_.getVertexCount() * 2);
-			
+			triangles_.resize(spline_->splinePoints_.getVertexCount() * 6);
+
 			// **********************************************************
 			// SETTINGS
 			// **********************************************************
@@ -294,26 +309,15 @@ namespace tgf
 
 			for (int i = startindex; i < spline_->splinePoints_.getVertexCount(); i++)
 			{
-				// create triangle strip for the spline
-				triangles_[i * 2 + 1].position = spline_->splinePoints_[i].position;
-				triangles_[i * 2].position = spline_->splinePoints_[i].position;
-
-				triangles_[i * 2].position += spline_->normals_[i] * width_ / 2.0f;
-				triangles_[i * 2 + 1].position -= spline_->normals_[i] * width_ / 2.0f;
-
-				//bent_texture[i * 2 + 1].color = bent_texture[i * 2].color = sf::Color(255, 0, 0, 100);
-				//bent_texture[i * 2 + 1].color = cols[(i * 2+1) % 3];
-				//bent_texture[i * 2].color = cols[(i*2)%3];
-
 				/*cuts: 4
 
-	index		0  1  2  3		4  5  6  7			8
+				index		0  1  2  3		4  5  6  7			8
 
-	tex.y (32)	0  8 16 24		32 24 16 8			0
+				tex.y (32)	0  8 16 24		32 24 16 8			0
 
-	simple index multiplication	   40 48 56			0
+				simple index multiplication	   40 48 56			0
 				*/
-				
+
 				// pretty complicated way of doing a two way travel 0->1->0 (see example above to how it pans out)
 				int temp = i % (texture_cuts.y * 2);
 				int mo = texture_cuts.y + 1;
@@ -328,9 +332,91 @@ namespace tgf
 
 				texturePos.y += texture_seg_size.y * (temp % (mo));
 
-				triangles_[i * 2 + 1].texCoords = triangles_[i * 2].texCoords = texturePos;
-				triangles_[i * 2 + 1].texCoords.x += texture_seg_size.x;
+				fillTriangleData(i, i, texturePos);
 			}
+		}
+
+		// filling triangle data with respect to the primitive type.
+		// this function always uses the full width of the given texture (no x axis segmenting)
+		bool SplineTexture::fillTriangleData(int tri_index, int spline_index, sf::Vector2f texturePos)
+		{
+			auto pos = spline_->splinePoints_[spline_index].position;
+			auto normal = spline_->normals_[spline_index] * width_ / 2.0f;
+			auto len = spline_->splinePointsLengths_[spline_index];
+			return fillTriangleData_manual(tri_index, pos, normal, len, texturePos);
+		}
+
+
+		bool SplineTexture::fillTriangleData_manual(int tri_index, sf::Vector2f pos, sf::Vector2f normal, float len, sf::Vector2f texturePos)
+		{
+			auto size = texture_->getSize();
+			float tex_scale = width_ / size.x;
+
+			if (triangles_.getPrimitiveType() == sf::PrimitiveType::TriangleStrip)
+			{
+				triangles_[tri_index * 2 + 1].position = pos;
+				triangles_[tri_index * 2].position = pos;
+
+				triangles_[tri_index * 2].position += normal;
+				triangles_[tri_index * 2 + 1].position -= normal;
+
+				triangles_[tri_index * 2 + 1].texCoords = triangles_[tri_index * 2].texCoords = texturePos;
+				triangles_[tri_index * 2 + 1].texCoords.x += size.x;
+
+				trianglesLengths_[tri_index * 2] = len;
+				trianglesLengths_[tri_index * 2 + 1] = len;
+			}
+			else if (triangles_.getPrimitiveType() == sf::PrimitiveType::Triangles)
+			{
+				// initialize the triangle data (no triangles built yet)
+				if (tri_index == 0)
+				{
+					triangles_[0].position = pos;
+					triangles_[1].position = pos;
+					triangles_[0].position += normal;
+					triangles_[1].position -= normal;
+				}
+				else if (tri_index > 0)
+				{
+
+					// 6	--> 2, 3, 4, 5, 6, 7
+								
+					//		--> -4,-3,-2,-1,0,+1,
+
+					// create triangles for the spline (1 new points *3, 1 new point * 2 = 5 new points)
+					triangles_[tri_index * 6].position = pos;
+					triangles_[tri_index * 6].position += normal;
+					triangles_[tri_index * 6 + 1].position = pos;
+					triangles_[tri_index * 6 + 1].position -= normal;
+
+					// new texture position
+					triangles_[tri_index * 6].texCoords = texturePos;
+					triangles_[tri_index * 6 + 1].texCoords = texturePos;
+					triangles_[tri_index * 6 + 1].texCoords.x += size.x;
+
+					// copy vertices
+					triangles_[tri_index * 6 - 1] = triangles_[tri_index * 6 + 1];
+
+					triangles_[tri_index * 6 - 2] = triangles_[tri_index * 6];
+					triangles_[tri_index * 6 - 4] = triangles_[tri_index * 6];
+
+					// take old triangle points to fill the triangle info (1 old point)
+					triangles_[tri_index * 6 - 3] = triangles_[tri_index * 6 - 5];
+
+					// note lenghts
+					trianglesLengths_[tri_index * 6 - 3] = trianglesLengths_[tri_index * 6 - 5];
+
+					trianglesLengths_[tri_index * 6 - 4] = len;
+					trianglesLengths_[tri_index * 6 - 2] = len;					
+					trianglesLengths_[tri_index * 6 - 1] = len;
+					trianglesLengths_[tri_index * 6 - 0] = len;
+					trianglesLengths_[tri_index * 6 + 1] = len;
+				}
+			}
+			else
+				return false;
+
+			return true;
 		}
 	}
 }
