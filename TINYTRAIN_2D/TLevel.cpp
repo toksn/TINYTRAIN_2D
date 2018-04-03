@@ -5,7 +5,6 @@
 #include "GameState_Running.h"
 #include "TObstacle.h"
 #include "InterpolateToPoint.h"
-#include "CityGenerator.h"
 
 namespace tinytrain
 {
@@ -20,7 +19,7 @@ namespace tinytrain
 
 	void TLevel::onDraw(sf::RenderTarget * target)
 	{
-		target->draw(roads_);
+		target->draw(roads_debug_);
 
 		if (railtrack_)
 			railtrack_->draw(target);
@@ -64,10 +63,11 @@ namespace tinytrain
 			tgf::utilities::CityGenerator city;
 			auto t1 = std::clock();
 			city.generate();
-			roads_ = city.road_segments_;
+			roads_debug_ = city.road_segments_;
 			int time = std::clock() - t1;
 			printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.getVertexCount()/2, (float)time/ (float)(city.road_segments_.getVertexCount() / 2));
 
+			roads_ = triangulateRoadSegments(city);
 
 			// create train for the player
 			train_ = std::make_unique<TTrain>(gs);
@@ -158,5 +158,23 @@ namespace tinytrain
 	{
 		obstacles_.clear();
 		load(gs);			//load(gs, currentLevelFile);
+	}
+
+	sf::VertexArray TLevel::triangulateRoadSegments(tgf::utilities::CityGenerator& city)
+	{
+		sf::VertexArray triangles;
+		triangles.setPrimitiveType(sf::PrimitiveType::Triangles);
+
+		// generate all crossing types (4 way * 1, 3way * 4 = 5 types) triangulations
+		// should be enough to generate 2 triangles each ?!
+
+		// use crossing templates (copy) on each crossing to fill triangles array at pos of crossing with given texture coords
+
+		// generate road triangles from splines (roadsegments = controlpoints) between deadends/crossings
+
+		// fill in road triangles
+		// fill in crossing triangles (to draw over roads)
+
+		return triangles;
 	}
 }

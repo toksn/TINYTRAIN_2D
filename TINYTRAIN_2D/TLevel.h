@@ -2,6 +2,7 @@
 #include <memory>
 #include "Entity.h"
 #include "TRailTrack.h"
+#include "CityGenerator.h"
 
 namespace tinytrain
 {
@@ -19,7 +20,7 @@ namespace tinytrain
 		void load(GameState_Running* gs, std::string file = "");
 
 		void restart(GameState_Running* gs);
-		
+				
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;
 		std::vector<std::unique_ptr<TObstacle>> obstacles_;
@@ -30,6 +31,9 @@ namespace tinytrain
 		virtual void onUpdate(float deltaTime) override;
 
 		sf::VertexArray roads_;
+		sf::VertexArray roads_debug_;
+
+		sf::VertexArray triangulateRoadSegments(tgf::utilities::CityGenerator & city);
 	};
 
 
