@@ -66,7 +66,7 @@ namespace tinytrain
 			city.generate();
 			roads_ = city.road_segments_;
 			int time = std::clock() - t1;
-			printf("road generation took %i ms. %i segments placed making %fms per segment\n", time, city.road_segments_.getVertexCount()/2, (float)time/ (float)(city.road_segments_.getVertexCount() / 2));
+			printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.getVertexCount()/2, (float)time/ (float)(city.road_segments_.getVertexCount() / 2));
 
 
 			// create train for the player

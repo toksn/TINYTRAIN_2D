@@ -415,6 +415,8 @@ namespace tgf
 			}
 			else
 				return false;
+
+			return true;
 		}
 	}
 }
