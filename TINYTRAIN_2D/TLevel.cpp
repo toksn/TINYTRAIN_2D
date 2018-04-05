@@ -24,7 +24,7 @@ namespace tinytrain
 	{
 		
 		target->draw(roads_, sf::RenderStates::RenderStates(tex_.get()));
-		target->draw(roads_debug_);
+		//target->draw(roads_debug_);
 		
 
 		if (railtrack_)
@@ -67,6 +67,15 @@ namespace tinytrain
 			SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
 			***************************************************************************/
 			tgf::utilities::CityGenerator city;
+			tgf::utilities::cgSettings settings;
+			
+			float factor = 10.0f;
+			settings.road_crossingMinDist *= factor;
+			settings.road_segLength *= factor;
+			settings.road_chanceToSplitRadius *= factor;
+			settings.road_chanceToContinueRadius *= factor;
+			city.applySettings(settings);
+
 			auto t1 = std::clock();
 			city.generate();
 			roads_debug_ = city.road_segments_;
@@ -177,7 +186,7 @@ namespace tinytrain
 		// use crossing templates (copy) on each crossing to fill triangles array at pos of crossing with given texture coords
 
 		// generate road triangles from splines (roadsegments = controlpoints) between deadends/crossings
-		float streetwidth = 16.0f;//64.0f;
+		float streetwidth = 64.0f;
 		std::vector<sf::VertexArray> tris;
 
 		std::list<sf::Vector2f> roadsegment_pts;
