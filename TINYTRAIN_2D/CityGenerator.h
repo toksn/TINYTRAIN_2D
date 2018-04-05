@@ -31,9 +31,13 @@ namespace tgf
 		struct road_crossing
 		{
 			sf::Vector2f pt;
+			int roads;
 
-			int roads = 1;
-
+			road_crossing()
+			{
+				pt = sf::Vector2f();
+				roads = 1;
+			}
 			road_crossing(sf::Vector2f a_pt, int a_roads)
 			{
 				pt = a_pt;
@@ -70,7 +74,7 @@ namespace tgf
 
 			// helper functions
 			void insertCrossingAtExistingRoadSegment(int i, roadsegment_candidate & seg, sf::Vector2f intersection);
-			bool checkForCrossingInRadius(sf::Vector2f & pt, float radius, sf::Vector2f* crossing = NULL);
+			bool checkForCrossingInRadius(sf::Vector2f & pt, float radius, road_crossing* crossing = NULL);
 			int checkForIntersection(roadsegment_candidate & seg, sf::Vector2f & intersecting_pt);
 			int extendSegmentOntoExistingRoadSegment(roadsegment_candidate & seg, float maxdist, sf::Vector2f & intersecting_pt);
 
