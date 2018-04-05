@@ -62,11 +62,13 @@ namespace tgf
 			int min_start_index = 3;
 			if (interpolateControlPointEnds_)
 			{
+				if (controlPointCount < 2)
+					return;
+
 				controlPointCount++;
 				min_start_index--;
 			}				
-			
-			if (controlPointCount < 4)
+			else if (controlPointCount < 4)
 			{
 				return;
 			}
