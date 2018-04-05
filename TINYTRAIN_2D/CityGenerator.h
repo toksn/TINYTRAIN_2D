@@ -40,6 +40,8 @@ namespace tgf
 			void generate();
 
 			sf::VertexArray road_segments_;
+			std::vector<sf::Vector2f> road_crossings_;
+			std::vector<sf::Vector2f> road_deadends_;
 		private:
 			// general city generation
 			void generateRoads();
@@ -63,8 +65,6 @@ namespace tgf
 			c2v mid_;
 
 			std::list<roadsegment_candidate> road_candidates_;
-			std::vector<sf::Vector2f> road_crossings_;
-			std::vector<sf::Vector2f> road_deadends_;
 		};
 	}
 }

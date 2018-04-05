@@ -134,6 +134,11 @@ namespace tgf
 				createTriangles_splitTextureByLength(startindex);
 		}
 
+		sf::VertexArray & SplineTexture::getTriangleData()
+		{
+			return triangles_;
+		}
+
 		// the texture will get split depending on the spline segment lengths.
 		// this can be used when you want your texture to be represented as its 
 		// actual content very closely. good for repeating textures like streets/rails.

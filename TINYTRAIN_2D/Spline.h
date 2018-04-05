@@ -21,6 +21,7 @@ namespace tgf
 			float getLengthAtTime(float a_time);
 
 			void appendControlPoint(sf::Vector2f a_pt);
+			void appendControlPoints(std::vector<sf::Vector2f> a_pts);
 
 			bool getLastControlPoint(sf::Vector2f& a_pt);
 			bool getLastControlPointSegment(sf::Vector2f& a_start, sf::Vector2f& a_end);

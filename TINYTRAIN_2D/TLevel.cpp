@@ -5,11 +5,14 @@
 #include "GameState_Running.h"
 #include "TObstacle.h"
 #include "InterpolateToPoint.h"
+#include "SplineTexture.h"
 
 namespace tinytrain
 {
 	TLevel::TLevel()
 	{
+		tex_ = std::make_unique<sf::Texture>();
+		tex_->loadFromFile("data/images/road/road.png");
 	}
 
 
@@ -19,7 +22,10 @@ namespace tinytrain
 
 	void TLevel::onDraw(sf::RenderTarget * target)
 	{
+		
+		target->draw(roads_, sf::RenderStates::RenderStates(tex_.get()));
 		target->draw(roads_debug_);
+		
 
 		if (railtrack_)
 			railtrack_->draw(target);
@@ -171,9 +177,70 @@ namespace tinytrain
 		// use crossing templates (copy) on each crossing to fill triangles array at pos of crossing with given texture coords
 
 		// generate road triangles from splines (roadsegments = controlpoints) between deadends/crossings
+		float streetwidth = 16.0f;//64.0f;
+		std::vector<sf::VertexArray> tris;
+
+		std::list<sf::Vector2f> roadsegment_pts;
+		//roadsegment_pts.resize(city.road_segments_.getVertexCount());
+		for (int i = 0; i < city.road_segments_.getVertexCount(); i++)
+			roadsegment_pts.push_back(city.road_segments_[i].position);
+
+		while (city.road_deadends_.size())
+		{
+			tgf::utilities::SplineTexture spline;
+			spline.spline_->interpolateControlPointEnds_ = true;
+			spline.useSplineptsForTextureSplitting_ = false;
+			spline.getTriangleData().setPrimitiveType(sf::PrimitiveType::Triangles);
+			std::vector<sf::Vector2f> ctrlPts;
+
+			ctrlPts.push_back(city.road_deadends_.back());
+			city.road_deadends_.pop_back();
+
+			auto it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
+			while (it != roadsegment_pts.end())
+			{
+				int index = std::distance(roadsegment_pts.begin(), it);//city.findFirstRoadSegmentWithPoint(pt);
+				auto it_2 = it;
+				if (index % 2 == 0)
+					++it_2;
+				else
+					--it_2;
+
+
+				ctrlPts.push_back(*it_2);
+				//pt = *it_2;
+
+				roadsegment_pts.erase(it);
+				roadsegment_pts.erase(it_2);
+				
+				//it = std::find_if(roadsegment_pts.begin(), roadsegment_pts.end(), [&pt](const sf::Vector2f& v) {return v == pt2})
+				it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
+			}
+			
+			spline.setTexture(tex_.get());
+			spline.width_ = streetwidth;			
+				
+			//spline.spline_->setcontrolspots(ctrlPts);
+			spline.spline_->appendControlPoints(ctrlPts);
+			spline.createTrianglesFromSpline();
+			auto t = spline.getTriangleData();
+			if (t.getVertexCount())
+			{
+				t.resize(t.getVertexCount() - 2);
+				tris.push_back(t);
+			}
+			else
+				printf("road triangluation failed (ctrlpt count %i) for one deadend. pt: %f, %f\n", ctrlPts.size(), ctrlPts.front().x, ctrlPts.front().y);
+		}
 
 		// fill in road triangles
+		for (auto& t : tris)
+		{
+			for (int i = 0; i < t.getVertexCount(); i++)
+				triangles.append(t[i]);
+		}
 		// fill in crossing triangles (to draw over roads)
+		
 
 		return triangles;
 	}

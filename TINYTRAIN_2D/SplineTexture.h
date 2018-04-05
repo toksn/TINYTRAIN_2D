@@ -25,6 +25,9 @@ namespace tgf
 			float width_;
 			// todo: use enum type instead of bool
 			bool useSplineptsForTextureSplitting_;
+
+			void createTrianglesFromSpline(int startindex = 0);
+			sf::VertexArray& getTriangleData();
 		protected:
 			sf::Texture* texture_;
 			sf::VertexArray triangles_;
@@ -35,7 +38,7 @@ namespace tgf
 			virtual void onDraw(sf::RenderTarget * target) override;
 			virtual void onUpdate(float deltaTime) override;
 			
-			void createTrianglesFromSpline(int startindex);
+			//void createTrianglesFromSpline(int startindex);
 			void createTriangles_splitTextureByLength(int startindex);
 			void createTriangles_splitTextureByPoints(int startindex);
 			bool fillTriangleData(int tri_index, int i, sf::Vector2f texturePos);

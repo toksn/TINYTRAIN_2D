@@ -153,6 +153,18 @@ namespace tgf
 			// onControlPointsAdded(0);
 		}
 
+		void Spline::appendControlPoints(std::vector<sf::Vector2f> a_pts)
+		{
+			auto size_before = controlPoints_.getVertexCount();
+
+			for(auto& pt : a_pts)
+				controlPoints_.append(sf::Vertex(pt, colorControlPts_));
+
+			onControlPointsAdded(size_before);
+			// passing 0 causes the whole spline to recalc
+			// onControlPointsAdded(0);
+		}
+
 		bool Spline::getLastControlPoint(sf::Vector2f & a_pt)
 		{
 			if(controlPoints_.getVertexCount() == 0)

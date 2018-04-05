@@ -34,6 +34,8 @@ namespace tinytrain
 		sf::VertexArray roads_debug_;
 
 		sf::VertexArray triangulateRoadSegments(tgf::utilities::CityGenerator & city);
+		std::unique_ptr<sf::Texture> tex_;
+
 	};
 
 
