@@ -28,6 +28,19 @@ namespace tgf
 			float angle = 0.0f;
 		};
 
+		struct road_crossing
+		{
+			sf::Vector2f pt;
+
+			int roads = 1;
+
+			road_crossing(sf::Vector2f a_pt, int a_roads)
+			{
+				pt = a_pt;
+				roads = a_roads;
+			}
+		};
+
 		class CityGenerator
 		{
 		public:
@@ -40,7 +53,7 @@ namespace tgf
 			void generate();
 
 			sf::VertexArray road_segments_;
-			std::vector<sf::Vector2f> road_crossings_;
+			std::vector<road_crossing> road_crossings_;
 			std::vector<sf::Vector2f> road_deadends_;
 		private:
 			// general city generation

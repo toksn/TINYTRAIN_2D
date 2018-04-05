@@ -185,7 +185,8 @@ namespace tinytrain
 		for (int i = 0; i < city.road_segments_.getVertexCount(); i++)
 			roadsegment_pts.push_back(city.road_segments_[i].position);
 
-		while (city.road_deadends_.size())
+		//while (city.road_deadends_.size())
+		while(roadsegment_pts.size())
 		{
 			tgf::utilities::SplineTexture spline;
 			spline.spline_->interpolateControlPointEnds_ = true;
@@ -193,8 +194,13 @@ namespace tinytrain
 			spline.getTriangleData().setPrimitiveType(sf::PrimitiveType::Triangles);
 			std::vector<sf::Vector2f> ctrlPts;
 
-			ctrlPts.push_back(city.road_deadends_.back());
-			city.road_deadends_.pop_back();
+			if (city.road_deadends_.size())
+			{
+				ctrlPts.push_back(city.road_deadends_.back());
+				city.road_deadends_.pop_back();
+			}
+			else
+				ctrlPts.push_back(roadsegment_pts.back());
 
 			auto it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
 			while (it != roadsegment_pts.end())
@@ -216,6 +222,10 @@ namespace tinytrain
 				//it = std::find_if(roadsegment_pts.begin(), roadsegment_pts.end(), [&pt](const sf::Vector2f& v) {return v == pt2})
 				it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
 			}
+
+			auto deadend = std::find(city.road_deadends_.begin(), city.road_deadends_.end(), ctrlPts.back());
+			if (deadend != city.road_deadends_.end())
+				city.road_deadends_.erase(deadend);
 			
 			spline.setTexture(tex_.get());
 			spline.width_ = streetwidth;			
@@ -233,6 +243,7 @@ namespace tinytrain
 				printf("road triangluation failed (ctrlpt count %i) for one deadend. pt: %f, %f\n", ctrlPts.size(), ctrlPts.front().x, ctrlPts.front().y);
 		}
 
+		printf("road triangulation ended with %f road segments left.\n", roadsegment_pts.size() / 2.0f);
 		// fill in road triangles
 		for (auto& t : tris)
 		{
