@@ -185,8 +185,10 @@ namespace tinytrain
 		for (int i = 0; i < city.road_segments_.getVertexCount(); i++)
 			roadsegment_pts.push_back(city.road_segments_[i].position);
 
+		printf("begin: crossings count %i\n", city.road_crossings_.size());
+
 		//while (city.road_deadends_.size())
-		while(roadsegment_pts.size())
+		while(city.road_crossings_.size() || city.road_deadends_.size())
 		{
 			tgf::utilities::SplineTexture spline;
 			spline.spline_->interpolateControlPointEnds_ = true;
@@ -199,9 +201,17 @@ namespace tinytrain
 				ctrlPts.push_back(city.road_deadends_.back());
 				city.road_deadends_.pop_back();
 			}
-			else
-				ctrlPts.push_back(roadsegment_pts.back());
-
+			else if(city.road_crossings_.size())
+			{
+				auto cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [](const tgf::utilities::road_crossing& cross) {return cross.roads == 1; });
+				if (cross_iter != city.road_crossings_.end())
+				{
+					ctrlPts.push_back(cross_iter->pt);
+					city.road_crossings_.erase(cross_iter);
+				}
+			}
+			
+			
 			auto it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
 			while (it != roadsegment_pts.end())
 			{
@@ -212,14 +222,28 @@ namespace tinytrain
 				else
 					--it_2;
 
-
 				ctrlPts.push_back(*it_2);
 				//pt = *it_2;
+
+				auto cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [&it](const tgf::utilities::road_crossing& cross) {return cross.pt == *it; });
+				if (cross_iter != city.road_crossings_.end())
+				{
+					cross_iter->roads--;
+					if (cross_iter->roads < 1)
+						city.road_crossings_.erase(cross_iter);
+				}
+				cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [&it_2](const tgf::utilities::road_crossing& cross) {return cross.pt == *it_2; });
+				if (cross_iter != city.road_crossings_.end())
+				{
+					cross_iter->roads--;
+					if (cross_iter->roads < 1)
+						city.road_crossings_.erase(cross_iter);
+				}
 
 				roadsegment_pts.erase(it);
 				roadsegment_pts.erase(it_2);
 				
-				//it = std::find_if(roadsegment_pts.begin(), roadsegment_pts.end(), [&pt](const sf::Vector2f& v) {return v == pt2})
+				
 				it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
 			}
 
@@ -243,7 +267,7 @@ namespace tinytrain
 				printf("road triangluation failed (ctrlpt count %i) for one deadend. pt: %f, %f\n", ctrlPts.size(), ctrlPts.front().x, ctrlPts.front().y);
 		}
 
-		printf("road triangulation ended with %f road segments left.\n", roadsegment_pts.size() / 2.0f);
+		printf("road triangulation ended with %f road segments and %i crossings left.\n", roadsegment_pts.size() / 2.0f, city.road_crossings_.size());
 		// fill in road triangles
 		for (auto& t : tris)
 		{
