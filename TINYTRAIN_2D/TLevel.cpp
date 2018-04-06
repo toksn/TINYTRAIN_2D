@@ -194,7 +194,7 @@ namespace tinytrain
 		for (int i = 0; i < city.road_segments_.getVertexCount(); i++)
 			roadsegment_pts.push_back(city.road_segments_[i].position);
 
-		printf("begin: crossings count %i\n", city.road_crossings_.size());
+		printf("road triangulation begin: crossings count %i\n", city.road_crossings_.size());
 
 		//while (city.road_deadends_.size())
 		while(city.road_crossings_.size() || city.road_deadends_.size())
@@ -218,8 +218,14 @@ namespace tinytrain
 					ctrlPts.push_back(cross_iter->pt);
 					city.road_crossings_.erase(cross_iter);
 				}
+				else
+				{
+					printf("road triangulation warning: failed to fill starting controlpoint (no crossing with 1 road left?)\n");
+					ctrlPts.push_back(city.road_crossings_.back().pt);
+					city.road_crossings_.pop_back();
+				}
+					
 			}
-			
 			
 			auto it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
 			while (it != roadsegment_pts.end())
@@ -276,7 +282,7 @@ namespace tinytrain
 				printf("road triangluation failed (ctrlpt count %i) for one deadend. pt: %f, %f\n", ctrlPts.size(), ctrlPts.front().x, ctrlPts.front().y);
 		}
 
-		printf("road triangulation ended with %f road segments and %i crossings left.\n", roadsegment_pts.size() / 2.0f, city.road_crossings_.size());
+		printf("road triangulation end: %i road segments and %i crossings left.\n", roadsegment_pts.size() / 2.0f, city.road_crossings_.size());
 		// fill in road triangles
 		for (auto& t : tris)
 		{
