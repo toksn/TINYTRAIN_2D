@@ -24,7 +24,7 @@ namespace tinytrain
 	{
 		
 		target->draw(roads_, sf::RenderStates::RenderStates(tex_.get()));
-		//target->draw(roads_debug_);
+		target->draw(roads_debug_);
 		
 
 		if (railtrack_)
@@ -69,7 +69,7 @@ namespace tinytrain
 			tgf::utilities::CityGenerator city;
 			tgf::utilities::cgSettings settings;
 			
-			float factor = 10.0f;
+			float factor = 1.0f;
 			settings.road_crossingMinDist *= factor;
 			settings.road_segLength *= factor;
 			settings.road_chanceToSplitRadius *= factor;
@@ -186,7 +186,8 @@ namespace tinytrain
 		// use crossing templates (copy) on each crossing to fill triangles array at pos of crossing with given texture coords
 
 		// generate road triangles from splines (roadsegments = controlpoints) between deadends/crossings
-		float streetwidth = 64.0f;
+		float streetwidth = 16.0f;
+		//float streetwidth = 64.0f;
 		std::vector<sf::VertexArray> tris;
 
 		std::list<sf::Vector2f> roadsegment_pts;
@@ -220,11 +221,9 @@ namespace tinytrain
 				}
 				else
 				{
-					printf("road triangulation warning: failed to fill starting controlpoint (no crossing with 1 road left?)\n");
+					//printf("road triangulation warning: failed to fill starting controlpoint (no crossing with 1 road left?)\n");
 					ctrlPts.push_back(city.road_crossings_.back().pt);
-					city.road_crossings_.pop_back();
 				}
-					
 			}
 			
 			auto it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
@@ -235,11 +234,11 @@ namespace tinytrain
 				if (index % 2 == 0)
 					++it_2;
 				else
-					--it_2;
-
+					--it_2;		
 				ctrlPts.push_back(*it_2);
 				//pt = *it_2;
 
+				// find crossings at begin and end of segment
 				auto cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [&it](const tgf::utilities::road_crossing& cross) {return cross.pt == *it; });
 				if (cross_iter != city.road_crossings_.end())
 				{
@@ -248,18 +247,26 @@ namespace tinytrain
 						city.road_crossings_.erase(cross_iter);
 				}
 				cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [&it_2](const tgf::utilities::road_crossing& cross) {return cross.pt == *it_2; });
+				
+				// remove current roadsegment
+				roadsegment_pts.erase(it);
+				roadsegment_pts.erase(it_2);
+				it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
+
 				if (cross_iter != city.road_crossings_.end())
 				{
 					cross_iter->roads--;
+
+
 					if (cross_iter->roads < 1)
 						city.road_crossings_.erase(cross_iter);
+					else
+						// stop at crossing instead of stopping when no further roadsegment was found
+						it = roadsegment_pts.end();
 				}
-
-				roadsegment_pts.erase(it);
-				roadsegment_pts.erase(it_2);
 				
 				
-				it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
+				//it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
 			}
 
 			auto deadend = std::find(city.road_deadends_.begin(), city.road_deadends_.end(), ctrlPts.back());
