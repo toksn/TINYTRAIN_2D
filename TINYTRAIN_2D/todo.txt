@@ -1,20 +1,16 @@
-TODO:
-
-- add un-do of spline
-	- use controlpoints (tags) for undo/redo. when undo happend, just cut the spline at the calculated pointcount.
-	- when undo happened, redo is possible until a new controlpoint was appended
-	- use right click for undo, apply time penalty to input component
-	- optional: copy removed triangles vertices and apply them to another texture of a construction site
-
-- loading of levels from files
-	- define level saving format
-
+TODO:	
+- proc gen of city
+	- road gen 
+	- obstacle gen (houses, walls, ect)
+	- other background gen
 - add on-screen instructions (controls, goals, hints)
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
 
 - train vs train collision
 - check all wagons of a train for collision
 
+- spline undo 
+	- apply penalty player (cooldown, penalty time to not build a new seg, money, uses (fillable by picking up construction site workers?))
 - add optional targets to score more points or have an objective at all (passengers)
 	- taxi mission gta?
 
@@ -24,7 +20,12 @@ TODO:
 	- level3: do 3 passengers (in time)
 	- level4: collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
 
+- saving/loading of levels from files
+	- define level saving format
+
 QUESTIONABLE:
+- spline undo: (optional) copy removed triangles vertices and apply them to another texture of a construction site
+- add spline redo
 - make collisionmanager running in an own thread calling callbacks on overlap ?
 - abstract gamestates into tgf
 	- running: load, initloadedlevel, pause, win, loose, restart
@@ -33,6 +34,10 @@ QUESTIONABLE:
 	- level_interface: load(), restart()
 
 DONE:
+- add un-do of spline
+	- use controlpoints (tags) for undo/redo. when undo happend, just cut the spline at the calculated pointcount.
+	- when undo happened, redo is possible until a new controlpoint was appended
+	- use right click for undo, apply penalty player (cooldown, penalty time to not build a new seg, money, uses (fillable by picking up construction site workers?))
 - splineTexture: use catmullrom normals to generate a vertexbuffer with texture bending in railtrack
 - added option to calculate normals in catmullrom spline
 - processinputcomponent -> single segment input, polyline input, polyline mindist <> drawrect.size
