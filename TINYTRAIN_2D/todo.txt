@@ -14,6 +14,8 @@ TODO:
 - add optional targets to score more points or have an objective at all (passengers)
 	- taxi mission gta?
 
+- add traffic
+
 - level editor or procedural level creation?
 	- level1: reach target zone
 	- level2: reach target zone in time

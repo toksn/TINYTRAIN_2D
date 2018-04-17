@@ -7,6 +7,8 @@
 #include "InterpolateToPoint.h"
 #include "SplineTexture.h"
 
+#define city_size_factor 4.0f;
+
 namespace tinytrain
 {
 	TLevel::TLevel()
@@ -69,11 +71,10 @@ namespace tinytrain
 			tgf::utilities::CityGenerator city;
 			tgf::utilities::cgSettings settings;
 			
-			float factor = 1.0f;
-			settings.road_crossingMinDist *= factor;
-			settings.road_segLength *= factor;
-			settings.road_chanceToSplitRadius *= factor;
-			settings.road_chanceToContinueRadius *= factor;
+			settings.road_crossingMinDist *= city_size_factor;
+			settings.road_segLength *= city_size_factor;
+			settings.road_chanceToSplitRadius *= city_size_factor;
+			settings.road_chanceToContinueRadius *= city_size_factor;
 			city.applySettings(settings);
 
 			auto t1 = std::clock();
@@ -186,8 +187,8 @@ namespace tinytrain
 		// use crossing templates (copy) on each crossing to fill triangles array at pos of crossing with given texture coords
 
 		// generate road triangles from splines (roadsegments = controlpoints) between deadends/crossings
-		float streetwidth = 16.0f;
-		//float streetwidth = 64.0f;
+		//float streetwidth = 16.0f;
+		float streetwidth = 6.4f * city_size_factor;
 		std::vector<sf::VertexArray> tris;
 
 		std::list<sf::Vector2f> roadsegment_pts;
