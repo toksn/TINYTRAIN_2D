@@ -24,7 +24,7 @@ namespace tgf
 			sf::Vector2f b;
 
 			// chance for const angle
-			bool constAngle = false;
+			float constAngle = 0.0;
 			float angle = 0.0f;
 		};
 

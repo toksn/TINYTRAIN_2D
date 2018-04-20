@@ -173,16 +173,21 @@ namespace tgf
 				if (chance_to_continue < 0.0f)
 					chance_to_continue = 0.0f;
 
-				std::uniform_real_distribution<> random_dis(0.0, 1.0);
+				//std::uniform_real_distribution<> random_dis(0.0, 1.0);
 				float do_split = rand() / (double)RAND_MAX;
 				float do_continue = rand() / (double)RAND_MAX;
 				
 				road_crossing cross(seg.b, 1);
+				//cross.addRoad(seg.angle - 180.0f);
+
 				// check to continue (straight extension)
 				if (do_continue < chance_to_continue)
 				{
 					advanceRoadCandidate(seg);
 					cross.roads++;
+					//auto next = advanceRoadCandidate(seg);
+					//if(cross.addRoad(next) != -1)
+						
 				}
 
 				// check to split (left right extension)
@@ -224,12 +229,15 @@ namespace tgf
 			{
 				nextsegment.angle += additional_angle;
 
-				// randomize const angle
+				// randomize const angle decision
 				nextsegment.constAngle = rand() % 2;
-				nextsegment.angle += (rand() / (double)RAND_MAX - 0.5f) * (float)settings_.road_segAngleRange;
+				nextsegment.constAngle *= (rand() / (double)RAND_MAX - 0.5f) * (float)settings_.road_segAngleRange;
+				nextsegment.angle += nextsegment.constAngle;
 			}
-			else if (seg.constAngle == false)
+			else if (seg.constAngle == 0.0f)
 				nextsegment.angle += (rand() / (double)RAND_MAX - 0.5f) * (float)settings_.road_segAngleRange;
+			else
+				nextsegment.angle += nextsegment.constAngle;
 
 
 			// advance end point with new angle
@@ -237,6 +245,8 @@ namespace tgf
 			nextsegment.b.y += settings_.road_segLength * sin(nextsegment.angle * DEG_TO_RAD);
 
 			road_candidates_.push_back(nextsegment);
+
+			//return road_candidates_.back();
 		}
 
 		bool CityGenerator::checkForCrossingInRadius(sf::Vector2f& pt, float radius, road_crossing* crossing)
