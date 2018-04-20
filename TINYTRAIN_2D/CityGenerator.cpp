@@ -275,9 +275,9 @@ namespace tgf
 
 		bool CityGenerator::insertCrossingAtExistingRoadSegment(int roadseg_startindex, roadsegment_candidate& seg, sf::Vector2f intersection)
 		{
-			//				  x seg.b
-			//				 /
-			// old_a -------x--------- old_b
+			//				   x seg.b
+			//(start_index)	  /
+			// old_a --------x--------- old_b
 			//				/
 			//			   /
 			//			  x seg.a
@@ -295,7 +295,7 @@ namespace tgf
 			if (new_cross.addRoad(angle) == -1)
 				return false;
 
-			t = c2Sub(c2V(road_segments_[roadseg_startindex].position.x, road_segments_[roadseg_startindex].position.y), cross_pt);
+			t = c2Sub(c2V(road_segments_[roadseg_startindex+1].position.x, road_segments_[roadseg_startindex+1].position.y), cross_pt);
 			angle = atan2(t.y, t.x) * RAD_TO_DEG;
 			if (new_cross.addRoad(angle) == -1)
 				return false;
@@ -516,7 +516,6 @@ namespace tgf
 								if (road_segments_[i].position == closest_candidate->a)
 								{
 									c2v t = c2Sub(c2V(road_segments_[i-1].position.x, road_segments_[i-1].position.y), c2V(road_segments_[i].position.x, road_segments_[i].position.y));
-									// todo: angle should be the same as seg.angle?!
 									float angle_existing_segment = atan2(t.y, t.x) * RAD_TO_DEG;
 									cross.addRoad(angle_existing_segment);
 									break;
@@ -530,6 +529,12 @@ namespace tgf
 							// try to add the new road
 							if (cross.addRoad(angle) != -1)
 							{
+								if (cross.roads > 2)
+									road_crossings_.push_back(cross);
+								// todo: no new crossing and not in correct range -> skip this connection
+								//else if (in_range == false)
+								//	return true;
+
 								if (in_range)
 									road_candidates_.erase(closest_candidate);
 
@@ -537,9 +542,7 @@ namespace tgf
 								seg.b = candidate.a;
 								road_segments_.append(sf::Vertex(seg.a, sf::Color::White));
 								road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
-
-								if (cross.roads > 2)
-									road_crossings_.push_back(cross);
+																
 
 								return true;
 							}
@@ -576,7 +579,7 @@ namespace tgf
 					//road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
 				}
 				else
-					return insertCrossingAtExistingRoadSegment(i, seg, intersection);
+					insertCrossingAtExistingRoadSegment(i, seg, intersection);
 
 				return true;
 			}
@@ -605,7 +608,7 @@ namespace tgf
 						road_deadends_.push_back(seg.a);
 				}
 				else
-					return insertCrossingAtExistingRoadSegment(i, seg, intersection);
+					insertCrossingAtExistingRoadSegment(i, seg, intersection);
 
 				return true;
 			}
@@ -621,7 +624,6 @@ namespace tgf
 			{
 				if (crossing.roads < 4 && crossing.addRoad(seg.angle - 180.0f) != -1)
 				{
-					//todo: check for crossing to be full (4 pieces) already
 					seg.b = crossing.pt;
 
 					// add new candidate
