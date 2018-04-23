@@ -70,11 +70,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)..\SFML\SFML-2.4.2\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\SFML\SFML-2.4.2\include;$(ProjectDir)modules;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\SFML\SFML-2.4.2\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)..\SFML\SFML-2.4.2\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\SFML\SFML-2.4.2\include;$(ProjectDir)modules;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\SFML\SFML-2.4.2\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -175,6 +175,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="GameState_Running.h" />
     <ClInclude Include="GameStateBase.h" />
     <ClInclude Include="MathHelper2D.h" />
+    <ClInclude Include="modules\tinyc2.h" />
     <ClInclude Include="Spline.h" />
     <ClInclude Include="SplineTexture.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
@@ -182,7 +183,6 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="TLineInputInterface.h" />
     <ClInclude Include="TPolyLineInputComponent.h" />
     <ClInclude Include="TextMenu.h" />
-    <ClInclude Include="tinyc2.h" />
     <ClInclude Include="TLevel.h" />
     <ClInclude Include="TObstacle.h" />
     <ClInclude Include="TPlayer.h" />

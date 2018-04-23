@@ -124,9 +124,6 @@
     <ClInclude Include="Entity.h">
       <Filter>GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="tinyc2.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameStateBase.h">
       <Filter>GameFramework</Filter>
     </ClInclude>
@@ -204,6 +201,9 @@
     </ClInclude>
     <ClInclude Include="MathHelper2D.h">
       <Filter>GameFramework\math</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\tinyc2.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
