@@ -8,18 +8,18 @@ namespace tinytrain
 {
 	class TTrain;
 	class TObstacle;
-	class GameState_Running;
+	class GameState_Running;	
 
 	class TLevel : public tgf::Entity
 	{
 	public:
-		TLevel();
+		TLevel(GameState_Running* gs);
 		~TLevel();
 
 		// load a level from file
-		void load(GameState_Running* gs, std::string file = "");
+		void load(std::string file = "");
 
-		void restart(GameState_Running* gs);
+		void restart();
 				
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;
@@ -35,8 +35,6 @@ namespace tinytrain
 
 		sf::VertexArray triangulateRoadSegments(tgf::utilities::CityGenerator & city);
 		std::unique_ptr<sf::Texture> tex_;
-
+		GameState_Running* gs_;
 	};
-
-
 }

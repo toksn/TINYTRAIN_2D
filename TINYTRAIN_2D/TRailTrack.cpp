@@ -1,20 +1,34 @@
 #define TINYC2_IMPLEMENTATION
 #include "tinyc2.h"
+#undef TINYC2_IMPLEMENTATION
 
 #include "TRailTrack.h"
 #include "TTrain.h"
+#include "GameState_Running.h"
 
 namespace tinytrain
 {
-	TRailTrack::TRailTrack()
+	TRailTrack::TRailTrack(GameState_Running* gs)
 	{
 		segLength_ = 100.0f;
+		
 
 		track_ = std::make_unique<tgf::utilities::SplineTexture>();
-		texture_ = std::make_unique<sf::Texture>();
+
+		tgf::utilities::TextureAtlas* atlas = nullptr;
+
+		//gs_ = gs;
+		if (gs && gs->game_)
+			atlas = gs->game_->getTextureAtlas();
+
+		if (atlas)
+		{
+			texture_ = std::make_unique<sf::Texture>();
+			//texture_->loadFromFile("data/images/track/track_05.png");
+			//texture_.loadFromFile("data/images/track/railtrack_marked.png");
+			texture_->loadFromImage(*atlas->getImage(), atlas->getArea("track_05"));
+		}
 		
-		texture_->loadFromFile("data/images/track/track_05.png");
-		//texture_.loadFromFile("data/images/track/railtrack_marked.png");
 
 		track_->setTexture(texture_.get());
 		track_->width_ = 32.0f;

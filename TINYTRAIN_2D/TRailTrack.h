@@ -9,11 +9,12 @@
 namespace tinytrain
 {
 	class TTrain;
+	class GameState_Running;
 
 	class TRailTrack : public tgf::Entity
 	{
 	public:
-		TRailTrack();
+		TRailTrack(GameState_Running* gs);
 		~TRailTrack();
 
 		void append(const sf::Vector2f & a_ctrlPt);

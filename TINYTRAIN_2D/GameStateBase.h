@@ -1,11 +1,10 @@
 #pragma once
-#include <SFML\Graphics.hpp>
+//#include <SFML\Graphics.hpp>
+#include "Game.h"
 #include <functional>
 
 namespace tgf
 {
-	class Game;
-
 	class GameStateBase
 	{
 	public:
@@ -42,7 +41,7 @@ namespace tgf
 			}
 		}
 
-		Game* game_ = 0;
+		Game* game_;
 
 	private:
 		// store function pointers to call (along with a raw pointer for compare on unbind), mapped to specific events

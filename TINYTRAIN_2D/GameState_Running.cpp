@@ -16,8 +16,8 @@ namespace tinytrain
 
 		collisionMananger_ = std::make_unique<TTrainCollisionManager>();
 
-		level_ = std::make_unique<TLevel>();
-		level_->load(this);
+		level_ = std::make_unique<TLevel>(this);
+		level_->load();
 
 		player_ = std::make_unique<TPlayer>(this);
 		player_->setColor(sf::Color::Green);
@@ -226,7 +226,7 @@ namespace tinytrain
 	void GameState_Running::restart()
 	{
 		if(level_)
-			level_->restart(this);
+			level_->restart();
 
 		initCurrentLevel();
 	}

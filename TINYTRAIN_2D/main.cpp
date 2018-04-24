@@ -8,6 +8,9 @@ int main()
 	srand (time(NULL));
 
 	tgf::Game game("tinytrain 2D", 600, 400, 100);
+
+	game.loadFont("data/fonts/pixantiqua.ttf");
+	game.loadTextureAtlas("data/images/texture_atlas.png");
 	
 	//std::unique_ptr<tgf::GameStateBase> state(new GameManager(&game));
 	

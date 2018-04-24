@@ -119,6 +119,9 @@
     <ClCompile Include="MathHelper2D.cpp">
       <Filter>GameFramework\math</Filter>
     </ClCompile>
+    <ClCompile Include="TextureAtlas.cpp">
+      <Filter>GameFramework\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -204,6 +207,9 @@
     </ClInclude>
     <ClInclude Include="modules\tinyc2.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureAtlas.h">
+      <Filter>GameFramework\utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

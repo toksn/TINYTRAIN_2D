@@ -1,13 +1,12 @@
 #pragma once
-#include <memory>
-#include <stack>
-
-#include <SFML/Graphics.hpp>
-
-#include "GameStateBase.h"
+//#include <memory>
+//#include <SFML/Graphics.hpp>
+//#include "GameStateBase.h"
+#include "TextureAtlas.h"
 
 namespace tgf
 {
+	class GameStateBase;
 	class Game
 	{
 	public:
@@ -23,6 +22,10 @@ namespace tgf
 		void pushState(std::unique_ptr<GameStateBase> state);
 		void popState();
 		GameStateBase* peekState();
+
+		bool loadFont(std::string font_file_path);
+		bool loadTextureAtlas(std::string texture_file_path);
+		utilities::TextureAtlas* getTextureAtlas();
 
 		// this can be used to manually controlling the fps instead of using the SFML framerate
 		void setMaxFPS(sf::Uint16 maxFPS);
@@ -43,10 +46,11 @@ namespace tgf
 		// this is necessary because the states can potentially delete themselves from the states_ vector and thus get deleted while in the middle of execution (eventloop)
 		std::vector<std::unique_ptr<GameStateBase>> removedStates_;
 
+		std::unique_ptr<utilities::TextureAtlas> texture_atlas_;
+
 		// this can be used to manually controlling the fps instead of using the SFML framerate
 		sf::Uint16	maxFPS_;
 		sf::Time	renderTimer_;
 		sf::Time	desiredFrameTime_;
 	};
-
 }

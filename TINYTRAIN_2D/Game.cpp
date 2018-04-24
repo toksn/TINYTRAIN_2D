@@ -1,8 +1,14 @@
+//#define TEST_HEADER
+#ifdef TEST_HEADER
+#include "GameStateBase.h"
+#else
+
 //#include "Windows.h"
 //#include <thread>
 //#include <chrono>
-
+//#include "TextureAtlas.h"
 #include "Game.h"
+#include "GameStateBase.h"
 
 namespace tgf
 {
@@ -15,9 +21,6 @@ namespace tgf
 
 		frameClock_ = std::make_unique<sf::Clock>();
 		bShowFPS_ = false;
-
-		font_ = std::make_unique<sf::Font>();
-		font_->loadFromFile("data/fonts/pixantiqua.ttf");
 	}
 
 
@@ -149,6 +152,27 @@ namespace tgf
 			return states_.back().get();
 		return nullptr;
 	}
+
+	bool Game::loadFont(std::string font_file_path)
+	{
+		if (font_ == nullptr)
+			font_ = std::make_unique<sf::Font>();
+
+		return font_->loadFromFile(font_file_path);
+	}
+
+	bool Game::loadTextureAtlas(std::string texture_file_path)
+	{
+		if (texture_atlas_ == nullptr)
+			texture_atlas_ = std::make_unique<utilities::TextureAtlas>();
+
+		return texture_atlas_->init(texture_file_path);
+	}
+
+	utilities::TextureAtlas* Game::getTextureAtlas()
+	{
+		return texture_atlas_.get();
+	}
 		
 	void Game::setMaxFPS(sf::Uint16 maxFPS)
 	{
@@ -163,3 +187,4 @@ namespace tgf
 		}
 	}
 }
+#endif // TEST_HEADER
