@@ -18,7 +18,7 @@ namespace tgf
 			sf::Vector2f road_startingPoint;
 		};
 
-		struct roadsegment_candidate
+		struct roadsegment
 		{
 			sf::Vector2f a;
 			sf::Vector2f b;
@@ -119,32 +119,33 @@ namespace tgf
 			void generate();
 
 			sf::VertexArray road_segments_;
+			//std::list<roadsegment> road_segments_;
 			std::vector<road_crossing> road_crossings_;
 			std::vector<sf::Vector2f> road_deadends_;
 		private:
 			// general city generation
 			void generateRoads();
-			void processRoadSegment(roadsegment_candidate & seg);
-			roadsegment_candidate advanceRoadCandidate(roadsegment_candidate & seg, float additional_angle = 0.0f);
+			void processRoadSegment(roadsegment & seg);
+			roadsegment advanceRoadCandidate(roadsegment & seg, float additional_angle = 0.0f);
 			
 			// local constraint functions
-			bool applyLocalContraintsToSegmentCandidate(roadsegment_candidate & seg);
-			bool connectToDeadEndInRadius(roadsegment_candidate & seg, float radius);
-			bool connectToCandidateStartInRadius(roadsegment_candidate & seg, float radius, float angle_tolerance);
-			bool connectToExistingRoadSeg_intersecting(roadsegment_candidate & seg);
-			bool connectToExistingRoadSeg_extending(roadsegment_candidate & seg, float radius);
-			bool connectToExistingCrossing(roadsegment_candidate & seg, float radius);
+			bool applyLocalContraintsToSegmentCandidate(roadsegment & seg_candidate);
+			bool connectToDeadEndInRadius(roadsegment & seg_candidate, float radius);
+			bool connectToCandidateStartInRadius(roadsegment & seg_candidate, float radius, float angle_tolerance);
+			bool connectToExistingRoadSeg_intersecting(roadsegment & seg_candidate);
+			bool connectToExistingRoadSeg_extending(roadsegment & seg_candidate, float radius);
+			bool connectToExistingCrossing(roadsegment & seg_candidate, float radius);
 
 			// helper functions
-			bool insertCrossingAtExistingRoadSegment(int i, roadsegment_candidate & seg, sf::Vector2f intersection);
+			bool insertCrossingAtExistingRoadSegment(int i, roadsegment & seg, sf::Vector2f intersection);
 			bool checkForCrossingInRadius(sf::Vector2f & pt, float radius, road_crossing* crossing = NULL);
-			int checkForIntersection(roadsegment_candidate & seg, sf::Vector2f & intersecting_pt);
-			int extendSegmentOntoExistingRoadSegment(roadsegment_candidate & seg, float maxdist, sf::Vector2f & intersecting_pt);
+			int checkForIntersection(roadsegment & seg, sf::Vector2f & intersecting_pt);
+			int extendSegmentOntoExistingRoadSegment(roadsegment & seg, float maxdist, sf::Vector2f & intersecting_pt);
 
 			cgSettings settings_;
 			c2v mid_;
 
-			std::list<roadsegment_candidate> road_candidates_;
+			std::list<roadsegment> road_candidates_;
 		};
 	}
 }

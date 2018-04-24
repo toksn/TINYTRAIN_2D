@@ -42,7 +42,7 @@ namespace tgf
 
 		void CityGenerator::generateRoads()
 		{
-			roadsegment_candidate start;
+			roadsegment start;
 			road_crossing start_crossing(settings_.road_startingPoint);
 			start.a = settings_.road_startingPoint;
 		
@@ -85,25 +85,25 @@ namespace tgf
 		//
 		// return true when the candidate may be processed normally
 		// return false when the candidate was processed by local constraints already or is invalid to further process
-		bool CityGenerator::applyLocalContraintsToSegmentCandidate(roadsegment_candidate& seg)
+		bool CityGenerator::applyLocalContraintsToSegmentCandidate(roadsegment& seg_candidate)
 		{
 			float close = settings_.road_segLength / 2.0f;
 			//float close = settings_.road_crossingMinDist / 2.0f;
-			if (connectToExistingRoadSeg_intersecting(seg))
+			if (connectToExistingRoadSeg_intersecting(seg_candidate))
 				return false;
-			if (connectToCandidateStartInRadius(seg, close, 65.0f))
+			if (connectToCandidateStartInRadius(seg_candidate, close, 65.0f))
 				return false;
-			if (connectToDeadEndInRadius(seg, close))
+			if (connectToDeadEndInRadius(seg_candidate, close))
 				return false;
-			if (connectToExistingRoadSeg_extending(seg, close))
+			if (connectToExistingRoadSeg_extending(seg_candidate, close))
 				return false;
-			if (connectToExistingCrossing(seg, close))
+			if (connectToExistingCrossing(seg_candidate, close))
 				return false;
 			
 			return true;
 		}
 		
-		int CityGenerator::checkForIntersection(roadsegment_candidate& seg, sf::Vector2f& intersecting_pt)
+		int CityGenerator::checkForIntersection(roadsegment& seg, sf::Vector2f& intersecting_pt)
 		{
 			c2v s1_a, s1_b, s2_a, s2_b, intersection;
 			s1_a = { seg.a.x, seg.a.y };
@@ -131,7 +131,7 @@ namespace tgf
 			return -1;
 		}
 
-		int CityGenerator::extendSegmentOntoExistingRoadSegment(roadsegment_candidate& seg, float maxdist, sf::Vector2f& intersecting_pt)
+		int CityGenerator::extendSegmentOntoExistingRoadSegment(roadsegment& seg, float maxdist, sf::Vector2f& intersecting_pt)
 		{
 			c2v s1_a, s1_b, s2_a, s2_b, intersection;
 			s1_a = { seg.a.x, seg.a.y };
@@ -158,7 +158,7 @@ namespace tgf
 			return -1;
 		}
 
-		void CityGenerator::processRoadSegment(roadsegment_candidate& seg)
+		void CityGenerator::processRoadSegment(roadsegment& seg)
 		{
 			// check wether placement is possible
 			bool valid_placement = applyLocalContraintsToSegmentCandidate(seg);
@@ -225,10 +225,10 @@ namespace tgf
 			}
 		}
 		
-		roadsegment_candidate CityGenerator::advanceRoadCandidate(roadsegment_candidate& seg, float additional_angle)
+		roadsegment CityGenerator::advanceRoadCandidate(roadsegment& seg, float additional_angle)
 		{
 			// copy current segment
-			roadsegment_candidate nextsegment(seg);
+			roadsegment nextsegment(seg);
 			// advance start point
 			nextsegment.a = seg.b;
 
@@ -273,7 +273,7 @@ namespace tgf
 			return false;
 		}
 
-		bool CityGenerator::insertCrossingAtExistingRoadSegment(int roadseg_startindex, roadsegment_candidate& seg, sf::Vector2f intersection)
+		bool CityGenerator::insertCrossingAtExistingRoadSegment(int roadseg_startindex, roadsegment& seg, sf::Vector2f intersection)
 		{
 			//				   x seg.b
 			//(start_index)	  /
@@ -314,14 +314,16 @@ namespace tgf
 
 			// save crossing
 			road_crossings_.push_back(new_cross);
+
+			return true;
 		}
 
 		// check other candidate STARTING points and saved deadends that are close (to possibly connect two close loose line endings)
-		bool CityGenerator::connectToDeadEndInRadius(roadsegment_candidate& seg, float radius)
+		bool CityGenerator::connectToDeadEndInRadius(roadsegment& seg_candidate, float radius)
 		{
 			//radius *= 1.5f;
 
-			c2v pt = { seg.b.x, seg.b.y };
+			c2v pt = { seg_candidate.b.x, seg_candidate.b.y };
 
 			//if (connectClosestCandidateInRadius(seg, radius))
 			//	return true;
@@ -416,10 +418,10 @@ namespace tgf
 			{
 				if (c2Distance({ (*end).x, (*end).y }, pt) < radius)
 				{
-					seg.b = *end;
+					seg_candidate.b = *end;
 
-					road_segments_.append(sf::Vertex(seg.a, sf::Color::Magenta));
-					road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
+					road_segments_.append(sf::Vertex(seg_candidate.a, sf::Color::Magenta));
+					road_segments_.append(sf::Vertex(seg_candidate.b, sf::Color::Magenta));
 
 					road_deadends_.erase(end);
 					return true;
@@ -429,16 +431,16 @@ namespace tgf
 			return false;
 		}
 
-		bool CityGenerator::connectToCandidateStartInRadius(roadsegment_candidate& seg, float radius, float angle_tolerance)
+		bool CityGenerator::connectToCandidateStartInRadius(roadsegment& seg_candidate, float radius, float angle_tolerance)
 		{
-			c2v pt = { seg.b.x, seg.b.y };
+			c2v pt = { seg_candidate.b.x, seg_candidate.b.y };
 
 			// search all starting points of other candidates
 			for (auto iter = road_candidates_.begin(); iter != road_candidates_.end(); ++iter)
 			{
 				auto candidate = *iter;
 				//if (candidate.a != seg.a || candidate.b != seg.b || candidate.angle != seg.angle || candidate.constAngle != seg.constAngle)
-				if (candidate.a == seg.a && candidate.b == seg.b)
+				if (candidate.a == seg_candidate.a && candidate.b == seg_candidate.b)
 					printf("error, same candidate\n");
 				else
 				{
@@ -450,7 +452,7 @@ namespace tgf
 
 						if (crossing_on_candidate != road_crossings_.end())
 						{
-							c2v pt_a = { seg.a.x, seg.a.y };
+							c2v pt_a = { seg_candidate.a.x, seg_candidate.a.y };
 							float mindist = c2Distance(c2V(closest_candidate->b.x, closest_candidate->b.y), pt_a);
 
 							// check for roadcandidates from a crossing -> choose the best candidate to replace
@@ -467,7 +469,7 @@ namespace tgf
 							}
 
 							// angle of new seg vs angle of closest candidate (should differ about 180° +- tolerance)
-							c2v t = c2Sub(c2V(seg.b.x, seg.b.y), c2V(seg.a.x, seg.a.y));
+							c2v t = c2Sub(c2V(seg_candidate.b.x, seg_candidate.b.y), c2V(seg_candidate.a.x, seg_candidate.a.y));
 							// todo: angle should be the same as seg.angle?!
 							float angle = atan2(t.y, t.x) * RAD_TO_DEG;
 							float angle_diff = fmod(c2Abs(angle - closest_candidate->angle), 360.0f);
@@ -486,9 +488,9 @@ namespace tgf
 									road_candidates_.erase(closest_candidate);
 
 								// do it
-								seg.b = candidate.a;
-								road_segments_.append(sf::Vertex(seg.a, sf::Color::White));
-								road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
+								seg_candidate.b = candidate.a;
+								road_segments_.append(sf::Vertex(seg_candidate.a, sf::Color::White));
+								road_segments_.append(sf::Vertex(seg_candidate.b, sf::Color::Magenta));
 
 								return true;
 							}
@@ -504,7 +506,7 @@ namespace tgf
 						else
 						{
 							// angle of new seg vs angle of closest candidate (should differ about 180° +- tolerance)
-							c2v t = c2Sub(c2V(seg.b.x, seg.b.y), c2V(seg.a.x, seg.a.y));
+							c2v t = c2Sub(c2V(seg_candidate.b.x, seg_candidate.b.y), c2V(seg_candidate.a.x, seg_candidate.a.y));
 							// todo: angle should be the same as seg.angle?!
 							float angle = atan2(t.y, t.x) * RAD_TO_DEG;
 							float angle_diff = fmod(c2Abs(angle - closest_candidate->angle), 360.0f);
@@ -539,9 +541,9 @@ namespace tgf
 									road_candidates_.erase(closest_candidate);
 
 								// do it
-								seg.b = candidate.a;
-								road_segments_.append(sf::Vertex(seg.a, sf::Color::White));
-								road_segments_.append(sf::Vertex(seg.b, sf::Color::Magenta));
+								seg_candidate.b = candidate.a;
+								road_segments_.append(sf::Vertex(seg_candidate.a, sf::Color::White));
+								road_segments_.append(sf::Vertex(seg_candidate.b, sf::Color::Magenta));
 																
 
 								return true;
@@ -556,30 +558,30 @@ namespace tgf
 		}
 
 		// check existing road segments for an intersection of the candidate
-		bool CityGenerator::connectToExistingRoadSeg_intersecting(roadsegment_candidate& seg)
+		bool CityGenerator::connectToExistingRoadSeg_intersecting(roadsegment& seg_candidate)
 		{
 			sf::Vector2f intersection;
-			int i = checkForIntersection(seg, intersection);
+			int i = checkForIntersection(seg_candidate, intersection);
 			if (i >= 0)
 			{
 				// check wether a new crossing is possible
 				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist))
 				{
-					auto cross_iter = std::find_if(road_crossings_.begin(), road_crossings_.end(), [&seg](road_crossing& cross) {return cross.pt == seg.a; });
+					auto cross_iter = std::find_if(road_crossings_.begin(), road_crossings_.end(), [&seg_candidate](road_crossing& cross) {return cross.pt == seg_candidate.a; });
 					if (cross_iter != road_crossings_.end())
 					{
-						cross_iter->removeRoad(seg.angle);
+						cross_iter->removeRoad(seg_candidate.angle);
 						if (cross_iter->roads < 3)
 							road_crossings_.erase(cross_iter);
 					}
 					else
-						road_deadends_.push_back(seg.a);
+						road_deadends_.push_back(seg_candidate.a);
 					//seg.b = crossing;
 					//road_segments_.append(sf::Vertex(seg.a, sf::Color::Red));
 					//road_segments_.append(sf::Vertex(seg.b, sf::Color::Green));
 				}
 				else
-					insertCrossingAtExistingRoadSegment(i, seg, intersection);
+					insertCrossingAtExistingRoadSegment(i, seg_candidate, intersection);
 
 				return true;
 			}
@@ -588,27 +590,27 @@ namespace tgf
 		}
 
 		// check for existing road segments that are close by extending the current segment
-		bool CityGenerator::connectToExistingRoadSeg_extending(roadsegment_candidate& seg, float radius)
+		bool CityGenerator::connectToExistingRoadSeg_extending(roadsegment& seg_candidate, float radius)
 		{
 			sf::Vector2f intersection;
-			int i = extendSegmentOntoExistingRoadSegment(seg, radius, intersection);
+			int i = extendSegmentOntoExistingRoadSegment(seg_candidate, radius, intersection);
 			if (i >= 0)
 			{
 				// check wether a new crossing is possible
 				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist))
 				{
-					auto cross_iter = std::find_if(road_crossings_.begin(), road_crossings_.end(), [&seg](road_crossing& cross) {return cross.pt == seg.a; });
+					auto cross_iter = std::find_if(road_crossings_.begin(), road_crossings_.end(), [&seg_candidate](road_crossing& cross) {return cross.pt == seg_candidate.a; });
 					if (cross_iter != road_crossings_.end())
 					{
-						cross_iter->removeRoad(seg.angle);
+						cross_iter->removeRoad(seg_candidate.angle);
 						if (cross_iter->roads < 3)
 							road_crossings_.erase(cross_iter);
 					}
 					else
-						road_deadends_.push_back(seg.a);
+						road_deadends_.push_back(seg_candidate.a);
 				}
 				else
-					insertCrossingAtExistingRoadSegment(i, seg, intersection);
+					insertCrossingAtExistingRoadSegment(i, seg_candidate, intersection);
 
 				return true;
 			}
@@ -617,18 +619,18 @@ namespace tgf
 		}
 
 		// check existing road crossings that are close to simply connect seg.b to that point
-		bool CityGenerator::connectToExistingCrossing(roadsegment_candidate& seg, float radius)
+		bool CityGenerator::connectToExistingCrossing(roadsegment& seg_candidate, float radius)
 		{
 			road_crossing crossing;
-			if (checkForCrossingInRadius(seg.b, radius, &crossing))
+			if (checkForCrossingInRadius(seg_candidate.b, radius, &crossing))
 			{
-				if (crossing.roads < 4 && crossing.addRoad(seg.angle - 180.0f) != -1)
+				if (crossing.roads < 4 && crossing.addRoad(seg_candidate.angle - 180.0f) != -1)
 				{
-					seg.b = crossing.pt;
+					seg_candidate.b = crossing.pt;
 
 					// add new candidate
-					road_segments_.append(sf::Vertex(seg.a, sf::Color::Blue));
-					road_segments_.append(sf::Vertex(seg.b, sf::Color::Blue));
+					road_segments_.append(sf::Vertex(seg_candidate.a, sf::Color::Blue));
+					road_segments_.append(sf::Vertex(seg_candidate.b, sf::Color::Blue));
 					
 					return true;
 				}
