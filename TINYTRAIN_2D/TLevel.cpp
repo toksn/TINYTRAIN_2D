@@ -89,9 +89,17 @@ namespace tinytrain
 
 				auto t1 = std::clock();
 				city.generate();
-				roads_debug_ = city.road_segments_;
+
+				roads_debug_.clear();
+				roads_debug_.setPrimitiveType(sf::PrimitiveType::Lines);
+				for (auto& road : city.road_segments_)
+				{
+					roads_debug_.append(sf::Vertex(road.a, road.col_a));
+					roads_debug_.append(sf::Vertex(road.b, road.col_b));
+				}
+					
 				int time = std::clock() - t1;
-				printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.getVertexCount() / 2, (float)time / (float)(city.road_segments_.getVertexCount() / 2));
+				printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.size(), (float)time / (float)(city.road_segments_.size()));
 
 				roads_ = triangulateRoadSegments(city);
 
@@ -204,9 +212,12 @@ namespace tinytrain
 		std::vector<sf::VertexArray> tris;
 
 		std::list<sf::Vector2f> roadsegment_pts;
-		//roadsegment_pts.resize(city.road_segments_.getVertexCount());
-		for (int i = 0; i < city.road_segments_.getVertexCount(); i++)
-			roadsegment_pts.push_back(city.road_segments_[i].position);
+		//roadsegment_pts.resize(city.road_segments_.size()*2);
+		for (auto& road : city.road_segments_)
+		{
+			roadsegment_pts.push_back(road.a);
+			roadsegment_pts.push_back(road.b);
+		}
 
 		printf("road triangulation begin: crossings count %zi\n", city.road_crossings_.size());
 

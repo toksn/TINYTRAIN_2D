@@ -23,6 +23,9 @@ namespace tgf
 			sf::Vector2f a;
 			sf::Vector2f b;
 
+			sf::Color col_a = sf::Color::Green;
+			sf::Color col_b = sf::Color::Green;
+
 			// chance for const angle
 			float constAngle = 0.0;
 			float angle = 0.0f;
@@ -118,8 +121,8 @@ namespace tgf
 
 			void generate();
 
-			sf::VertexArray road_segments_;
-			//std::list<roadsegment> road_segments_;
+			//sf::VertexArray road_segments_;
+			std::list<roadsegment> road_segments_;
 			std::vector<road_crossing> road_crossings_;
 			std::vector<sf::Vector2f> road_deadends_;
 		private:
@@ -137,10 +140,10 @@ namespace tgf
 			bool connectToExistingCrossing(roadsegment & seg_candidate, float radius);
 
 			// helper functions
-			bool insertCrossingAtExistingRoadSegment(int i, roadsegment & seg, sf::Vector2f intersection);
+			bool insertCrossingAtExistingRoadSegment(roadsegment & existing_seg, roadsegment & seg, sf::Vector2f intersection);
 			bool checkForCrossingInRadius(sf::Vector2f & pt, float radius, road_crossing* crossing = NULL);
-			int checkForIntersection(roadsegment & seg, sf::Vector2f & intersecting_pt);
-			int extendSegmentOntoExistingRoadSegment(roadsegment & seg, float maxdist, sf::Vector2f & intersecting_pt);
+			roadsegment* checkForIntersection(roadsegment & seg, sf::Vector2f & intersecting_pt);
+			roadsegment* extendSegmentOntoExistingRoadSegment(roadsegment & seg, float maxdist, sf::Vector2f & intersecting_pt);
 
 			cgSettings settings_;
 			c2v mid_;
