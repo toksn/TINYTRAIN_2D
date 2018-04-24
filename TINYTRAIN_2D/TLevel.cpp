@@ -14,16 +14,15 @@ namespace tinytrain
 	TLevel::TLevel(GameState_Running* gs)
 	{
 		gs_ = gs;
-		tgf::utilities::TextureAtlas* atlas = nullptr;
-
-		if (gs_ && gs_->game_)
-			atlas = gs_->game_->getTextureAtlas();
 		
-		if (atlas)
+		if (gs_ && gs_->game_)
+			texture_atlas_ = gs_->game_->getTextureAtlas();
+		
+		if (texture_atlas_)
 		{
-			tex_ = std::make_unique<sf::Texture>();
-			//tex_->loadFromFile("data/images/road/road.png");
-			tex_->loadFromImage(*atlas->getImage(), atlas->getArea("road"));
+			road_texture_ = std::make_unique<sf::Texture>();
+			road_texture_->loadFromImage(*texture_atlas_->getImage(), texture_atlas_->getArea("road"));
+			//full_texture_ = texture_atlas_->getTexture();
 		}
 	}
 
@@ -34,8 +33,7 @@ namespace tinytrain
 
 	void TLevel::onDraw(sf::RenderTarget * target)
 	{
-		
-		target->draw(roads_, sf::RenderStates::RenderStates(tex_.get()));
+		target->draw(roads_, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
 		target->draw(roads_debug_);
 		
 
@@ -288,7 +286,7 @@ namespace tinytrain
 			if (deadend != city.road_deadends_.end())
 				city.road_deadends_.erase(deadend);
 			
-			spline.setTexture(tex_.get());
+			spline.setTexture(road_texture_.get());
 			spline.width_ = streetwidth;			
 				
 			//spline.spline_->setcontrolspots(ctrlPts);
@@ -306,10 +304,15 @@ namespace tinytrain
 
 		printf("road triangulation end: %zi road segments and %zi crossings left.\n", roadsegment_pts.size() / 2, city.road_crossings_.size());
 		// fill in road triangles
+		auto roadTexCoords = texture_atlas_->getArea("road");
 		for (auto& t : tris)
 		{
 			for (int i = 0; i < t.getVertexCount(); i++)
+			{
+				t[i].texCoords.x += roadTexCoords.left;
+				t[i].texCoords.y += roadTexCoords.top;
 				triangles.append(t[i]);
+			}
 		}
 		// fill in crossing triangles (to draw over roads)
 		

@@ -4,11 +4,19 @@
 #include "TRailTrack.h"
 #include "CityGenerator.h"
 
+namespace tgf
+{
+	namespace utilities
+	{
+		class TextureAtlas;
+	}
+}
+
 namespace tinytrain
 {
 	class TTrain;
 	class TObstacle;
-	class GameState_Running;	
+	class GameState_Running;
 
 	class TLevel : public tgf::Entity
 	{
@@ -34,7 +42,8 @@ namespace tinytrain
 		sf::VertexArray roads_debug_;
 
 		sf::VertexArray triangulateRoadSegments(tgf::utilities::CityGenerator & city);
-		std::unique_ptr<sf::Texture> tex_;
+		std::unique_ptr<sf::Texture> road_texture_;
+		tgf::utilities::TextureAtlas* texture_atlas_ = nullptr;
 		GameState_Running* gs_;
 	};
 }
