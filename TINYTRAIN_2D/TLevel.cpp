@@ -94,8 +94,8 @@ namespace tinytrain
 				roads_debug_.setPrimitiveType(sf::PrimitiveType::Lines);
 				for (auto& road : city.road_segments_)
 				{
-					roads_debug_.append(sf::Vertex(road.a, road.col_a));
-					roads_debug_.append(sf::Vertex(road.b, road.col_b));
+					roads_debug_.append(sf::Vertex(road->a, road->col_a));
+					roads_debug_.append(sf::Vertex(road->b, road->col_b));
 				}
 					
 				int time = std::clock() - t1;
@@ -215,8 +215,8 @@ namespace tinytrain
 		//roadsegment_pts.resize(city.road_segments_.size()*2);
 		for (auto& road : city.road_segments_)
 		{
-			roadsegment_pts.push_back(road.a);
-			roadsegment_pts.push_back(road.b);
+			roadsegment_pts.push_back(road->a);
+			roadsegment_pts.push_back(road->b);
 		}
 
 		printf("road triangulation begin: crossings count %zi\n", city.road_crossings_.size());

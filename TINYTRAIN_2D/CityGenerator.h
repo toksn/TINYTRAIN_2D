@@ -2,6 +2,7 @@
 #include <SFML\Graphics.hpp>
 #include "MathHelper2D.h"
 #include <list>
+#include <memory>
 
 namespace tgf
 {
@@ -38,21 +39,20 @@ namespace tgf
 			float angle;
 
 			int roads;
-		private:
-			
+		private:			
 			// crossing slots (right, up, left, down)
 			// 0 - right (315, 360]+[0, 45], 1 - up(45, 135], 2 - left(135, 225], 3 - down(225, 315] , can later be shifted by angle
-			bool slots[4]{ false };
+			std::weak_ptr<roadsegment> slots[4];
 
 		public:
-			int addRoad(float road_angle)
+			int addRoad(std::shared_ptr<roadsegment>& road)
 			{
 				int rc = -1;
-				int possible_slot_index = crossing_index_from_angle(road_angle);
-				if (slots[possible_slot_index] == false)
+				int possible_slot_index = crossing_index_from_angle(road.get());
+				if (slots[possible_slot_index].expired())
 				{
 					rc = possible_slot_index;
-					slots[rc] = true;
+					slots[rc] = road;
 
 					updateRoadCount();
 				}
@@ -60,14 +60,14 @@ namespace tgf
 				return rc;
 			}
 
-			bool removeRoad(float road_angle)
+			bool removeRoad(std::shared_ptr<roadsegment>& road)
 			{
 				bool rc = false;
-				int possible_slot_index = crossing_index_from_angle(road_angle);
-				if (slots[possible_slot_index] == true)
+				int possible_slot_index = crossing_index_from_angle(road.get());
+				if (slots[possible_slot_index].expired() == false)
 				{
 					rc = true;
-					slots[possible_slot_index] = false;
+					slots[possible_slot_index].reset();
 
 					updateRoadCount();
 				}
@@ -75,8 +75,18 @@ namespace tgf
 				return rc;
 			}
 
-			int crossing_index_from_angle(float road_angle)
+			int crossing_index_from_angle(roadsegment* road)
 			{
+				float road_angle = road->angle;
+				//if (road.a.x != pt.x && road.a.y != pt.y && road.b.x == pt)
+				if (road->a != pt)
+				{
+					if (road->b == pt)
+						road_angle -= 180.0f;
+					else
+						printf("crossing_failure: roadsegment is not connected to crossing\n");		// should not happen
+				}					
+
 				// bring given angle into [0, 360) range (+45 + crossing.angle)
 				road_angle = fmod(road_angle + 45.0f + angle, 360.0f);
 				if (road_angle < 0.0f)
@@ -89,8 +99,8 @@ namespace tgf
 			int updateRoadCount()
 			{
 				roads = 0;
-				for (bool& r : slots)
-					if (r) roads++;
+				for (auto& r : slots)
+					if (r.expired() == false) roads++;
 				
 				return roads;
 			}
@@ -122,33 +132,33 @@ namespace tgf
 			void generate();
 
 			//sf::VertexArray road_segments_;
-			std::list<roadsegment> road_segments_;
+			std::list<std::shared_ptr<roadsegment>> road_segments_;
 			std::vector<road_crossing> road_crossings_;
 			std::vector<sf::Vector2f> road_deadends_;
 		private:
 			// general city generation
 			void generateRoads();
-			void processRoadSegment(roadsegment & seg);
-			roadsegment advanceRoadCandidate(roadsegment & seg, float additional_angle = 0.0f);
+			void processRoadSegment(std::shared_ptr<roadsegment> & seg);
+			std::shared_ptr<roadsegment> advanceRoadCandidate(roadsegment & seg, float additional_angle = 0.0f);
 			
 			// local constraint functions
-			bool applyLocalContraintsToSegmentCandidate(roadsegment & seg_candidate);
-			bool connectToDeadEndInRadius(roadsegment & seg_candidate, float radius);
-			bool connectToCandidateStartInRadius(roadsegment & seg_candidate, float radius, float angle_tolerance);
-			bool connectToExistingRoadSeg_intersecting(roadsegment & seg_candidate);
-			bool connectToExistingRoadSeg_extending(roadsegment & seg_candidate, float radius);
-			bool connectToExistingCrossing(roadsegment & seg_candidate, float radius);
+			bool applyLocalContraintsToSegmentCandidate(std::shared_ptr<roadsegment> & seg_candidate);
+			bool connectToDeadEndInRadius(std::shared_ptr<roadsegment>& seg_candidate, float radius);
+			bool connectToCandidateStartInRadius(std::shared_ptr<roadsegment>& seg_candidate, float radius, float angle_tolerance);
+			bool connectToExistingRoadSeg_intersecting(std::shared_ptr<roadsegment>& seg_candidate);
+			bool connectToExistingRoadSeg_extending(std::shared_ptr<roadsegment>& seg_candidate, float radius);
+			bool connectToExistingCrossing(std::shared_ptr<roadsegment>& seg_candidate, float radius);
 
 			// helper functions
-			bool insertCrossingAtExistingRoadSegment(roadsegment & existing_seg, roadsegment & seg, sf::Vector2f intersection);
+			bool insertCrossingAtExistingRoadSegment(std::shared_ptr<roadsegment> & existing_seg, std::shared_ptr<roadsegment> & seg, sf::Vector2f intersection);
 			bool checkForCrossingInRadius(sf::Vector2f & pt, float radius, road_crossing* crossing = NULL);
-			roadsegment* checkForIntersection(roadsegment & seg, sf::Vector2f & intersecting_pt);
-			roadsegment* extendSegmentOntoExistingRoadSegment(roadsegment & seg, float maxdist, sf::Vector2f & intersecting_pt);
+			std::shared_ptr<roadsegment> checkForIntersection(roadsegment & seg, sf::Vector2f & intersecting_pt);
+			std::shared_ptr<roadsegment> extendSegmentOntoExistingRoadSegment(roadsegment & seg, float maxdist, sf::Vector2f & intersecting_pt);
 
 			cgSettings settings_;
 			c2v mid_;
 
-			std::list<roadsegment> road_candidates_;
+			std::list<std::shared_ptr<roadsegment>> road_candidates_;
 		};
 	}
 }
