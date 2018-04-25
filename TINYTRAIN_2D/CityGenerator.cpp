@@ -201,7 +201,7 @@ namespace tgf
 				// check to split (left right extension)
 				if (do_split < chance_to_split)
 				{
-					if (checkForCrossingInRadius(seg->b, settings_.road_crossingMinDist) == false)
+					if (checkForCrossingInRadius(seg->b, settings_.road_crossingMinDist) == nullptr)
 					{
 						// splitting road may only create one new candidate (random direction) (+1 or -1)
 						int direction_first = (rand() % 2) * 2 - 1;
@@ -260,20 +260,17 @@ namespace tgf
 			return std::move(nextsegment);
 		}
 
-		bool CityGenerator::checkForCrossingInRadius(sf::Vector2f& pt, float radius, road_crossing* crossing)
+		road_crossing* CityGenerator::checkForCrossingInRadius(sf::Vector2f& pt, float radius)
 		{
 			for (auto& c : road_crossings_)
 			{
 				if (c2Len(c2Sub({ pt.x, pt.y }, { c.pt.x, c.pt.y })) < radius)
 				{
-					if (crossing)
-						*crossing = c;
-
-					return true;
+					return &c;
 				}
 			}
 
-			return false;
+			return nullptr;
 		}
 
 		bool CityGenerator::insertCrossingAtExistingRoadSegment(std::shared_ptr<roadsegment>& existing_seg, std::shared_ptr<roadsegment>& seg, sf::Vector2f intersection)
@@ -476,7 +473,7 @@ namespace tgf
 			if(intersection_segment)
 			{
 				// check wether a new crossing is possible
-				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist))
+				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist) != nullptr)
 				{
 					auto cross_iter = std::find_if(road_crossings_.begin(), road_crossings_.end(), [&seg_candidate](road_crossing& cross) {return cross.pt == seg_candidate->a; });
 					if (cross_iter != road_crossings_.end())
@@ -505,7 +502,7 @@ namespace tgf
 			if (intersection_segment)
 			{
 				// check wether a new crossing is possible
-				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist))
+				if (checkForCrossingInRadius(intersection, settings_.road_crossingMinDist) != nullptr)
 				{
 					auto cross_iter = std::find_if(road_crossings_.begin(), road_crossings_.end(), [&seg_candidate](road_crossing& cross) {return cross.pt == seg_candidate->a; });
 					if (cross_iter != road_crossings_.end())
@@ -529,12 +526,12 @@ namespace tgf
 		// check existing road crossings that are close to simply connect seg.b to that point
 		bool CityGenerator::connectToExistingCrossing(std::shared_ptr<roadsegment>& seg_candidate, float radius)
 		{
-			road_crossing crossing;
-			if (checkForCrossingInRadius(seg_candidate->b, radius, &crossing))
+			road_crossing* crossing = checkForCrossingInRadius(seg_candidate->b, radius);
+			if(crossing)
 			{
 				sf::Vector2f seg_b = seg_candidate->b;
-				seg_candidate->b = crossing.pt;
-				if (crossing.roads < 4 && crossing.addRoad(seg_candidate) != -1)
+				seg_candidate->b = crossing->pt;
+				if (crossing->roads < 4 && crossing->addRoad(seg_candidate) != -1)
 				{
 					// add new candidate
 					seg_candidate->col_a = seg_candidate->col_b = sf::Color::Blue;

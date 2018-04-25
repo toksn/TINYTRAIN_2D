@@ -151,7 +151,7 @@ namespace tgf
 
 			// helper functions
 			bool insertCrossingAtExistingRoadSegment(std::shared_ptr<roadsegment> & existing_seg, std::shared_ptr<roadsegment> & seg, sf::Vector2f intersection);
-			bool checkForCrossingInRadius(sf::Vector2f & pt, float radius, road_crossing* crossing = NULL);
+			road_crossing* checkForCrossingInRadius(sf::Vector2f & pt, float radius);
 			std::shared_ptr<roadsegment> checkForIntersection(roadsegment & seg, sf::Vector2f & intersecting_pt);
 			std::shared_ptr<roadsegment> extendSegmentOntoExistingRoadSegment(roadsegment & seg, float maxdist, sf::Vector2f & intersecting_pt);
 
