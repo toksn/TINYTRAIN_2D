@@ -7,7 +7,7 @@
 #include "SplineTexture.h"
 #include "GameState_Running.h"
 
-#define city_size_factor 4.0f;
+#define city_size_factor 2.0f;
 
 namespace tinytrain
 {
@@ -85,6 +85,9 @@ namespace tinytrain
 				settings.road_segLength *= city_size_factor;
 				settings.road_chanceToSplitRadius *= city_size_factor;
 				settings.road_chanceToContinueRadius *= city_size_factor;
+
+				//settings.road_chanceToSplitRadius *= 5.0f;
+				//settings.road_chanceToContinueRadius *= 5.0f;
 				city.applySettings(settings);
 
 				auto t1 = std::clock();
@@ -145,7 +148,7 @@ namespace tinytrain
 				*/
 				railtrack_->addLastControlPointToHistory();
 				railtrack_->addTrain(train_.get());
-				train_->initWagons(1);
+				train_->initWagons(15);
 
 				// create obstacles for the games to be lost
 				auto zone = std::make_unique<TObstacle>(gs_, false);
@@ -209,15 +212,9 @@ namespace tinytrain
 		// generate road triangles from splines (roadsegments = controlpoints) between deadends/crossings
 		//float streetwidth = 16.0f;
 		float streetwidth = 6.4f * city_size_factor;
+		//float crossing_radius = streetwidth
 		std::vector<sf::VertexArray> tris;
 
-		std::list<sf::Vector2f> roadsegment_pts;
-		//roadsegment_pts.resize(city.road_segments_.size()*2);
-		for (auto& road : city.road_segments_)
-		{
-			roadsegment_pts.push_back(road->a);
-			roadsegment_pts.push_back(road->b);
-		}
 
 		printf("road triangulation begin: crossings count %zi\n", city.road_crossings_.size());
 
@@ -229,73 +226,93 @@ namespace tinytrain
 			spline.useSplineptsForTextureSplitting_ = false;
 			spline.getTriangleData().setPrimitiveType(sf::PrimitiveType::Triangles);
 			std::vector<sf::Vector2f> ctrlPts;
-
+			sf::Vector2f lastCtrlPt;
+			tgf::utilities::road_crossing startcrossing;
 			if (city.road_deadends_.size())
 			{
 				ctrlPts.push_back(city.road_deadends_.back());
 				city.road_deadends_.pop_back();
+				lastCtrlPt = ctrlPts.back();
 			}
 			else if(city.road_crossings_.size())
 			{
 				auto cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [](const tgf::utilities::road_crossing& cross) {return cross.roads == 1; });
 				if (cross_iter != city.road_crossings_.end())
 				{
-					ctrlPts.push_back(cross_iter->pt);
+					//ctrlPts.push_back(cross_iter->pt);
+					lastCtrlPt = cross_iter->pt;
+					startcrossing = *cross_iter;
 					city.road_crossings_.erase(cross_iter);
 				}
 				else
 				{
 					//printf("road triangulation warning: failed to fill starting controlpoint (no crossing with 1 road left?)\n");
-					ctrlPts.push_back(city.road_crossings_.back().pt);
+					lastCtrlPt = city.road_crossings_.back().pt;
+					startcrossing = city.road_crossings_.back();
+					//ctrlPts.push_back(city.road_crossings_.back().pt);
 				}
 			}
 			
-			auto it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
-			while (it != roadsegment_pts.end())
+			
+			auto it = std::find_if(city.road_segments_.begin(), city.road_segments_.end(), [&lastCtrlPt](std::shared_ptr<tgf::utilities::roadsegment>& road) 
+				{return (road->a == lastCtrlPt || road->b == lastCtrlPt); });
+
+			// create crossing ctrlpts because we started at a crossing
+			if(ctrlPts.empty() && it != city.road_segments_.end())
+				triangulation_insertSplineCtrlPtsForSegmentAtCrossing((*it).get(), &startcrossing, ctrlPts, true);
+
+			while (it != city.road_segments_.end())
 			{
-				int index = std::distance(roadsegment_pts.begin(), it);//city.findFirstRoadSegmentWithPoint(pt);
-				auto it_2 = it;
-				if (index % 2 == 0)
-					++it_2;
-				else
-					--it_2;		
-				ctrlPts.push_back(*it_2);
-				//pt = *it_2;
+				sf::Vector2f next_pt = (*it)->b;
+				if (next_pt == lastCtrlPt)
+					next_pt = (*it)->a;
 
 				// find crossings at begin and end of segment
-				auto cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [&it](const tgf::utilities::road_crossing& cross) {return cross.pt == *it; });
+				auto cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [&lastCtrlPt](tgf::utilities::road_crossing& cross) 
+					{return cross.pt == lastCtrlPt; });
+
 				if (cross_iter != city.road_crossings_.end())
 				{
 					cross_iter->roads--;
 					if (cross_iter->roads < 1)
 						city.road_crossings_.erase(cross_iter);
 				}
-				cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [&it_2](const tgf::utilities::road_crossing& cross) {return cross.pt == *it_2; });
-				
+
+				cross_iter = std::find_if(city.road_crossings_.begin(), city.road_crossings_.end(), [&next_pt](tgf::utilities::road_crossing& cross)
+					{return cross.pt == next_pt; });
+
 				// remove current roadsegment
-				roadsegment_pts.erase(it);
-				roadsegment_pts.erase(it_2);
-				it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
+				std::shared_ptr<tgf::utilities::roadsegment> temp = *it;
+				city.road_segments_.erase(it);
 
 				if (cross_iter != city.road_crossings_.end())
 				{
 					cross_iter->roads--;
-
 
 					if (cross_iter->roads < 1)
 						city.road_crossings_.erase(cross_iter);
 					else
+					{
 						// stop at crossing instead of stopping when no further roadsegment was found
-						it = roadsegment_pts.end();
+						it = city.road_segments_.end();
+
+						triangulation_insertSplineCtrlPtsForSegmentAtCrossing(temp.get(), &*cross_iter, ctrlPts);
+						continue;
+					}
 				}
-				
-				
-				//it = std::find(roadsegment_pts.begin(), roadsegment_pts.end(), ctrlPts.back());
+
+				ctrlPts.push_back(next_pt);
+				lastCtrlPt = next_pt;
+				it = std::find_if(city.road_segments_.begin(), city.road_segments_.end(), [&next_pt](std::shared_ptr<tgf::utilities::roadsegment>& road)
+					{return (road->a == next_pt || road->b == next_pt); });
 			}
 
-			auto deadend = std::find(city.road_deadends_.begin(), city.road_deadends_.end(), ctrlPts.back());
-			if (deadend != city.road_deadends_.end())
-				city.road_deadends_.erase(deadend);
+			if (ctrlPts.size())
+			{
+				auto deadend = std::find(city.road_deadends_.begin(), city.road_deadends_.end(), ctrlPts.back());
+				if (deadend != city.road_deadends_.end())
+					city.road_deadends_.erase(deadend);
+			}
 			
 			spline.setTexture(road_texture_.get());
 			spline.width_ = streetwidth;			
@@ -313,7 +330,7 @@ namespace tinytrain
 				printf("road triangluation failed (ctrlpt count %zi) for one deadend. pt: %f, %f\n", ctrlPts.size(), ctrlPts.front().x, ctrlPts.front().y);
 		}
 
-		printf("road triangulation end: %zi road segments and %zi crossings left.\n", roadsegment_pts.size() / 2, city.road_crossings_.size());
+		printf("road triangulation end: %zi road segments and %zi crossings left.\n", city.road_segments_.size(), city.road_crossings_.size());
 		// fill in road triangles
 		auto roadTexCoords = texture_atlas_->getArea("road");
 		for (auto& t : tris)
@@ -329,5 +346,49 @@ namespace tinytrain
 		
 
 		return triangles;
+	}
+
+	// insert extra control points when a roadsegment is part of a crossing
+	bool TLevel::triangulation_insertSplineCtrlPtsForSegmentAtCrossing(tgf::utilities::roadsegment* seg, tgf::utilities::road_crossing* crossing, std::vector<sf::Vector2f>& ctrl_pts, bool start)
+	{
+		float angle = crossing->crossing_index_from_angle(seg) * 90.0f + crossing->angle;
+		
+		////////////////////////////////////////////
+		// example case: start = false
+		//
+		//
+		//		calc_pt_1		calc_pt_2		cross->pt
+		//			x<----(dist)---x------------->x
+		//		   /
+		//		  /			<---x angle (180°) + cross.angle
+		//		 /
+		//	last_pt
+		////////////////////////////////////////////
+		float distance = 6.4f * city_size_factor;	// = streetwidth
+		sf::Vector2f calc_pt_1, calc_pt_2;
+		calc_pt_1 = calc_pt_2 = crossing->pt;
+
+		// convert to radians
+		sf::Vector2f displacement;
+		angle *= DEG_TO_RAD;
+		displacement.x = distance * cosf(angle);
+		displacement.y = distance * sinf(angle);
+		calc_pt_1 += displacement;
+		calc_pt_2 += displacement * 0.5f;
+
+		if (start)
+		{
+			ctrl_pts.push_back(crossing->pt);
+			ctrl_pts.push_back(calc_pt_2);
+			ctrl_pts.push_back(calc_pt_1);			
+		}
+		else
+		{
+			ctrl_pts.push_back(calc_pt_1);
+			ctrl_pts.push_back(calc_pt_2);
+			ctrl_pts.push_back(crossing->pt);
+		}
+
+		return true;
 	}
 }

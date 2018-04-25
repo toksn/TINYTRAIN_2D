@@ -42,6 +42,8 @@ namespace tinytrain
 		sf::VertexArray roads_debug_;
 
 		sf::VertexArray triangulateRoadSegments(tgf::utilities::CityGenerator & city);
+		bool triangulation_insertSplineCtrlPtsForSegmentAtCrossing(tgf::utilities::roadsegment* seg, tgf::utilities::road_crossing* crossing, std::vector<sf::Vector2f>& ctrl_pts, bool start = false);
+
 		std::unique_ptr<sf::Texture> road_texture_;
 		tgf::utilities::TextureAtlas* texture_atlas_ = nullptr;
 		GameState_Running* gs_;
