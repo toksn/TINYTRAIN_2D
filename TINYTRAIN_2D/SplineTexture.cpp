@@ -280,7 +280,7 @@ namespace tgf
 				// todo: insert another triangle to reach the last spline point
 				// this does not matter too much for the calculation because the end is removed at the next input anyway.
 				// it will only miss the rest_len for drawing
-				printf("todo: insert another triangle to reach the last spline pt. rest_len: %f.\n", rest_len);
+				//printf("todo: insert another triangle to reach the last spline pt. rest_len: %f.\n", rest_len);
 			}
 		}
 

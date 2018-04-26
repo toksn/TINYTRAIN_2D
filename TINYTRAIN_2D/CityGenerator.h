@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML\Graphics.hpp>
 #include "MathHelper2D.h"
+#include "tgfdefines.h"
 #include <list>
 #include <memory>
 
@@ -30,6 +31,13 @@ namespace tgf
 			// chance for const angle
 			float constAngle = 0.0;
 			float angle = 0.0f;
+
+			void updateAngle()
+			{
+				// vec dir = b - a;
+				c2v dir = c2Sub(c2V(b.x, b.y), c2V(a.x, a.y));
+				angle = atan2(dir.y, dir.x) * RAD_TO_DEG;
+			}
 		};
 
 		struct road_crossing

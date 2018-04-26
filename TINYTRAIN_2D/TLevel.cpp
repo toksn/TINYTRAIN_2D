@@ -326,8 +326,10 @@ namespace tinytrain
 				t.resize(t.getVertexCount() - 2);
 				tris.push_back(t);
 			}
-			else
+			else if(ctrlPts.size())
 				printf("road triangluation failed (ctrlpt count %zi) for one deadend. pt: %f, %f\n", ctrlPts.size(), ctrlPts.front().x, ctrlPts.front().y);
+			else
+				printf("road triangluation failed (ctrlpt count 0)\n");
 		}
 
 		printf("road triangulation end: %zi road segments and %zi crossings left.\n", city.road_segments_.size(), city.road_crossings_.size());

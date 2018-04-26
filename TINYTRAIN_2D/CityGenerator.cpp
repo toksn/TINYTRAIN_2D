@@ -1,5 +1,4 @@
 #include "CityGenerator.h"
-#include "tgfdefines.h"
 #include <random>
 
 using namespace tgf::math;
@@ -307,7 +306,8 @@ namespace tgf
 			// add new candidate
 			seg->col_b = sf::Color::Red;
 			road_segments_.push_back(seg);
-
+			//todo: when adding snap to close seg points and/or crossings, do update the angle
+			// seg->updateAngle();
 			// save crossing
 			road_crossings_.push_back(new_cross);
 
@@ -326,7 +326,7 @@ namespace tgf
 
 					seg_candidate->col_a = seg_candidate->col_b = sf::Color::Magenta;
 					road_segments_.push_back(seg_candidate);
-					
+					seg_candidate->updateAngle();
 					road_deadends_.erase(end);
 					return true;
 				}
@@ -388,6 +388,7 @@ namespace tgf
 							// try to add the new road
 							sf::Vector2f seg_b = seg_candidate->b;
 							seg_candidate->b = candidate->a;
+							seg_candidate->updateAngle();
 							if (crossing_on_candidate->addRoad(seg_candidate) != -1)
 							{
 								if(in_range)
@@ -397,12 +398,12 @@ namespace tgf
 								seg_candidate->col_a = sf::Color::White;
 								seg_candidate->col_b = sf::Color::Magenta;
 								road_segments_.push_back(seg_candidate);
-								
 								return true;
 							}
 							else
 							{
 								seg_candidate->b = seg_b;
+								seg_candidate->updateAngle();
 								// re-add the closest candidate
 								crossing_on_candidate->addRoad(*closest_candidate);
 								return false;
@@ -532,16 +533,20 @@ namespace tgf
 			{
 				sf::Vector2f seg_b = seg_candidate->b;
 				seg_candidate->b = crossing->pt;
+				seg_candidate->updateAngle();
 				if (crossing->roads < 4 && crossing->addRoad(seg_candidate) != -1)
 				{
 					// add new candidate
 					seg_candidate->col_a = seg_candidate->col_b = sf::Color::Blue;
 					road_segments_.push_back(seg_candidate);
-
 					return true;
 				}
 				else
+				{
 					seg_candidate->b = seg_b;
+					seg_candidate->updateAngle();
+				}
+					
 			}
 
 			return false;
