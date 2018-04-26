@@ -67,8 +67,6 @@ namespace tgf
 					if (angle < 0.0f)
 						angle += 90.0f;
 					angle -= 45.0f;
-					// rotate by another 90.0f degree to match the texture (because it is going top-bottom)
-					angle += 90.0f;
 				}
 
 				int rc = -1;
