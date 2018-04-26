@@ -89,9 +89,9 @@ namespace tgf
 		{
 			float close = settings_.road_segLength / 2.0f;
 			//float close = settings_.road_crossingMinDist / 2.0f;
-			if (connectToExistingCrossing(seg_candidate, close))
-				return false;
 			if (connectToExistingRoadSeg_intersecting(seg_candidate))
+				return false;
+			if (connectToExistingCrossing(seg_candidate, close))
 				return false;
 			if (connectToCandidateStartInRadius(seg_candidate, close, 65.0f))
 				return false;
