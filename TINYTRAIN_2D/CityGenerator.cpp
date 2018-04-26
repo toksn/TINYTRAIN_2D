@@ -292,7 +292,8 @@ namespace tgf
 			seg->b = existing_seg->b = additionalsegment->a = intersection;
 
 			road_crossing new_cross(intersection);
-			if (new_cross.addRoad(seg) < 0 || new_cross.addRoad(existing_seg) < 0 || new_cross.addRoad(additionalsegment) < 0)
+			// !order of adding roads is important because the first road determines the crossing direction!
+			if (new_cross.addRoad(existing_seg) < 0 || new_cross.addRoad(seg) < 0 || new_cross.addRoad(additionalsegment) < 0)
 			{
 				// reset segment info
 				seg->b = seg_b;

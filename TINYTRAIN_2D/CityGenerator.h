@@ -47,6 +47,22 @@ namespace tgf
 		public:
 			int addRoad(std::shared_ptr<roadsegment>& road)
 			{
+				// first road to add -> determine crossing angle
+				if (roads == 0)
+				{
+					//calc crossing angle
+					float a = road->angle;
+					if (road->b == pt)
+						a += 180.0f;
+
+					angle = fmod(a+ 45.0f, 90.0f);
+					if (angle < 0.0f)
+						angle += 90.0f;
+					angle -= 45.0f;
+					// rotate by another 90.0f degree to match the texture (because it is going top-bottom)
+					angle += 90.0f;
+				}
+
 				int rc = -1;
 				int possible_slot_index = crossing_index_from_angle(road.get());
 				if (slots[possible_slot_index].expired())
@@ -85,10 +101,18 @@ namespace tgf
 						road_angle -= 180.0f;
 					else
 						printf("crossing_failure: roadsegment is not connected to crossing\n");		// should not happen
-				}					
+				}				
 
-				// bring given angle into [0, 360) range (+45 + crossing.angle)
-				road_angle = fmod(road_angle + 45.0f + angle, 360.0f);
+				// treat seg angle in 0-360 range
+				road_angle = fmod(road_angle, 360.0f);
+				if (road_angle < 0.0f)
+					road_angle += 360.0f;
+
+				// rotate by 45 and use crossing angle
+				road_angle += 45.0f - angle;
+				
+				// bring angle into 0-360 range again
+				road_angle = fmod(road_angle, 360.0f);
 				if (road_angle < 0.0f)
 					road_angle += 360.0f;
 
@@ -112,10 +136,10 @@ namespace tgf
 				angle = 0.0f;
 			}
 
-			road_crossing(sf::Vector2f a_pt, float a_angle = 0.0f)
+			road_crossing(sf::Vector2f a_pt)
 			{
 				pt = a_pt;
-				angle = a_angle;
+				angle = 0.0f;
 				roads = 0;
 			}
 		};
