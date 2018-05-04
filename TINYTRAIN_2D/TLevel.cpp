@@ -100,7 +100,7 @@ namespace tinytrain
 					roads_debug_.append(sf::Vertex(road->a, road->col_a));
 					roads_debug_.append(sf::Vertex(road->b, road->col_b));
 				}
-					
+
 				int time = std::clock() - t1;
 				printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.size(), (float)time / (float)(city.road_segments_.size()));
 
@@ -189,6 +189,39 @@ namespace tinytrain
 				/************************************************************************/
 
 				// TODO: passengers to pick up
+			}
+			else
+			{
+				// try to load the file as an image
+				sf::Image map;
+				int tile_size = 128;
+
+				if (map.loadFromFile(file))
+				{
+					// every pixel is an area of the size of a (simple) street
+					auto size = map.getSize();
+					for (int x = 0; x < size.x; x++)
+					{
+						for (int y = 0; y < size.y; y++)
+						{
+							sf::Color col = map.getPixel(x, y);
+							sf::IntRect area(x*tile_size, y*tile_size, tile_size, tile_size);
+
+
+							// this should generate:
+							//		- background of the tile (texture)
+							//		- road_network
+							//		- foreground of the tile (something special like a bridge, roofs of houses ect)
+							//		- obstacles
+							//		- tile type
+							//generateLevelTile(col, area);
+						}
+					}
+
+					// random start location
+					// random yellow events (collectables, like passengers, construction_workers, bonus_points)
+					// random target zones
+				}
 			}
 		}
 	}
