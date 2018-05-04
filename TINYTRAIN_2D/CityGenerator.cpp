@@ -87,9 +87,9 @@ namespace tgf
 		// return false when the candidate was processed by local constraints already or is invalid to further process
 		bool CityGenerator::applyLocalContraintsToSegmentCandidate(std::shared_ptr<roadsegment>& seg_candidate)
 		{
-			float close = settings_.road_segLength / 2.0f;
+			float close = settings_.road_segLength * 0.5f;
 			//float close = settings_.road_crossingMinDist / 2.0f;
-			if (connectToExistingRoadSeg_intersecting(seg_candidate))
+			if (connectToExistingRoadSeg_intersecting(seg_candidate, close * 0.5f))
 				return false;
 			if (connectToExistingCrossing(seg_candidate, close))
 				return false;
@@ -272,7 +272,7 @@ namespace tgf
 			return nullptr;
 		}
 
-		bool CityGenerator::insertCrossingAtExistingRoadSegment(std::shared_ptr<roadsegment>& existing_seg, std::shared_ptr<roadsegment>& seg, sf::Vector2f intersection)
+		bool CityGenerator::insertCrossingAtExistingRoadSegment(std::shared_ptr<roadsegment>& existing_seg, std::shared_ptr<roadsegment>& seg, sf::Vector2f intersection, float radius)
 		{
 			//							x seg.b
 			//						   /
@@ -281,35 +281,113 @@ namespace tgf
 			//						/
 			//					   x seg.a
 
-			// copy existing segment to split it in two parts
-			std::shared_ptr<roadsegment> additionalsegment = std::shared_ptr<roadsegment>(new roadsegment(*existing_seg));
-			// save points to revert changes on failure
-			sf::Vector2f seg_b = seg->b;
-			sf::Vector2f existing_seg_b = existing_seg->b;
 
-			//apply intersection point changes 
-			seg->b = existing_seg->b = additionalsegment->a = intersection;
+			// check for snapping to existing_seg.a or b
+			c2v pt = { intersection.x, intersection.y };
+			sf::Vector2f* snap_to_pt = nullptr;
+			if (c2Distance({ existing_seg->a.x, existing_seg->a.y }, pt) < radius)
+				snap_to_pt = &(existing_seg->a);
+			else if (c2Distance({ existing_seg->b.x, existing_seg->b.y }, pt) < radius)
+				snap_to_pt = &(existing_seg->b);
 
-			road_crossing new_cross(intersection);
-			// !order of adding roads is important because the first road determines the crossing direction!
-			if (new_cross.addRoad(existing_seg) < 0 || new_cross.addRoad(seg) < 0 || new_cross.addRoad(additionalsegment) < 0)
+			if (snap_to_pt)
 			{
-				// reset segment info
-				seg->b = seg_b;
-				existing_seg->b = existing_seg_b;
-				return false;
-			}
-				
-			// add second part of old segment
-			road_segments_.push_back(additionalsegment);
+				//if (c2Distance({ snap_to_pt->x, snap_to_pt->y }, { seg->a.x, seg->a.y }) > radius)
+				{
+					sf::Vector2f seg_b = seg->b;
+					seg->b = *snap_to_pt;
+					seg->updateAngle();
+					//find existing crossing at new point to connect to
+					auto cross_iter = std::find_if(road_crossings_.begin(), road_crossings_.end(), [&snap_to_pt](tgf::utilities::road_crossing& cross)
+						{return cross.pt == *snap_to_pt; });
+					if (cross_iter != road_crossings_.end())
+					{
+						if (cross_iter->addRoad(seg) != -1)
+						{
+							seg->col_a = seg->col_b = sf::Color::Red;
+							road_segments_.push_back(seg);
+							return true;
+						}
+						else
+						{
+							seg->b = seg_b;
+							seg->updateAngle();
+							return false;
+						}
+					}
 
-			// add new candidate
-			seg->col_b = sf::Color::Red;
-			road_segments_.push_back(seg);
-			//todo: when adding snap to close seg points and/or crossings, do update the angle
-			// seg->updateAngle();
-			// save crossing
-			road_crossings_.push_back(new_cross);
+					// find all roadsegments that share the point (should always be 1 or 2), (only search segments that are not equal the existing_seg
+					auto road_it = std::find_if(road_segments_.begin(), road_segments_.end(), [&snap_to_pt, &existing_seg](std::shared_ptr<tgf::utilities::roadsegment>& road)
+						{return road != existing_seg && (road->a == *snap_to_pt || road->b == *snap_to_pt); });
+
+					// 2 existing segments -> try to create crossing
+					if (road_it != road_segments_.end())
+					{
+						road_crossing cross(*snap_to_pt);
+						if (cross.addRoad(existing_seg) < 0 || cross.addRoad(*road_it) < 0 || cross.addRoad(seg) < 0 )
+						{
+							seg->b = seg_b;
+							seg->updateAngle();
+							return false;
+						}
+						//should not be able to find more road_segments
+						else if (std::find_if(road_segments_.begin(), road_segments_.end(), [&snap_to_pt, &existing_seg, &road_it](std::shared_ptr<tgf::utilities::roadsegment>& road)
+							{return road != *road_it && road != existing_seg && (road->a == *snap_to_pt || road->b == *snap_to_pt); }) != road_segments_.end())
+						{
+							seg->b = seg_b;
+							seg->updateAngle();
+							printf("ERROR - insertCrossingAtExistingRoadSegment: found more than 2 existing segments but no corresponding crossing object.\n");
+							return false;
+						}
+						else
+						{
+							seg->col_a = seg->col_b = sf::Color::Red;
+							road_segments_.push_back(seg);
+							road_crossings_.push_back(cross);
+							return true;
+						}
+					}
+					else
+					{
+						//deadend
+						road_segments_.push_back(seg);
+						std::remove(road_deadends_.begin(), road_deadends_.end(), *snap_to_pt);
+						return true;
+					}
+				}
+			}
+			else
+			{
+				// copy existing segment to split it in two parts
+				std::shared_ptr<roadsegment> additionalsegment = std::shared_ptr<roadsegment>(new roadsegment(*existing_seg));
+				// save points to revert changes on failure
+				sf::Vector2f seg_b = seg->b;
+				sf::Vector2f existing_seg_b = existing_seg->b;
+
+				//apply intersection point changes 
+				seg->b = existing_seg->b = additionalsegment->a = intersection;
+
+				road_crossing new_cross(intersection);
+				// !order of adding roads is important because the first road determines the crossing direction!
+				if (new_cross.addRoad(existing_seg) < 0 || new_cross.addRoad(seg) < 0 || new_cross.addRoad(additionalsegment) < 0)
+				{
+					// reset segment info
+					seg->b = seg_b;
+					existing_seg->b = existing_seg_b;
+					return false;
+				}
+
+				// add second part of old segment
+				road_segments_.push_back(additionalsegment);
+
+				// add new candidate
+				seg->col_b = sf::Color::Red;
+				road_segments_.push_back(seg);
+				//todo: when adding snap to close seg points and/or crossings, do update the angle
+				// seg->updateAngle();
+				// save crossing
+				road_crossings_.push_back(new_cross);
+			}
 
 			return true;
 		}
@@ -468,7 +546,7 @@ namespace tgf
 		}
 
 		// check existing road segments for an intersection of the candidate
-		bool CityGenerator::connectToExistingRoadSeg_intersecting(std::shared_ptr<roadsegment>& seg_candidate)
+		bool CityGenerator::connectToExistingRoadSeg_intersecting(std::shared_ptr<roadsegment>& seg_candidate, float radius)
 		{
 			sf::Vector2f intersection;
 			auto intersection_segment = checkForIntersection(*seg_candidate, intersection);
@@ -488,7 +566,7 @@ namespace tgf
 						road_deadends_.push_back(seg_candidate->a);
 				}
 				else
-					insertCrossingAtExistingRoadSegment(intersection_segment, seg_candidate, intersection);
+					insertCrossingAtExistingRoadSegment(intersection_segment, seg_candidate, intersection, radius);
 
 				return true;
 			}
@@ -517,7 +595,7 @@ namespace tgf
 						road_deadends_.push_back(seg_candidate->a);
 				}
 				else
-					insertCrossingAtExistingRoadSegment(intersection_segment, seg_candidate, intersection);
+					insertCrossingAtExistingRoadSegment(intersection_segment, seg_candidate, intersection, radius);
 
 				return true;
 			}

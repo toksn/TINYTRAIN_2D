@@ -175,12 +175,12 @@ namespace tgf
 			bool applyLocalContraintsToSegmentCandidate(std::shared_ptr<roadsegment> & seg_candidate);
 			bool connectToDeadEndInRadius(std::shared_ptr<roadsegment>& seg_candidate, float radius);
 			bool connectToCandidateStartInRadius(std::shared_ptr<roadsegment>& seg_candidate, float radius, float angle_tolerance);
-			bool connectToExistingRoadSeg_intersecting(std::shared_ptr<roadsegment>& seg_candidate);
+			bool connectToExistingRoadSeg_intersecting(std::shared_ptr<roadsegment>& seg_candidate, float radius);
 			bool connectToExistingRoadSeg_extending(std::shared_ptr<roadsegment>& seg_candidate, float radius);
 			bool connectToExistingCrossing(std::shared_ptr<roadsegment>& seg_candidate, float radius);
 
 			// helper functions
-			bool insertCrossingAtExistingRoadSegment(std::shared_ptr<roadsegment> & existing_seg, std::shared_ptr<roadsegment> & seg, sf::Vector2f intersection);
+			bool insertCrossingAtExistingRoadSegment(std::shared_ptr<roadsegment> & existing_seg, std::shared_ptr<roadsegment> & seg, sf::Vector2f intersection, float radius);
 			road_crossing* checkForCrossingInRadius(sf::Vector2f & pt, float radius);
 			std::shared_ptr<roadsegment> checkForIntersection(roadsegment & seg, sf::Vector2f & intersecting_pt);
 			std::shared_ptr<roadsegment> extendSegmentOntoExistingRoadSegment(roadsegment & seg, float maxdist, sf::Vector2f & intersecting_pt);

@@ -1,8 +1,11 @@
 TODO:	
 - proc gen of city
 	- road gen 
-	- obstacle gen (houses, walls, ect)
-	- other background gen
+	- road triangulation
+	- obstacle gen (houses, walls, trees, lakes, streetlamps)
+	- other background gen (grass)
+	- create 2 renderTextures from all static city elements. ground + above_train
+
 - add on-screen instructions (controls, goals, hints)
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
 
