@@ -9,6 +9,64 @@ namespace tgf
 {
 	namespace json
 	{
+		static std::pair<std::size_t, std::size_t> findRange(const std::string& string, const char& start_token, const char& end_token)
+		{
+			std::size_t start = std::string::npos;
+			std::size_t end = std::string::npos;
+
+			
+
+			start = string.find(start_token);
+			if (start != std::string::npos)
+			{
+				std::size_t nested_counter = 1;
+				end = start + 1;
+				while (end < string.length() && nested_counter > 0)
+				{
+					if (string[end] == end_token)
+						nested_counter--;
+					else if (string[end] == start_token)
+						nested_counter++;
+
+					end++;
+				}
+
+				if (nested_counter > 0)
+					end = std::string::npos;
+			}
+
+			return std::pair<std::size_t, std::size_t>(start, end);
+		}
+		static std::vector<std::size_t> findValidSeperators(const std::string& string, const char& seperator, std::size_t start = 0, bool ignore_surrounding = false)
+		{
+			std::size_t nested_counter = 0;
+			bool quotes = false;
+			std::size_t cur = start;
+			std::size_t len = string.length();
+			std::vector<std::size_t> indexes;
+
+			if (ignore_surrounding && len > 0)
+			{
+				cur++;
+				len--;
+			}
+				
+
+			for (; cur < len; cur++)
+			{
+				if (string[cur] == '{' || string[cur] == '[')
+					nested_counter++;
+				else if (string[cur] == '}' || string[cur] == ']')
+					nested_counter--;
+				else if (string[cur] == '"')
+					quotes != quotes;
+				else if (string[cur] == seperator && quotes == false && nested_counter == 0)
+					indexes.push_back(cur);
+			}
+
+			return indexes;
+		}
+
 		enum class type
 		{
 			BOOLEAN,
@@ -66,54 +124,32 @@ namespace tgf
 		static json::object parseFromJsonString(std::string str)
 		{
 			json::object obj;
-
-			std::size_t start = str.find('{');
-			if (start != std::string::npos)
+			auto range = findRange(str, '{', '}');
+			if(range.first != std::string::npos && range.second != std::string::npos)
 			{
-				//std::size_t end = str.find('}');
-				// todo check for new start 
-				std::size_t anotherstart = start;
-				std::size_t end = start;
-				while (anotherstart != std::string::npos)
+				std::size_t seperator = str.find(':', range.first + 1);
+				if (seperator != std::string::npos && seperator < range.second)
 				{
-					anotherstart = end + 1;
-					end = str.find('}', end + 1);
+					// found an object with a seperator. parse its contents.
+					// start ----> "key" ---> seperator ---> value ---> end
+					std::string keystring = str.substr(range.first + 1, seperator - range.first - 1);
+					//std::string key;
+					std::string datastring = str.substr(seperator + 1, range.second - seperator - 1);
 
-					if (end != std::string::npos)
+
+					if (datastring.length())
 					{
-						std::string temp = str.substr(anotherstart, end - anotherstart);
-						anotherstart = temp.find('{');
-					}
-					else
-						anotherstart = std::string::npos;
-				}
-				
-				if (end != std::string::npos)
-				{
-					std::size_t seperator = str.find(':', start + 1);
-					if (seperator != std::string::npos && seperator < end)
-					{
-						// found an object with a seperator. parse its contents.
-						// start ----> "key" ---> seperator ---> value ---> end
-						std::string keystring = str.substr(start+1, seperator-start-1);
-						//std::string key;
-						std::string datastring = str.substr(seperator+1, end-seperator-1);
-
-
-						if (datastring.length())
+						std::size_t namestart = keystring.find('"');
+						std::size_t nameend = std::string::npos;
+						if (namestart != std::string::npos)
 						{
-							std::size_t namestart = keystring.find('"');
-							std::size_t nameend = std::string::npos;
-							if (namestart != std::string::npos)
+							nameend = keystring.find('"', namestart + 1);
+							if (nameend != std::string::npos && nameend - namestart > 1)
 							{
-								nameend = keystring.find('"', namestart + 1);
-								if (nameend != std::string::npos && nameend - namestart > 1)
-								{
-									// found a key name within doublequotes
-									keystring = keystring.substr(namestart+1, nameend - namestart - 1);
-									// parse data
-									obj[keystring] = json::data(datastring);
-								}
+								// found a key name within doublequotes
+								keystring = keystring.substr(namestart + 1, nameend - namestart - 1);
+								// parse data
+								obj[keystring] = json::data(datastring);
 							}
 						}
 					}
@@ -140,35 +176,20 @@ namespace tgf
 					// recursive when array or object
 					case '[':		// array
 					{
-						std::size_t anotherstart = 0;
-						std::size_t end = start;
-						while (anotherstart != std::string::npos)
+						auto range = findRange(data_string, '[', ']');
+						if (range.first != std::string::npos && range.second != std::string::npos)
 						{
-							end = data_string.find(']', end+1);
-							if (end != std::string::npos)
-								anotherstart = data_string.find("[", anotherstart, end - anotherstart);
-							else
-								anotherstart = std::string::npos;
-						}
-							
-						
-						
-
-						if (end != std::string::npos)
-						{
-							char seperator = ',';
-							std::size_t last = start+1;
-							std::size_t pos = data_string.find(seperator, last);
-							while (pos < end)
+							std::string sub = data_string.substr(range.first + 1, range.second - 1 - range.first);
+							auto seps = findValidSeperators(sub, ',');
+							std::size_t last = 0;
+							for (auto& s : seps)
 							{
-								std::string part = data_string.substr(last, pos - 1 - last);
+								std::string part = sub.substr(last, s - last);
 								value.a.push_back(json::data(part));
-
-								last = pos + 1;
-								pos = data_string.find(seperator, last);
-							} 
+								last = s + 1;
+							}
 							// fill in the part from last seperator to end
-							std::string part = data_string.substr(last, end - 1 - last);
+							std::string part = sub.substr(last, sub.length() - 1 - last);
 							value.a.push_back(json::data(part));
 
 							type = json::type::ARRAY;
@@ -177,24 +198,10 @@ namespace tgf
 					}
 					case '{':		// object
 					{
-						//std::size_t end = data_string.find('}', start + 1);
-						
-						// todo check for another start
-						std::size_t anotherstart = 0;
-						std::size_t end = start;
-						while (anotherstart != std::string::npos)
+						auto range = findRange(data_string, '{', '}');
+						if (range.first != std::string::npos && range.second != std::string::npos)
 						{
-							end = data_string.find('}', end + 1);
-							if (end != std::string::npos)
-								anotherstart = data_string.find("{", anotherstart, end - anotherstart);
-							else
-								anotherstart = std::string::npos;
-						}
-
-						
-						if (end != std::string::npos)
-						{
-							std::string part = data_string.substr(start, end-start+1);
+							std::string part = data_string.substr(range.first, range.second-range.first+1);
 							value.o = parseFromJsonString(part);
 
 							type = json::type::OBJECT;
