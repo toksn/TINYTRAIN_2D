@@ -177,6 +177,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="GameState_Pause.h" />
     <ClInclude Include="GameState_Running.h" />
     <ClInclude Include="GameStateBase.h" />
+    <ClInclude Include="json_tgf.h" />
     <ClInclude Include="MathHelper2D.h" />
     <ClInclude Include="modules\tinyc2.h" />
     <ClInclude Include="Spline.h" />

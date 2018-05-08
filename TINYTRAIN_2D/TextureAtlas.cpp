@@ -1,9 +1,9 @@
 #include "TextureAtlas.h"
 
-//#include <string>
-//#include <fstream>
-//#include <streambuf>
-//#include "json_tgf.h"
+#include <string>
+#include <fstream>
+#include <streambuf>
+#include "json_tgf.h"
 
 namespace tgf
 {
@@ -24,10 +24,22 @@ namespace tgf
 				texture_coords_.clear();
 				tex_ = std::make_unique<sf::Texture>();
 
+				if (jsondata_file_path.length() == 0)
+				{
+					jsondata_file_path = texture_file_path;
+					std::size_t ext_pos = jsondata_file_path.rfind('.');
+					if (ext_pos != std::string::npos)
+					{
+						jsondata_file_path.resize(ext_pos + 1);
+						jsondata_file_path.append("json");
+					}
+				}
+					
+
 				// json data may be empty -> create json path by chaning texture file extension to json
 				// todo: read out json data to fill the map
 				//texture_coords_[texture_name] = sf::IntRect(x, y, w, h);
-				/*std::ifstream t(jsondata_file_path);
+				std::ifstream t(jsondata_file_path);
 				std::string str;
 
 				t.seekg(0, std::ios::end);
@@ -41,43 +53,45 @@ namespace tgf
 				json::object bla = json::parseFromJsonString(str);
 				//std::string somestring = json::parseToJsonString(bla);
 				
-				auto frames = bla["frames"]->asArray();
+				auto frames = bla["frames"].as_array();
 				if (frames != nullptr)
 				{
-					for (auto& data : frames->arraydata)
+					for (auto it = frames->begin(); it != frames->end(); ++it)
 					{
-						if (data->type == json::types::object)
+						auto data = it->as_object();
+						if( data != nullptr )
+						//if (data.type == json::type::OBJECT)
 						{
-							auto name = data["filename"]->asString();
-							auto frame = data["frame"]->asObject();
+							auto name = (*data)["filename"].as_string();
+							auto frame = (*data)["frame"].as_object();
 
 							if (name && frame)	// && name->type == json::types::string && frame->type == json::types::object)
 							{
-								std::string key_name = name->string;
+								//std::string key_name = name->string;
 								sf::IntRect r;
-								auto x = frame["x"]->asInt();
-								auto y = frame["y"]->asInt();
-								auto w = frame["w"]->asInt();
-								auto h = frame["h"]->asInt();
+								auto x = (*frame)["x"].as_int();
+								auto y = (*frame)["y"].as_int();
+								auto w = (*frame)["w"].as_int();
+								auto h = (*frame)["h"].as_int();
 								if (x && y && w && h)
 								{
-									r.left = x.integer;
-									r.top = y.integer;
-									r.width = w.integer;
-									r.height = h.integer;
+									r.left = *x;
+									r.top = *y;
+									r.width = *w;
+									r.height = *h;
 								}
 
 								// add frame
-								texture_coords_[key_name] = r;
+								texture_coords_[*name] = r;
 							}
 						}
 					}
-				}*/
+				}
 
-				texture_coords_["road"] = sf::IntRect(64, 0, 64, 64);
-				texture_coords_["road_crossing-1"] = sf::IntRect(0, 192, 128, 128);
-				texture_coords_["road_crossing-2"] = sf::IntRect(0, 64, 128, 128);
-				texture_coords_["track_05"] = sf::IntRect(0, 0, 64, 32);
+				//texture_coords_["road"] = sf::IntRect(64, 0, 64, 64);
+				//texture_coords_["road_crossing-1"] = sf::IntRect(0, 192, 128, 128);
+				//texture_coords_["road_crossing-2"] = sf::IntRect(0, 64, 128, 128);
+				//texture_coords_["track_05"] = sf::IntRect(0, 0, 64, 32);
 
 				return true;
 			}
