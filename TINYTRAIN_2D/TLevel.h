@@ -28,6 +28,7 @@ namespace tinytrain
 		void load(std::string file = "");
 
 		void restart();
+
 				
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;
@@ -38,11 +39,15 @@ namespace tinytrain
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(float deltaTime) override;
 
+		void onKeyPressed(sf::Event & e);
+
 		sf::VertexArray roads_;
 		sf::VertexArray roads_debug_;
+		bool drawDebug_;
 
 		sf::VertexArray triangulateRoadSegments(tgf::utilities::CityGenerator & city);
 		bool triangulation_insertSplineCtrlPtsForSegmentAtCrossing(tgf::utilities::roadsegment* seg, tgf::utilities::road_crossing* crossing, std::vector<sf::Vector2f>& ctrl_pts, bool start = false);
+		void generateLevel();
 
 		std::unique_ptr<sf::Texture> road_texture_;
 		tgf::utilities::TextureAtlas* texture_atlas_ = nullptr;
