@@ -37,31 +37,28 @@ namespace tgf
 
 			return std::pair<std::size_t, std::size_t>(start, end);
 		}
-		static std::vector<std::size_t> findValidSeperators(const std::string& string, const char& seperator, std::size_t start = 0, bool ignore_surrounding = false)
+
+
+		static std::vector<std::size_t> findValidSeperators(const std::string& string, const char& seperator, std::size_t start = 0, std::size_t end = std::string::npos)
 		{
 			std::size_t nested_counter = 0;
 			bool quotes = false;
-			std::size_t cur = start;
-			std::size_t len = string.length();
+
 			std::vector<std::size_t> indexes;
 
-			if (ignore_surrounding && len > 0)
-			{
-				cur++;
-				len--;
-			}
-				
+			if (end == std::string::npos || end > string.length())
+				end = string.length();
 
-			for (; cur < len; cur++)
+			for (; start < end; start++)
 			{
-				if (string[cur] == '{' || string[cur] == '[')
+				if (string[start] == '{' || string[start] == '[')
 					nested_counter++;
-				else if (string[cur] == '}' || string[cur] == ']')
+				else if (string[start] == '}' || string[start] == ']')
 					nested_counter--;
-				else if (string[cur] == '"')
-					quotes != quotes;
-				else if (string[cur] == seperator && quotes == false && nested_counter == 0)
-					indexes.push_back(cur);
+				else if (string[start] == '"')
+					quotes = !quotes;
+				else if (string[start] == seperator && quotes == false && nested_counter == 0)
+					indexes.push_back(start);
 			}
 
 			return indexes;
@@ -127,32 +124,42 @@ namespace tgf
 			auto range = findRange(str, '{', '}');
 			if(range.first != std::string::npos && range.second != std::string::npos)
 			{
-				std::size_t seperator = str.find(':', range.first + 1);
-				if (seperator != std::string::npos && seperator < range.second)
+				std::size_t last = range.first + 1;
+				auto seps = findValidSeperators(str, ',', range.first+1, range.second);
+				seps.push_back(range.second);
+				for (auto& s : seps)
 				{
-					// found an object with a seperator. parse its contents.
-					// start ----> "key" ---> seperator ---> value ---> end
-					std::string keystring = str.substr(range.first + 1, seperator - range.first - 1);
-					//std::string key;
-					std::string datastring = str.substr(seperator + 1, range.second - seperator - 1);
-
-
-					if (datastring.length())
+					auto doublecolons = findValidSeperators(str, ':', last, s);
+					// only use the first, in fact this should only return one index
+					if (doublecolons.size())
 					{
-						std::size_t namestart = keystring.find('"');
-						std::size_t nameend = std::string::npos;
-						if (namestart != std::string::npos)
+						std::size_t seperator = doublecolons[0];
+
+						// found an object with a seperator. parse its contents.
+						// start ----> "key" ---> seperator ---> value ---> end
+						std::string keystring = str.substr(last, seperator - last);
+						//std::string key;
+						std::string datastring = str.substr(seperator + 1, s - seperator - 1);
+
+
+						if (datastring.length())
 						{
-							nameend = keystring.find('"', namestart + 1);
-							if (nameend != std::string::npos && nameend - namestart > 1)
+							std::size_t namestart = keystring.find('"');
+							std::size_t nameend = std::string::npos;
+							if (namestart != std::string::npos)
 							{
-								// found a key name within doublequotes
-								keystring = keystring.substr(namestart + 1, nameend - namestart - 1);
-								// parse data
-								obj[keystring] = json::data(datastring);
+								nameend = keystring.find('"', namestart + 1);
+								if (nameend != std::string::npos && nameend - namestart > 1)
+								{
+									// found a key name within doublequotes
+									keystring = keystring.substr(namestart + 1, nameend - namestart - 1);
+									// parse data
+									obj[keystring] = json::data(datastring);
+								}
 							}
 						}
 					}
+					last = s+1;
 				}
 			}
 			return obj;
@@ -238,11 +245,10 @@ namespace tgf
 							}
 							else
 							{
-								std::string sub = data_string.substr(start + 1);
 								try
 								{									
-									float f = std::stof(sub);
-									//int i = std::stoi(data_string.substr(start + 1));
+									float f = std::stof(data_string);
+									//int i = std::stoi(data_string);
 									if (f == (int)f)
 									{
 										value.i = f;
@@ -258,7 +264,7 @@ namespace tgf
 								{
 									try
 									{
-										value.i = std::stoi(sub);
+										value.i = std::stoi(data_string);
 										type = json::type::INTEGER;
 									}
 									catch (const std::exception&)
