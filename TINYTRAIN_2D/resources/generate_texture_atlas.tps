@@ -28,7 +28,7 @@
             </struct>
         </array>
         <key>allowRotation</key>
-        <true/>
+        <false/>
         <key>shapeDebug</key>
         <false/>
         <key>dpi</key>
@@ -36,7 +36,7 @@
         <key>dataFormat</key>
         <string>json-array</string>
         <key>textureFileName</key>
-        <filename>images/texture_atlas.png</filename>
+        <filename></filename>
         <key>flipPVR</key>
         <false/>
         <key>pvrCompressionQuality</key>
@@ -119,7 +119,7 @@
             <key>basic</key>
             <struct type="AlgorithmBasicSettings">
                 <key>sortBy</key>
-                <enum type="AlgorithmBasicSettings::SortBy">Best</enum>
+                <enum type="AlgorithmBasicSettings::SortBy">Name</enum>
                 <key>order</key>
                 <enum type="AlgorithmBasicSettings::Order">Ascending</enum>
             </struct>
@@ -183,7 +183,42 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">images/road/road.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/flowers_bg_01.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/grass_bg_01.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_01.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_02.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_03.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_04.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_05.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_06.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_07.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_08.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_09.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_10.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_01.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_02.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_03.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_04.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_05.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_06.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_07.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_08.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_09.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_10.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_01.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_02.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_03.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_04.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_05.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_06.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_07.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_08.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_09.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_10.png</key>
+            <key type="filename">../../../GFX/2d/64x64/roads/road-3way.png</key>
+            <key type="filename">../../../GFX/2d/64x64/roads/road-4way.png</key>
+            <key type="filename">../../../GFX/2d/64x64/roads/road.png</key>
+            <key type="filename">../../../GFX/2d/64x64/water.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -196,17 +231,23 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">images/road/road_crossing-1.png</key>
-            <key type="filename">images/road/road_crossing-2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/trees/tree_collision_1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/trees/tree_collision_2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/trees/tree_collision_3.png</key>
+            <key type="filename">../../../GFX/2d/64x64/trees/tree_collision_4.png</key>
+            <key type="filename">../../../GFX/2d/64x64/trees/tree_fg_1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/trees/tree_fg_2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/trees/tree_fg_3.png</key>
+            <key type="filename">../../../GFX/2d/64x64/trees/tree_fg_4.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>32,32,64,64</rect>
+                <rect>5,5,11,11</rect>
                 <key>scale9Paddings</key>
-                <rect>32,32,64,64</rect>
+                <rect>5,5,11,11</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -226,9 +267,10 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>images/road/road.png</filename>
-            <filename>images/road/road_crossing-1.png</filename>
-            <filename>images/road/road_crossing-2.png</filename>
+            <filename>../../../GFX/2d/64x64/roads</filename>
+            <filename>../../../GFX/2d/64x64/houses</filename>
+            <filename>../../../GFX/2d/64x64/trees</filename>
+            <filename>../../../GFX/2d/64x64/water.png</filename>
             <filename>images/track/track_05.png</filename>
         </array>
         <key>ignoreFileList</key>
