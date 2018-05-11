@@ -17,13 +17,6 @@ namespace tinytrain
 		
 		if (gs_ && gs_->game_)
 			texture_atlas_ = gs_->game_->getTextureAtlas();
-		
-		if (texture_atlas_)
-		{
-			road_texture_ = std::make_unique<sf::Texture>();
-			road_texture_->loadFromImage(*texture_atlas_->getImage(), texture_atlas_->getArea("road"));
-			//full_texture_ = texture_atlas_->getTexture();
-		}
 
 		drawDebug_ = false;
 		if (gs)
@@ -95,39 +88,15 @@ namespace tinytrain
 		{
 			if (file.empty())
 			{
-				generateLevel();
+				generateLevel_random();
 			}
 			else
 			{
 				// try to load the file as an image
 				sf::Image map;
-				int tile_size = 128;
-
 				if (map.loadFromFile(file))
 				{
-					// every pixel is an area of the size of a (simple) street
-					auto size = map.getSize();
-					for (int x = 0; x < size.x; x++)
-					{
-						for (int y = 0; y < size.y; y++)
-						{
-							sf::Color col = map.getPixel(x, y);
-							sf::IntRect area(x*tile_size, y*tile_size, tile_size, tile_size);
-
-
-							// this should generate:
-							//		- background of the tile (texture)
-							//		- road_network
-							//		- foreground of the tile (something special like a bridge, roofs of houses ect)
-							//		- obstacles
-							//		- tile type
-							//generateLevelTile(col, area);
-						}
-					}
-
-					// random start location
-					// random yellow events (collectables, like passengers, construction_workers, bonus_points)
-					// random target zones
+					generateLevel_fromImage(map);
 				}
 			}
 		}
@@ -139,7 +108,62 @@ namespace tinytrain
 		load();			//load(currentLevelFile);
 	}
 
-	void TLevel::generateLevel()
+	void TLevel::generateLevel_fromImage(sf::Image& map)
+	{
+		// define possible tile type colors
+		// todo: move definition to a fitting place
+		//sf::Color tile_types[5];
+		const sf::Color water		(  0, 162, 232);	//blue
+		const sf::Color residental	(237,  28,  36);	//red
+		const sf::Color park		(181, 230,  29);	//bright green
+		const sf::Color forest		( 34, 177,  76);	//dark green
+		const sf::Color road		(127, 127, 127);	//grey
+		const sf::Color industrial	(255, 201,  14);	//yellow
+
+		// collect texture rects for every type from atlas (by name)
+
+
+		// every pixel is an area of the size of a (simple) street
+		auto size = map.getSize();
+		for (int x = 0; x < size.x; x++)
+		{
+			for (int y = 0; y < size.y; y++)
+			{
+				sf::Color col = map.getPixel(x, y);
+				
+				
+
+
+				// load textures:
+
+				// background_static:
+				// common bg tiles
+				// road, flowers
+				// house textures (house_bg_xxx)
+				// todo: other area textures (bg_x
+
+				// industial textures (bg, fg, collision * x)
+				// trees (fg, collision * x)
+
+
+
+				// this should generate:
+				//		- background of the tile (texture)
+				//		- road_network
+				//		- foreground of the tile (something special like a bridge, roofs of houses ect)
+				//		- obstacles
+				//		- tile type
+				//generateLevelTile(col, area);
+			}
+		}
+
+		// random start location
+		// random yellow events (collectables, like passengers, construction_workers, bonus_points)
+		// random target zones
+	}
+
+
+	void TLevel::generateLevel_random()
 	{
 		/**************************************************************************
 		SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
@@ -261,6 +285,16 @@ namespace tinytrain
 	{
 		sf::VertexArray triangles;
 		triangles.setPrimitiveType(sf::PrimitiveType::Triangles);
+		std::unique_ptr<sf::Texture> road_texture;
+
+		if (texture_atlas_)
+		{
+			road_texture = std::make_unique<sf::Texture>();
+			road_texture->loadFromImage(*texture_atlas_->getImage(), texture_atlas_->getArea("road"));
+			//full_texture_ = texture_atlas_->getTexture();
+		}
+		else
+			return triangles;
 
 		// generate all crossing types (4 way * 1, 3way * 4 = 5 types) triangulations
 		// or just 4 way, 3 way
@@ -373,7 +407,7 @@ namespace tinytrain
 					city.road_deadends_.erase(deadend);
 			}
 			
-			spline.setTexture(road_texture_.get());
+			spline.setTexture(road_texture.get());
 			spline.width_ = streetwidth;			
 				
 			//spline.spline_->setcontrolspots(ctrlPts);
