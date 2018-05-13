@@ -18,6 +18,21 @@ namespace tinytrain
 	class TObstacle;
 	class GameState_Running;
 
+	struct tile_type_info
+	{
+		struct texture_layer_set
+		{
+			sf::IntRect bg;
+			sf::IntRect fg;
+			sf::IntRect fg_dyn;
+			sf::IntRect collision;
+		};
+		sf::IntRect common_bg;
+		std::vector<texture_layer_set> tex_coords;
+		bool rotationAllowed = true;
+		bool isValid = false;
+	};
+
 	class TLevel : public tgf::Entity
 	{
 	public:
@@ -53,6 +68,8 @@ namespace tinytrain
 		bool triangulation_insertSplineCtrlPtsForSegmentAtCrossing(tgf::utilities::roadsegment* seg, tgf::utilities::road_crossing* crossing, std::vector<sf::Vector2f>& ctrl_pts, bool start = false);
 
 		void generateLevel_fromImage(sf::Image & map);
+		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotationAllowed = false);
+		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture* tex);
 
 		tgf::utilities::TextureAtlas* texture_atlas_ = nullptr;
 		GameState_Running* gs_;

@@ -120,38 +120,54 @@ namespace tinytrain
 		const sf::Color road		(127, 127, 127);	//grey
 		const sf::Color industrial	(255, 201,  14);	//yellow
 
-		// collect texture rects for every type from atlas (by name)
+		
+		// todo: collect texture rects for every type from atlas (by name)
+		std::map < sf::Color, tile_type_info> texture_rects_by_tiletype;
+		
 
 
 		// every pixel is an area of the size of a (simple) street
 		auto size = map.getSize();
+		int tilesize = 128;
 		for (int x = 0; x < size.x; x++)
 		{
 			for (int y = 0; y < size.y; y++)
 			{
 				sf::Color col = map.getPixel(x, y);
-				
-				
+				sf::IntRect curTileRect(x*tilesize, y*tilesize, tilesize, tilesize);
+
+				//auto it = texture_rects_by_tiletype.find(col);
+				//if (it != texture_rects_by_tiletype.end())
+				auto cur_type_data = texture_rects_by_tiletype[col];
+
+				if (cur_type_data.isValid)
+				{
+					// common tile
+					addMapTile(background_static, curTileRect, cur_type_data.common_bg, false);
 
 
-				// load textures:
+					if (cur_type_data.tex_coords.size())
+					{
+						// get random element from the list
+						int index = rand() % cur_type_data.tex_coords.size();
+						tile_type_info::texture_layer_set chosen_texture_set = cur_type_data.tex_coords[index];
 
-				// background_static:
-				// common bg tiles
-				// road, flowers
-				// house textures (house_bg_xxx)
-				// todo: other area textures (bg_x
+						// add layers if there is any
+						addMapTile(background_static, curTileRect, chosen_texture_set.bg, cur_type_data.rotationAllowed);
+						addMapTile(foreground_static, curTileRect, chosen_texture_set.fg, cur_type_data.rotationAllowed);
+						addMapTile(foreground_dynamic, curTileRect, chosen_texture_set.fg_dyn, cur_type_data.rotationAllowed);
+						//...
 
-				// industial textures (bg, fg, collision * x)
-				// trees (fg, collision * x)
-
-
+						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture());
+					}
+				}
 
 				// this should generate:
 				//		- background of the tile (texture)
 				//		- road_network
 				//		- foreground of the tile (something special like a bridge, roofs of houses ect)
-				//		- obstacles
+				//		- obstacles from collision textures
+				//		- possible randomly placed obstacles like trees
 				//		- tile type
 				//generateLevelTile(col, area);
 			}
@@ -160,6 +176,45 @@ namespace tinytrain
 		// random start location
 		// random yellow events (collectables, like passengers, construction_workers, bonus_points)
 		// random target zones
+	}
+
+	// vertex arrays are supposed to use PrimitiveType::Quads
+	void TLevel::addMapTile(sf::VertexArray & vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotationAllowed)
+	{
+		int startindex = vertices.getVertexCount();
+
+		// add four points for the vertex array
+		vertices.resize(vertices.getVertexCount() + 4);
+
+		vertices[startindex + 0].position = { tile_rect.left, tile_rect.top };
+		vertices[startindex + 1].position = { tile_rect.left + tile_rect.width, tile_rect.top };
+		vertices[startindex + 2].position = { tile_rect.left + tile_rect.width, tile_rect.top + tile_rect.height };
+		vertices[startindex + 3].position = { tile_rect.left, tile_rect.top + tile_rect.height };
+
+		// texure coordinates
+		vertices[startindex + 0].texCoords = { texture_rect.left, texture_rect.top };
+		vertices[startindex + 1].texCoords = { texture_rect.left + texture_rect.width, texture_rect.top };
+		vertices[startindex + 2].texCoords = { texture_rect.left + texture_rect.width, texture_rect.top + texture_rect.height };
+		vertices[startindex + 3].texCoords = { texture_rect.left, texture_rect.top + texture_rect.height };
+			
+		// rotate and mirror to keep the correct pixel art lighting 
+		if (rotationAllowed && rand() % 2)
+		{
+			// rotate by -90°(270°) and mirror horizontally
+			// 0 1			-->	3 0			--> 0 3
+			// 3 2				2 1				2 1
+			vertices[startindex + 3].texCoords = vertices[startindex + 1].texCoords;
+			vertices[startindex + 2].texCoords = vertices[startindex + 3].texCoords;
+			vertices[startindex + 1].texCoords = { texture_rect.left + texture_rect.width, texture_rect.top + texture_rect.height };
+		}
+	}
+
+	void TLevel::addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture * tex)
+	{
+		// circle the texture for black pixels
+		// expand pixels until completed area is found
+
+		// use area to create an obstacle (cPoly?)
 	}
 
 
