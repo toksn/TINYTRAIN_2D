@@ -88,11 +88,6 @@ namespace tgf
 					}
 				}
 
-				//texture_coords_["road"] = sf::IntRect(64, 0, 64, 64);
-				//texture_coords_["road_crossing-1"] = sf::IntRect(0, 192, 128, 128);
-				//texture_coords_["road_crossing-2"] = sf::IntRect(0, 64, 128, 128);
-				//texture_coords_["track_05"] = sf::IntRect(0, 0, 64, 32);
-
 				return true;
 			}
 	

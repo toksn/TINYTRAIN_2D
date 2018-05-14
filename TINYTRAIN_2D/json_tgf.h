@@ -126,6 +126,8 @@ namespace tgf
 			{
 				std::size_t last = range.first + 1;
 				auto seps = findValidSeperators(str, ',', range.first+1, range.second);
+
+				// adding full range as another (fake)seperator to include the part after the last seperator to the end
 				seps.push_back(range.second);
 				for (auto& s : seps)
 				{
@@ -173,8 +175,6 @@ namespace tgf
 		data::data(std::string& data_string)
 		{
 			//json::data dat;
-			
-			
 			std::size_t start = data_string.find_first_not_of(" \n\t");
 			if (start != std::string::npos)
 			{
@@ -189,16 +189,17 @@ namespace tgf
 							std::string sub = data_string.substr(range.first + 1, range.second - 1 - range.first);
 							auto seps = findValidSeperators(sub, ',');
 							std::size_t last = 0;
+
+							// adding last str index as another (fake)seperator to include the part after the last seperator to the end
+							if(sub.length() > 0)
+								seps.push_back(sub.length() - 1);
+
 							for (auto& s : seps)
 							{
 								std::string part = sub.substr(last, s - last);
 								value.a.push_back(json::data(part));
 								last = s + 1;
 							}
-							// fill in the part from last seperator to end
-							std::string part = sub.substr(last, sub.length() - 1 - last);
-							value.a.push_back(json::data(part));
-
 							type = json::type::ARRAY;
 						}
 						break;
