@@ -41,10 +41,7 @@ namespace tinytrain
 	void TLevel::onDraw(sf::RenderTarget * target)
 	{
 		target->draw(background_static, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
-		target->draw(foreground_static, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
-		target->draw(foreground_dynamic, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
-
-
+		
 		target->draw(roads_, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
 		if(drawDebug_)
 			target->draw(roads_debug_);
@@ -55,6 +52,9 @@ namespace tinytrain
 		if (train_)
 			train_->draw(target);
 		
+		target->draw(foreground_static, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
+		target->draw(foreground_dynamic, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
+
 		for (int i = obstacles_.size() - 1; i >= 0; i--)
 		{
 			auto o = obstacles_[i].get();
