@@ -14,6 +14,11 @@ namespace tinytrain
 	TLevel::TLevel(GameState_Running* gs)
 	{
 		gs_ = gs;
+
+		background_static.setPrimitiveType(sf::PrimitiveType::Quads);
+		foreground_static.setPrimitiveType(sf::PrimitiveType::Quads);
+		foreground_dynamic.setPrimitiveType(sf::PrimitiveType::Quads);
+
 		
 		if (gs_ && gs_->game_)
 			texture_atlas_ = gs_->game_->getTextureAtlas();
@@ -35,6 +40,11 @@ namespace tinytrain
 
 	void TLevel::onDraw(sf::RenderTarget * target)
 	{
+		target->draw(background_static, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
+		target->draw(foreground_static, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
+		target->draw(foreground_dynamic, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
+
+
 		target->draw(roads_, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
 		if(drawDebug_)
 			target->draw(roads_debug_);
@@ -109,23 +119,10 @@ namespace tinytrain
 	}
 
 	void TLevel::generateLevel_fromImage(sf::Image& map)
-	{
-		// define possible tile type colors
-		// todo: move definition to a fitting place
-		//sf::Color tile_types[5];
-		const sf::Color water		(  0, 162, 232);	//blue
-		const sf::Color residental	(237,  28,  36);	//red
-		const sf::Color park		(181, 230,  29);	//bright green
-		const sf::Color forest		( 34, 177,  76);	//dark green
-		const sf::Color road		(127, 127, 127);	//grey
-		const sf::Color industrial	(255, 201,  14);	//yellow
-
+	{		
+		// collect texture rects for every type from atlas (by name)
+		std::map< sf::Uint32, tile_type_info> texture_rects_by_tiletype = generateTileTypeInfos(texture_atlas_);
 		
-		// todo: collect texture rects for every type from atlas (by name)
-		std::map < sf::Color, tile_type_info> texture_rects_by_tiletype;
-		
-
-
 		// every pixel is an area of the size of a (simple) street
 		auto size = map.getSize();
 		int tilesize = 128;
@@ -138,13 +135,12 @@ namespace tinytrain
 
 				//auto it = texture_rects_by_tiletype.find(col);
 				//if (it != texture_rects_by_tiletype.end())
-				auto cur_type_data = texture_rects_by_tiletype[col];
+				auto cur_type_data = texture_rects_by_tiletype[col.toInteger()];
 
 				if (cur_type_data.isValid)
 				{
 					// common tile
 					addMapTile(background_static, curTileRect, cur_type_data.common_bg, false);
-
 
 					if (cur_type_data.tex_coords.size())
 					{
@@ -174,8 +170,57 @@ namespace tinytrain
 		}
 
 		// random start location
+		railtrack_ = std::make_unique<TRailTrack>(gs_);
+		train_ = std::make_unique<TTrain>(gs_);
+		train_->play();
+
+		railtrack_->append(sf::Vector2f(200.0f, 50.f));
+		railtrack_->append(sf::Vector2f(200.0f, 100.f));
+		railtrack_->addLastControlPointToHistory();
+		railtrack_->addTrain(train_.get());
+		train_->initWagons(15);
 		// random yellow events (collectables, like passengers, construction_workers, bonus_points)
 		// random target zones
+	}
+
+	std::map < sf::Uint32, tile_type_info> TLevel::generateTileTypeInfos(tgf::utilities::TextureAtlas* atlas)
+	{
+		// define possible tile type colors
+		// todo: move definition to a fitting place
+		//sf::Color tile_types[5];
+		const sf::Uint32 water		(sf::Color	 (0, 162, 232).toInteger());	//blue
+		const sf::Uint32 residental	(sf::Color	 (237, 28, 36).toInteger());	//red
+		const sf::Uint32 park		(sf::Color	(181, 230, 29).toInteger());	//bright green
+		const sf::Uint32 forest		(sf::Color   (34, 177, 76).toInteger());	//dark green
+		const sf::Uint32 road		(sf::Color (127, 127, 127).toInteger());	//grey
+		const sf::Uint32 industrial (sf::Color	(255, 201, 14).toInteger());	//yellow
+
+		// available common backgrounds
+		sf::IntRect common_bg_water = atlas->getArea("water");
+		sf::IntRect common_bg_grass = atlas->getArea("grass_bg_01");
+		// ...						
+
+
+		std::map< sf::Uint32, tile_type_info> info;
+
+		tile_type_info& cur = info[park];
+		cur.isValid = true;
+		cur.common_bg = common_bg_grass;		
+
+		info[forest] = tile_type_info(cur);
+		info[road] = tile_type_info(cur);
+		info[residental] = tile_type_info(cur);
+		info[industrial] = tile_type_info(cur);
+
+		info[water] = tile_type_info(cur);
+		info[water].common_bg = common_bg_water;
+
+		// residental search for "house" strings in atlas
+		
+		// industrial search for "industrial" strings in atlas
+		// ...
+
+		return info;
 	}
 
 	// vertex arrays are supposed to use PrimitiveType::Quads
@@ -186,16 +231,16 @@ namespace tinytrain
 		// add four points for the vertex array
 		vertices.resize(vertices.getVertexCount() + 4);
 
-		vertices[startindex + 0].position = { tile_rect.left, tile_rect.top };
-		vertices[startindex + 1].position = { tile_rect.left + tile_rect.width, tile_rect.top };
-		vertices[startindex + 2].position = { tile_rect.left + tile_rect.width, tile_rect.top + tile_rect.height };
-		vertices[startindex + 3].position = { tile_rect.left, tile_rect.top + tile_rect.height };
+		vertices[startindex + 0].position = { (float)tile_rect.left, (float)tile_rect.top };
+		vertices[startindex + 1].position = { (float)tile_rect.left + tile_rect.width, (float)tile_rect.top };
+		vertices[startindex + 2].position = { (float)tile_rect.left + tile_rect.width, (float)tile_rect.top + tile_rect.height };
+		vertices[startindex + 3].position = { (float)tile_rect.left, (float)tile_rect.top + tile_rect.height };
 
 		// texure coordinates
-		vertices[startindex + 0].texCoords = { texture_rect.left, texture_rect.top };
-		vertices[startindex + 1].texCoords = { texture_rect.left + texture_rect.width, texture_rect.top };
-		vertices[startindex + 2].texCoords = { texture_rect.left + texture_rect.width, texture_rect.top + texture_rect.height };
-		vertices[startindex + 3].texCoords = { texture_rect.left, texture_rect.top + texture_rect.height };
+		vertices[startindex + 0].texCoords = { (float)texture_rect.left, (float)texture_rect.top };
+		vertices[startindex + 1].texCoords = { (float)texture_rect.left + texture_rect.width, (float)texture_rect.top };
+		vertices[startindex + 2].texCoords = { (float)texture_rect.left + texture_rect.width, (float)texture_rect.top + texture_rect.height };
+		vertices[startindex + 3].texCoords = { (float)texture_rect.left, (float)texture_rect.top + texture_rect.height };
 			
 		// rotate and mirror to keep the correct pixel art lighting 
 		if (rotationAllowed && rand() % 2)
@@ -205,7 +250,7 @@ namespace tinytrain
 			// 3 2				2 1				2 1
 			vertices[startindex + 3].texCoords = vertices[startindex + 1].texCoords;
 			vertices[startindex + 2].texCoords = vertices[startindex + 3].texCoords;
-			vertices[startindex + 1].texCoords = { texture_rect.left + texture_rect.width, texture_rect.top + texture_rect.height };
+			vertices[startindex + 1].texCoords = { (float)texture_rect.left + texture_rect.width, (float)texture_rect.top + texture_rect.height };
 		}
 	}
 

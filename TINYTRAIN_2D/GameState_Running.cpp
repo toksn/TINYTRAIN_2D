@@ -17,7 +17,7 @@ namespace tinytrain
 		collisionMananger_ = std::make_unique<TTrainCollisionManager>();
 
 		level_ = std::make_unique<TLevel>(this);
-		level_->load();
+		level_->load("data/images/level/map.png");
 
 		player_ = std::make_unique<TPlayer>(this);
 		player_->setColor(sf::Color::Green);

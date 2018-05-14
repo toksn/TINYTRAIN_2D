@@ -142,7 +142,10 @@ namespace tinytrain
 
 	tgf::math::Spline_CatmullRom * TRailTrack::getTrackSpline()
 	{
-		return track_->spline_.get();
+		if (track_)
+			return track_->spline_.get();
+		else
+			return nullptr;
 	}
 
 	void TRailTrack::onSplineChanged()

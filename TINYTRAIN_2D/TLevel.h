@@ -68,6 +68,7 @@ namespace tinytrain
 		bool triangulation_insertSplineCtrlPtsForSegmentAtCrossing(tgf::utilities::roadsegment* seg, tgf::utilities::road_crossing* crossing, std::vector<sf::Vector2f>& ctrl_pts, bool start = false);
 
 		void generateLevel_fromImage(sf::Image & map);
+		std::map < sf::Uint32, tile_type_info> generateTileTypeInfos(tgf::utilities::TextureAtlas * atlas);
 		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotationAllowed = false);
 		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture* tex);
 
