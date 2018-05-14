@@ -20,7 +20,9 @@ namespace tgf
 		guiView_ = std::make_unique<sf::View>(sf::FloatRect(0.0f, 0.0f, window_width, window_height));
 
 		frameClock_ = std::make_unique<sf::Clock>();
-		bShowFPS_ = false;
+		bShowFPS_ = true;
+
+		fps_.setPosition(10.0f, 10.0f);
 	}
 
 
@@ -46,7 +48,10 @@ namespace tgf
 	{
 		// check for elapsed time and restart clock for next cycle
 		sf::Time deltaTime = frameClock_->restart();
-		float curFPS = 1.0f / deltaTime.asSeconds();
+		// add render timer in seconds
+		renderTimer_ += deltaTime;
+
+		//float curFPS = 1.0f / deltaTime.asSeconds();
 
 		GameStateBase* currentState = peekState();
 		if (currentState == nullptr)
@@ -56,19 +61,30 @@ namespace tgf
 			return;
 		}
 
+		if (bShowFPS_ && renderTimer_.asMilliseconds() > 100)
+		{
+			renderTimer_ = sf::Time::Zero;
+			//snprintf(fps_buf_, 50, "%05.1f", 1.0f / deltaTime.asSeconds());
+			snprintf(fps_buf_, 50, "%4d", (int)(1.0f / deltaTime.asSeconds()));
+			fps_.setString(fps_buf_);
+		}
+			
+
 		currentState->update(deltaTime.asSeconds());
 
+		// DRAWING BEGIN
 		window_->clear(sf::Color::Black);
+		
 		currentState->draw(window_.get());
-		window_->display();
 		
 		if (bShowFPS_)
-			printf("\nFPS: %f", 1.0f / renderTimer_.asSeconds());
+			window_->draw(fps_);
+
+		window_->display();
+		// DRAWING END
 
 		if (desiredFrameTime_ != sf::Time::Zero)
 		{
-			// add render timer in seconds
-			renderTimer_ += deltaTime;
 			// do fixed render steps until theres less than desired timeframe left
 			while (renderTimer_>desiredFrameTime_)
 				renderTimer_ -= desiredFrameTime_;
@@ -117,11 +133,11 @@ namespace tgf
 			}
 			else if(states_.size())
 				states_.back().get()->handleInput(event);
-		}
 
-		// F10 to toggle FPS
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::F10))
-			bShowFPS_ = !bShowFPS_;
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F10)
+				bShowFPS_ = !bShowFPS_;
+		}
 	}
 
 	void Game::changeState(std::unique_ptr<GameStateBase> state)
@@ -158,7 +174,10 @@ namespace tgf
 		if (font_ == nullptr)
 			font_ = std::make_unique<sf::Font>();
 
-		return font_->loadFromFile(font_file_path);
+		bool rc = font_->loadFromFile(font_file_path);
+		if(rc)
+			fps_.setFont(*font_);
+		return rc;
 	}
 
 	bool Game::loadTextureAtlas(std::string texture_file_path)

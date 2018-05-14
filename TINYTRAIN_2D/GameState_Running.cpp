@@ -95,7 +95,7 @@ namespace tinytrain
 			level_->draw(target);
 		
 		// guiview
-		if (game_ && game_->window_)
+		if (game_)
 			target->setView(*game_->guiView_);
 
 		// draw gui

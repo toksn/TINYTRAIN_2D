@@ -52,5 +52,7 @@ namespace tgf
 		sf::Uint16	maxFPS_;
 		sf::Time	renderTimer_;
 		sf::Time	desiredFrameTime_;
+		sf::Text	fps_;
+		char fps_buf_[50];
 	};
 }
