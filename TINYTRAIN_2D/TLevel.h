@@ -28,9 +28,11 @@ namespace tinytrain
 			sf::IntRect collision;
 		};
 		sf::IntRect common_bg;
-		std::vector<texture_layer_set> tex_coords;
+		std::map<std::string, texture_layer_set> tex_coords;
 		bool rotationAllowed = true;
 		bool isValid = false;
+
+		void fillFromAtlas(tgf::utilities::TextureAtlas* atlas, const std::string & prefix);
 	};
 
 	class TLevel : public tgf::Entity
@@ -69,8 +71,8 @@ namespace tinytrain
 
 		void generateLevel_fromImage(sf::Image & map);
 		std::map < sf::Uint32, tile_type_info> generateTileTypeInfos(tgf::utilities::TextureAtlas * atlas);
-		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotationAllowed = false);
-		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture* tex);
+		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotate = false);
+		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture* tex, bool rotate = false);
 
 		tgf::utilities::TextureAtlas* texture_atlas_ = nullptr;
 		GameState_Running* gs_;

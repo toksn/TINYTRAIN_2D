@@ -18,10 +18,12 @@ namespace tgf
 			const sf::Image* getImage();
 			sf::Texture* getTexture();
 			sf::IntRect getArea(std::string texture_name);
+
+			std::map<std::string, sf::IntRect> texture_coords_;
 		private:
 			std::unique_ptr<sf::Image> img_;
 			std::unique_ptr<sf::Texture> tex_;
-			std::map<std::string, sf::IntRect> texture_coords_;
+			
 		};
 	}
 }

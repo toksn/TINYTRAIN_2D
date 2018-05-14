@@ -139,22 +139,28 @@ namespace tinytrain
 
 				if (cur_type_data.isValid)
 				{
+					
+					
 					// common tile
 					addMapTile(background_static, curTileRect, cur_type_data.common_bg, false);
 
 					if (cur_type_data.tex_coords.size())
 					{
+						bool rotate = cur_type_data.rotationAllowed && rand() % 2;
+
 						// get random element from the list
 						int index = rand() % cur_type_data.tex_coords.size();
-						tile_type_info::texture_layer_set chosen_texture_set = cur_type_data.tex_coords[index];
+						auto iter = cur_type_data.tex_coords.begin();
+						std::advance(iter, index);
+						tile_type_info::texture_layer_set chosen_texture_set = iter->second;
 
 						// add layers if there is any
-						addMapTile(background_static, curTileRect, chosen_texture_set.bg, cur_type_data.rotationAllowed);
-						addMapTile(foreground_static, curTileRect, chosen_texture_set.fg, cur_type_data.rotationAllowed);
-						addMapTile(foreground_dynamic, curTileRect, chosen_texture_set.fg_dyn, cur_type_data.rotationAllowed);
+						addMapTile(background_static, curTileRect, chosen_texture_set.bg, rotate);
+						addMapTile(foreground_static, curTileRect, chosen_texture_set.fg, rotate);
+						addMapTile(foreground_dynamic, curTileRect, chosen_texture_set.fg_dyn, rotate);
 						//...
 
-						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture());
+						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture(), rotate);
 					}
 				}
 
@@ -216,15 +222,17 @@ namespace tinytrain
 		info[water].common_bg = common_bg_water;
 
 		// residental search for "house" strings in atlas
+		info[residental].fillFromAtlas(atlas, "house_");
 		
 		// industrial search for "industrial" strings in atlas
-		// ...
+		info[industrial].fillFromAtlas(atlas, "industrial_");
+		// ...			
 
 		return info;
 	}
 
 	// vertex arrays are supposed to use PrimitiveType::Quads
-	void TLevel::addMapTile(sf::VertexArray & vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotationAllowed)
+	void TLevel::addMapTile(sf::VertexArray & vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotate)
 	{
 		int startindex = vertices.getVertexCount();
 
@@ -243,18 +251,17 @@ namespace tinytrain
 		vertices[startindex + 3].texCoords = { (float)texture_rect.left, (float)texture_rect.top + texture_rect.height };
 			
 		// rotate and mirror to keep the correct pixel art lighting 
-		if (rotationAllowed && rand() % 2)
+		if(rotate)
 		{
 			// rotate by -90°(270°) and mirror horizontally
 			// 0 1			-->	3 0			--> 0 3
-			// 3 2				2 1				2 1
+			// 3 2				2 1				1 2
 			vertices[startindex + 3].texCoords = vertices[startindex + 1].texCoords;
-			vertices[startindex + 2].texCoords = vertices[startindex + 3].texCoords;
-			vertices[startindex + 1].texCoords = { (float)texture_rect.left + texture_rect.width, (float)texture_rect.top + texture_rect.height };
+			vertices[startindex + 1].texCoords = { (float)texture_rect.left, (float)texture_rect.top + texture_rect.height };
 		}
 	}
 
-	void TLevel::addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture * tex)
+	void TLevel::addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture * tex, bool rotate)
 	{
 		// circle the texture for black pixels
 		// expand pixels until completed area is found
@@ -585,5 +592,42 @@ namespace tinytrain
 		}
 
 		return true;
+	}
+
+	void tile_type_info::fillFromAtlas(tgf::utilities::TextureAtlas * atlas, const std::string & prefix)
+	{
+		const std::string col = "collision_";
+		const std::string fg_dyn = "fg_dyn_";
+		const std::string fg = "fg_";
+		const std::string bg = "bg_";
+		auto first = atlas->texture_coords_.lower_bound(prefix);
+		auto second = atlas->texture_coords_.upper_bound(prefix + "zzz");
+		if (first != atlas->texture_coords_.end() && second != atlas->texture_coords_.end())
+		{
+			for (auto it = first; it != second; ++it)
+			{
+				std::string suffix = it->first.substr(prefix.length());
+				if (suffix.length() > bg.length() && suffix.compare(0, bg.length(), bg) == 0)
+				{
+					suffix = suffix.substr(bg.length());
+					tex_coords[suffix].bg = it->second;
+				}
+				else if (suffix.length() > fg.length() && suffix.compare(0, fg.length(), fg) == 0)
+				{
+					suffix = suffix.substr(fg.length());
+					tex_coords[suffix].fg = it->second;
+				}
+				else if (suffix.length() > fg_dyn.length() && suffix.compare(0, fg_dyn.length(), fg_dyn) == 0)
+				{
+					suffix = suffix.substr(fg_dyn.length());
+					tex_coords[suffix].fg_dyn = it->second;
+				}
+				else if (suffix.length() > col.length() && suffix.compare(0, col.length(), col) == 0)
+				{
+					suffix = suffix.substr(col.length());
+					tex_coords[suffix].collision = it->second;
+				}
+			}
+		}
 	}
 }
