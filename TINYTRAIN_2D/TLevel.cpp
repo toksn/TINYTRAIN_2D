@@ -178,7 +178,7 @@ namespace tinytrain
 				if (col.toInteger() == tile_colors::road)
 				{
 					// count road neighbours
-					std::list<sf::Vector2u> road_neighbours;
+					std::vector<sf::Vector2u> road_neighbours;
 					std::list<sf::Vector2u> other_neighbours;
 					if (x + 1 < size.x && map.getPixel(x + 1, y).toInteger() == tile_colors::road)
 						road_neighbours.push_back(sf::Vector2u(x+1, y));
@@ -245,29 +245,47 @@ namespace tinytrain
 							
 						
 					}
-					else
+					else 
 					{
 						auto rect = texture_atlas_->getArea("road");
 						bool rotate = false;
-						for (auto& pos : road_neighbours)
-						{	// check for left right
-							if (pos.x != x)
-							{
-								rotate = true;
-								break;
+						if (road_neighbours.size() == 1)
+						{
+							for (auto& pos : road_neighbours)
+							{	// check for left right
+								if (pos.x != x)
+									rotate = true;
 							}
 						}
+						else if (road_neighbours.size() == 2)
+						{
+							if (road_neighbours[0].x == road_neighbours[1].x || road_neighbours[0].y == road_neighbours[1].y)
+								rotate = road_neighbours[0].x != x;
+							else
+							{
+								rect = texture_atlas_->getArea("road-2way");
+								bool v_mirror = road_neighbours[0].x < x || road_neighbours[1].x < x;
+								bool h_mirror = road_neighbours[0].y < y || road_neighbours[1].y < y;
+
+								if (v_mirror)
+								{
+									// mirror both axis
+									rect.left += rect.width;
+									rect.width *= -1.0f;
+								}
+								if (h_mirror)
+								{
+									rect.top += rect.height;
+									rect.height *= -1.0f;
+								}
+							}
+						}	
+						
 						addMapTile(background_static, curTileRect, rect, rotate);
 					}
 						
 
-					// build road network instead to gen the roads without the exact tiles
-					//__ .
-					//  \
-					//  |
-					//  .\_
-
-					
+					// build road network for ai cars to travel					
 				}
 			}
 		}
