@@ -18,6 +18,17 @@ namespace tinytrain
 	class TObstacle;
 	class GameState_Running;
 
+	// possible tile type colors
+	namespace tile_colors
+	{
+		const sf::Uint32 water(sf::Color(0, 162, 232).toInteger());	//blue
+		const sf::Uint32 residental(sf::Color(237, 28, 36).toInteger());	//red
+		const sf::Uint32 park(sf::Color(181, 230, 29).toInteger());	//bright green
+		const sf::Uint32 forest(sf::Color(34, 177, 76).toInteger());	//dark green
+		const sf::Uint32 road(sf::Color(127, 127, 127).toInteger());	//grey
+		const sf::Uint32 industrial(sf::Color(255, 201, 14).toInteger());	//yellow
+	}
+
 	struct tile_type_info
 	{
 		struct texture_layer_set

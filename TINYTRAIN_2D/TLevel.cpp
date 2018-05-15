@@ -7,7 +7,7 @@
 #include "SplineTexture.h"
 #include "GameState_Running.h"
 
-#define city_size_factor 2.0f;
+#define background_size_factor 10.0f;
 
 namespace tinytrain
 {
@@ -118,14 +118,25 @@ namespace tinytrain
 		load();			//load(currentLevelFile);
 	}
 
+	// this is used to generate:
+	//		- tile type infos
+	//
+	//		- background of the tile (texture)
+	//		- foreground of the tile (something special like a bridge, roofs of houses ect)
+	//		- obstacles from collision textures
+	//
+	//		- road_network				
+	//
+	//		- possible randomly placed obstacles like trees
 	void TLevel::generateLevel_fromImage(sf::Image& map)
 	{		
 		// collect texture rects for every type from atlas (by name)
 		std::map< sf::Uint32, tile_type_info> texture_rects_by_tiletype = generateTileTypeInfos(texture_atlas_);
 		
 		// every pixel is an area of the size of a (simple) street
-		auto size = map.getSize();
-		int tilesize = 128;
+		const auto size = map.getSize();
+		int tilesize = map.getSize().x * background_size_factor;
+
 		for (int x = 0; x < size.x; x++)
 		{
 			for (int y = 0; y < size.y; y++)
@@ -137,10 +148,9 @@ namespace tinytrain
 				//if (it != texture_rects_by_tiletype.end())
 				auto cur_type_data = texture_rects_by_tiletype[col.toInteger()];
 
+				// generate background and collision
 				if (cur_type_data.isValid)
-				{
-					
-					
+				{	
 					// common tile
 					addMapTile(background_static, curTileRect, cur_type_data.common_bg, false);
 
@@ -164,14 +174,101 @@ namespace tinytrain
 					}
 				}
 
-				// this should generate:
-				//		- background of the tile (texture)
-				//		- road_network
-				//		- foreground of the tile (something special like a bridge, roofs of houses ect)
-				//		- obstacles from collision textures
-				//		- possible randomly placed obstacles like trees
-				//		- tile type
-				//generateLevelTile(col, area);
+				// generate roadnetwork
+				if (col.toInteger() == tile_colors::road)
+				{
+					// count road neighbours
+					std::list<sf::Vector2u> road_neighbours;
+					std::list<sf::Vector2u> other_neighbours;
+					if (x + 1 < size.x && map.getPixel(x + 1, y).toInteger() == tile_colors::road)
+						road_neighbours.push_back(sf::Vector2u(x+1, y));
+					else 
+						other_neighbours.push_back(sf::Vector2u(x + 1, y));
+
+					if (x - 1 >= 0 && map.getPixel(x - 1, y).toInteger() == tile_colors::road)
+						road_neighbours.push_back(sf::Vector2u(x - 1, y));
+					else
+						other_neighbours.push_back(sf::Vector2u(x - 1, y));
+					
+					if (y - 1 >= 0 && map.getPixel(x, y-1).toInteger() == tile_colors::road)
+						road_neighbours.push_back(sf::Vector2u(x , y-1));
+					else
+						other_neighbours.push_back(sf::Vector2u(x, y - 1));
+
+					if (y + 1 < size.y && map.getPixel(x, y+1).toInteger() == tile_colors::road)
+						road_neighbours.push_back(sf::Vector2u(x, y+1));
+					else
+						other_neighbours.push_back(sf::Vector2u(x, y + 1));
+
+					if (road_neighbours.size() == 4)
+						addMapTile(background_static, curTileRect, texture_atlas_->getArea("road-4way"));
+					else if (road_neighbours.size() == 3)
+					{
+						if (other_neighbours.size() == 1)
+						{
+							auto rect = texture_atlas_->getArea("road-3way");
+							bool rotate = false;
+							// right check of the _NOT_road
+							if (other_neighbours.front().x != x + 1)
+							{
+								if (other_neighbours.front().x == x - 1)
+								{
+									// mirror both axis
+									rect.left += rect.width;
+									rect.width *= -1.0f;
+
+									rect.top += rect.height;
+									rect.height *= -1.0f;
+								}
+								else 
+								{
+									rotate = true;
+									if (other_neighbours.front().y == y - 1)
+									{
+										// mirror vertically
+										rect.left += rect.width;
+										rect.width *= -1.0f;
+									}
+									else
+									{
+										// mirror horizontally
+										rect.top += rect.height;
+										rect.height *= -1.0f;
+									}
+								}
+							}
+								
+							
+
+							addMapTile(background_static, curTileRect, rect, rotate);
+						}
+							
+						
+					}
+					else
+					{
+						auto rect = texture_atlas_->getArea("road");
+						bool rotate = false;
+						for (auto& pos : road_neighbours)
+						{	// check for left right
+							if (pos.x != x)
+							{
+								rotate = true;
+								break;
+							}
+						}
+						addMapTile(background_static, curTileRect, rect, rotate);
+					}
+						
+
+					// build road network instead to gen the roads without the exact tiles
+					//__ .
+					//  \
+					//  |
+					//  .\_
+
+					
+				}
 			}
 		}
 
@@ -191,16 +288,6 @@ namespace tinytrain
 
 	std::map < sf::Uint32, tile_type_info> TLevel::generateTileTypeInfos(tgf::utilities::TextureAtlas* atlas)
 	{
-		// define possible tile type colors
-		// todo: move definition to a fitting place
-		//sf::Color tile_types[5];
-		const sf::Uint32 water		(sf::Color	 (0, 162, 232).toInteger());	//blue
-		const sf::Uint32 residental	(sf::Color	 (237, 28, 36).toInteger());	//red
-		const sf::Uint32 park		(sf::Color	(181, 230, 29).toInteger());	//bright green
-		const sf::Uint32 forest		(sf::Color   (34, 177, 76).toInteger());	//dark green
-		const sf::Uint32 road		(sf::Color (127, 127, 127).toInteger());	//grey
-		const sf::Uint32 industrial (sf::Color	(255, 201, 14).toInteger());	//yellow
-
 		// available common backgrounds
 		sf::IntRect common_bg_water = atlas->getArea("water");
 		sf::IntRect common_bg_grass = atlas->getArea("grass_bg_01");
@@ -209,23 +296,23 @@ namespace tinytrain
 
 		std::map< sf::Uint32, tile_type_info> info;
 
-		tile_type_info& cur = info[park];
+		tile_type_info& cur = info[tile_colors::park];
 		cur.isValid = true;
 		cur.common_bg = common_bg_grass;		
 
-		info[forest] = tile_type_info(cur);
-		info[road] = tile_type_info(cur);
-		info[residental] = tile_type_info(cur);
-		info[industrial] = tile_type_info(cur);
+		info[tile_colors::forest] = tile_type_info(cur);
+		info[tile_colors::road] = tile_type_info(cur);
+		info[tile_colors::residental] = tile_type_info(cur);
+		info[tile_colors::industrial] = tile_type_info(cur);
 
-		info[water] = tile_type_info(cur);
-		info[water].common_bg = common_bg_water;
+		info[tile_colors::water] = tile_type_info(cur);
+		info[tile_colors::water].common_bg = common_bg_water;
 
 		// residental search for "house" strings in atlas
-		info[residental].fillFromAtlas(atlas, "house_");
+		info[tile_colors::residental].fillFromAtlas(atlas, "house_");
 		
 		// industrial search for "industrial" strings in atlas
-		info[industrial].fillFromAtlas(atlas, "industrial_");
+		info[tile_colors::industrial].fillFromAtlas(atlas, "house_"); //"industrial_"
 		// ...			
 
 		return info;
@@ -278,10 +365,10 @@ namespace tinytrain
 		tgf::utilities::CityGenerator city;
 		tgf::utilities::cgSettings settings;
 
-		settings.road_crossingMinDist *= city_size_factor;
-		settings.road_segLength *= city_size_factor;
-		settings.road_chanceToSplitRadius *= city_size_factor;
-		settings.road_chanceToContinueRadius *= city_size_factor;
+		settings.road_crossingMinDist *= background_size_factor;
+		settings.road_segLength *= background_size_factor;
+		settings.road_chanceToSplitRadius *= background_size_factor;
+		settings.road_chanceToContinueRadius *= background_size_factor;
 
 		//settings.road_chanceToSplitRadius *= 5.0f;
 		//settings.road_chanceToContinueRadius *= 5.0f;
@@ -411,7 +498,7 @@ namespace tinytrain
 
 		// generate road triangles from splines (roadsegments = controlpoints) between deadends/crossings
 		//float streetwidth = 16.0f;
-		float streetwidth = 6.4f * city_size_factor;
+		float streetwidth = 6.4f * background_size_factor;
 		//float crossing_radius = streetwidth
 		std::vector<sf::VertexArray> tris;
 
@@ -566,7 +653,7 @@ namespace tinytrain
 		//		 /
 		//	last_pt
 		////////////////////////////////////////////
-		float distance = 6.4f * city_size_factor;	// = streetwidth
+		float distance = 6.4f * background_size_factor;	// = streetwidth
 		sf::Vector2f calc_pt_1, calc_pt_2;
 		calc_pt_1 = calc_pt_2 = crossing->pt;
 
