@@ -289,7 +289,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "road-3way",
+	"filename": "road-2way",
 	"frame": {"x":0,"y":1024,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -298,7 +298,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "road-4way",
+	"filename": "road-3way",
 	"frame": {"x":64,"y":1024,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -307,7 +307,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "road",
+	"filename": "road-4way",
 	"frame": {"x":0,"y":1088,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -316,8 +316,17 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
+	"filename": "road",
+	"frame": {"x":64,"y":1088,"w":64,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
+	"sourceSize": {"w":64,"h":64},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
 	"filename": "track_05",
-	"frame": {"x":64,"y":1088,"w":64,"h":32},
+	"frame": {"x":0,"y":1152,"w":64,"h":32},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":32},
@@ -326,7 +335,7 @@
 },
 {
 	"filename": "tree_collision_1",
-	"frame": {"x":0,"y":1152,"w":21,"h":21},
+	"frame": {"x":64,"y":1152,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -335,7 +344,7 @@
 },
 {
 	"filename": "tree_collision_2",
-	"frame": {"x":21,"y":1152,"w":21,"h":21},
+	"frame": {"x":85,"y":1152,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -344,7 +353,7 @@
 },
 {
 	"filename": "tree_collision_3",
-	"frame": {"x":42,"y":1152,"w":21,"h":21},
+	"frame": {"x":106,"y":1152,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -353,7 +362,7 @@
 },
 {
 	"filename": "tree_collision_4",
-	"frame": {"x":63,"y":1152,"w":21,"h":21},
+	"frame": {"x":0,"y":1184,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -362,7 +371,7 @@
 },
 {
 	"filename": "tree_fg_1",
-	"frame": {"x":84,"y":1152,"w":21,"h":21},
+	"frame": {"x":21,"y":1184,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -371,7 +380,7 @@
 },
 {
 	"filename": "tree_fg_2",
-	"frame": {"x":105,"y":1152,"w":21,"h":21},
+	"frame": {"x":42,"y":1184,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -380,7 +389,7 @@
 },
 {
 	"filename": "tree_fg_3",
-	"frame": {"x":0,"y":1173,"w":21,"h":21},
+	"frame": {"x":63,"y":1184,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -389,7 +398,7 @@
 },
 {
 	"filename": "tree_fg_4",
-	"frame": {"x":21,"y":1173,"w":21,"h":21},
+	"frame": {"x":84,"y":1184,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -398,7 +407,7 @@
 },
 {
 	"filename": "water",
-	"frame": {"x":42,"y":1173,"w":64,"h":64},
+	"frame": {"x":0,"y":1205,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
@@ -410,8 +419,8 @@
 	"version": "1.0",
 	"image": "texture_atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":128,"h":1237},
+	"size": {"w":128,"h":1269},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:ac6ec5c794176613e1fdba28f7ea3abf:ca88d756ba0dc88b9abc25eb29161931:67087b54f7aa7c7f6411022b7ef8a190$"
+	"smartupdate": "$TexturePacker:SmartUpdate:326039c6a12c8370d0384a9904f0c58b:412b5170a7a28e8595f52aa689c1d857:67087b54f7aa7c7f6411022b7ef8a190$"
 }
 }

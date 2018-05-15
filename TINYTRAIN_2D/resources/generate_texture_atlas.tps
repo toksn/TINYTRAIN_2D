@@ -215,6 +215,7 @@
             <key type="filename">../../../GFX/2d/64x64/houses/house_fg_08.png</key>
             <key type="filename">../../../GFX/2d/64x64/houses/house_fg_09.png</key>
             <key type="filename">../../../GFX/2d/64x64/houses/house_fg_10.png</key>
+            <key type="filename">../../../GFX/2d/64x64/roads/road-2way.png</key>
             <key type="filename">../../../GFX/2d/64x64/roads/road-3way.png</key>
             <key type="filename">../../../GFX/2d/64x64/roads/road-4way.png</key>
             <key type="filename">../../../GFX/2d/64x64/roads/road.png</key>
