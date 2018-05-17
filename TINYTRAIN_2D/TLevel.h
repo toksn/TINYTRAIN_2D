@@ -86,6 +86,7 @@ namespace tinytrain
 		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture* tex, bool rotate = false);
 
 		tgf::utilities::TextureAtlas* texture_atlas_ = nullptr;
+		float road_texture_width_;
 		GameState_Running* gs_;
 	};
 }

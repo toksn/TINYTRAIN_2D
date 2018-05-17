@@ -7,7 +7,7 @@
 #include "SplineTexture.h"
 #include "GameState_Running.h"
 
-#define background_size_factor 10.0f;
+#define background_size_factor 1.0f;
 
 namespace tinytrain
 {
@@ -19,9 +19,13 @@ namespace tinytrain
 		foreground_static.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_dynamic.setPrimitiveType(sf::PrimitiveType::Quads);
 
-		
+		road_texture_width_ = 32.0f;
 		if (gs_ && gs_->game_)
+		{
 			texture_atlas_ = gs_->game_->getTextureAtlas();
+			road_texture_width_ = texture_atlas_->getArea("road").width;
+		}
+			
 
 		drawDebug_ = false;
 		if (gs)
@@ -135,7 +139,7 @@ namespace tinytrain
 		
 		// every pixel is an area of the size of a (simple) street
 		const auto size = map.getSize();
-		int tilesize = map.getSize().x * background_size_factor;
+		int tilesize = road_texture_width_ * background_size_factor;
 
 		for (int x = 0; x < size.x; x++)
 		{
@@ -383,13 +387,21 @@ namespace tinytrain
 		tgf::utilities::CityGenerator city;
 		tgf::utilities::cgSettings settings;
 
-		settings.road_crossingMinDist *= background_size_factor;
-		settings.road_segLength *= background_size_factor;
-		settings.road_chanceToSplitRadius *= background_size_factor;
-		settings.road_chanceToContinueRadius *= background_size_factor;
+		float factor = 5.0f * background_size_factor;
+		settings.road_crossingMinDist *= factor;
+		settings.road_segLength *= factor;
+		settings.road_chanceToSplitRadius *= factor;
+		settings.road_chanceToContinueRadius *= factor;
 
+		// variants for city generation:
+		 
+		//// rectangular roads only
+		//settings.road_segAngleRange = 0;
+		//
+		//// larger city radius
 		//settings.road_chanceToSplitRadius *= 5.0f;
 		//settings.road_chanceToContinueRadius *= 5.0f;
+		
 		city.applySettings(settings);
 
 		auto t1 = std::clock();
@@ -516,7 +528,7 @@ namespace tinytrain
 
 		// generate road triangles from splines (roadsegments = controlpoints) between deadends/crossings
 		//float streetwidth = 16.0f;
-		float streetwidth = 6.4f * background_size_factor;
+		float streetwidth = road_texture_width_ * background_size_factor;
 		//float crossing_radius = streetwidth
 		std::vector<sf::VertexArray> tris;
 
@@ -671,7 +683,7 @@ namespace tinytrain
 		//		 /
 		//	last_pt
 		////////////////////////////////////////////
-		float distance = 6.4f * background_size_factor;	// = streetwidth
+		float distance = road_texture_width_ * background_size_factor;	// = streetwidth
 		sf::Vector2f calc_pt_1, calc_pt_2;
 		calc_pt_1 = calc_pt_2 = crossing->pt;
 
