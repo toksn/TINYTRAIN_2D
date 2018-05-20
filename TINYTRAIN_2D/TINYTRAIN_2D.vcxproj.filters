@@ -214,6 +214,9 @@
     <ClInclude Include="json_tgf.h">
       <Filter>GameFramework\utilities</Filter>
     </ClInclude>
+    <ClInclude Include="graph_tgf.h">
+      <Filter>GameFramework\utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt">

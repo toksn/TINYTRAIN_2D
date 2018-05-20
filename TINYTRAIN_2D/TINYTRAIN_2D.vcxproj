@@ -169,6 +169,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="CollisionEntity.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="graph_tgf.h" />
     <ClInclude Include="InterpolateToPoint.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
