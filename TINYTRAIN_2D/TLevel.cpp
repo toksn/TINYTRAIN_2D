@@ -7,12 +7,18 @@
 #include "SplineTexture.h"
 #include "GameState_Running.h"
 
+//#include "graph_tgf.h"
+//using graph = tgf::graph::node_edgelist_graph<int, float>;
 #define background_size_factor 1.0f;
 
 namespace tinytrain
 {
 	TLevel::TLevel(GameState_Running* gs)
 	{
+		//graph g;
+		//g.addEdge(1, 2, 34.212f);
+		
+
 		gs_ = gs;
 
 		background_static.setPrimitiveType(sf::PrimitiveType::Quads);
@@ -241,9 +247,7 @@ namespace tinytrain
 									}
 								}
 							}
-								
 							
-
 							addMapTile(background_static, curTileRect, rect, rotate);
 						}
 							
