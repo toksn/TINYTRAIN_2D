@@ -6,7 +6,7 @@ namespace tgf
 	namespace graph
 	{
 		struct no_data {};
-		template <class node_type = int, class dist_type = float, class node_data = no_data, class edge_data = no_data> class node_edgelist_graph
+		template <class node_type = int, class dist_type = float, class node_data = no_data, class edge_data = no_data, class node_compare = std::less<node_type>> class node_edgelist_graph
 		{
 		public:
 			struct node;
@@ -25,7 +25,7 @@ namespace tgf
 			node_edgelist_graph() {};
 			~node_edgelist_graph() {};
 
-			std::map<node_type, node> nodes_;
+			std::map<node_type, node, node_compare> nodes_;
 
 			void addEdge(node_type from, node_type to, dist_type dist, edge_data data = edge_data())
 			{
