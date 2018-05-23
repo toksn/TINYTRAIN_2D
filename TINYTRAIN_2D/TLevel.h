@@ -28,7 +28,7 @@ namespace tinytrain
 		} stopinfo;
 	};
 
-	using graph = tgf::graph::node_edgelist_graph<int, float, tgf::graph::no_data, road_connection_info>;
+	using graph = tgf::graph::node_edgelist_graph<sf::Vector2f, float, tgf::graph::no_data, road_connection_info, vec2Less<float>>;
 
 	class TTrain;
 	class TObstacle;

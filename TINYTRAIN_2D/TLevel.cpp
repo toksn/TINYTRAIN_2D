@@ -12,7 +12,10 @@ namespace tinytrain
 	TLevel::TLevel(GameState_Running* gs)
 	{
 		//graph g;
-		//g.addEdge(1, 2, 34.212f);
+		//g.addEdge(sf::Vector2f(1.0f, 2.0f), sf::Vector2f(2.0f, 1.0f), 34.212f);
+		//g.addEdge(sf::Vector2f(2.0f, 1.0f), sf::Vector2f(1.0f, 2.0f), 30.212f);
+		//g.addEdge(sf::Vector2f(2.0f, 1.0f), sf::Vector2f(3.0f, 2.0f), 8.212f);
+
 		gs_ = gs;
 
 		background_static_.setPrimitiveType(sf::PrimitiveType::Quads);

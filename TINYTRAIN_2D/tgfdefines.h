@@ -1,6 +1,17 @@
 #pragma once
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <SFML\Graphics.hpp>
 
 constexpr float RAD_TO_DEG = 180.0f / M_PI;
 constexpr float DEG_TO_RAD = M_PI / 180.0f;
+
+
+template<class T> struct vec2Less {
+	bool operator()(const sf::Vector2<T> & a, const sf::Vector2<T>& b) const {
+		if (a.x != b.x)
+			return a.x < b.x;
+		else
+			return a.y < b.y;
+	}
+};
