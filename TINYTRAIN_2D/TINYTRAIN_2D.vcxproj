@@ -153,6 +153,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="SplineTexture.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
     <ClCompile Include="TextureAtlas.cpp" />
+    <ClCompile Include="TLevel_Builder.cpp" />
     <ClCompile Include="TLineInputInterface.cpp" />
     <ClCompile Include="TPolyLineInputComponent.cpp" />
     <ClCompile Include="TextMenu.cpp" />
@@ -186,6 +187,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="Spline_CatmullRom.h" />
     <ClInclude Include="TextureAtlas.h" />
     <ClInclude Include="tgfdefines.h" />
+    <ClInclude Include="TLevel_Builder.h" />
     <ClInclude Include="TLineInputInterface.h" />
     <ClInclude Include="TPolyLineInputComponent.h" />
     <ClInclude Include="TextMenu.h" />

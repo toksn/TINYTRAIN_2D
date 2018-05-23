@@ -122,6 +122,9 @@
     <ClCompile Include="TextureAtlas.cpp">
       <Filter>GameFramework\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="TLevel_Builder.cpp">
+      <Filter>TinyTrain\utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -216,6 +219,9 @@
     </ClInclude>
     <ClInclude Include="graph_tgf.h">
       <Filter>GameFramework\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="TLevel_Builder.h">
+      <Filter>TinyTrain\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
