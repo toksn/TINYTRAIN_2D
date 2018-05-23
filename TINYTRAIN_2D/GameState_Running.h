@@ -34,6 +34,8 @@ namespace tinytrain
 		void pause();
 		void restart();
 
+		void loadLevel(std::string file = "");
+
 		TTrainCollisionManager* getCollisionManager();
 
 	protected:

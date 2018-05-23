@@ -1,8 +1,8 @@
 #pragma once
 
-//#include <SFML\Graphics.hpp>
 #include "CityGenerator.h"
 #include "TextureAtlas.h"
+#include "TLevel.h"
 
 namespace tinytrain
 {
@@ -37,30 +37,27 @@ namespace tinytrain
 	class TLevel_Builder
 	{
 	public:
-		TLevel_Builder(tgf::utilities::TextureAtlas * atlas);
+		TLevel_Builder(GameState_Running* gs);
 		~TLevel_Builder();
 
-		void generateLevel_random();
-		void generateLevel_fromImage(sf::Image & map, float tilesize);
-		void loadLevel(std::string& filename);
-		
-
-		sf::VertexArray background_static;
-		sf::VertexArray foreground_static;
-		sf::VertexArray foreground_dynamic;
-
-		// graph road_network_;
-		// obstacles
-		// 
+		std::unique_ptr<TLevel> generateLevel_random();
+		std::unique_ptr<TLevel> generateLevel_fromImage(sf::Image & map);
+		std::unique_ptr<TLevel> loadLevel(std::string& filename);
 
 	protected:
 		sf::VertexArray triangulateRoadSegments(tgf::utilities::CityGenerator & city);
 		bool triangulation_insertSplineCtrlPtsForSegmentAtCrossing(tgf::utilities::roadsegment* seg, tgf::utilities::road_crossing* crossing, std::vector<sf::Vector2f>& ctrl_pts, bool start = false);
 
+		void placeTrainTrack(TLevel * level);
+
 		std::map < sf::Uint32, tile_type_info> generateTileTypeInfos(tgf::utilities::TextureAtlas * atlas);
 		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotate = false);
 		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture* tex, bool rotate = false);
 
+
+		float road_texture_width_ = 32.0f;
+		GameState_Running* gs_;
 		tgf::utilities::TextureAtlas* texture_atlas_ = nullptr;
+		std::map< sf::Uint32, tile_type_info> texture_rects_by_tiletype_;
 	};
 }

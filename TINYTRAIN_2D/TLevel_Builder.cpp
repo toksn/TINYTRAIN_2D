@@ -1,11 +1,22 @@
 #include "TLevel_Builder.h"
 #include "SplineTexture.h"
+#include "GameState_Running.h"
+
+// todo: maybe move into gamestate_running?
+#define background_size_factor 1.0f;
 
 namespace tinytrain
 {
-	TLevel_Builder::TLevel_Builder(tgf::utilities::TextureAtlas * atlas)
+	TLevel_Builder::TLevel_Builder(GameState_Running * gs)
 	{
-		texture_atlas_ = atlas;
+		gs_ = gs;
+		if (gs_ && gs_->game_)
+		{
+			texture_atlas_ = gs_->game_->getTextureAtlas();
+
+			if (texture_atlas_)
+				road_texture_width_ = texture_atlas_->getArea("road").width;
+		}
 	}
 
 	TLevel_Builder::~TLevel_Builder()
@@ -22,14 +33,17 @@ namespace tinytrain
 	//		- road_network				
 	//
 	//		- possible randomly placed obstacles like trees
-	void TLevel_Builder::generateLevel_fromImage(sf::Image& map, float tilesize)
-	{		
+	std::unique_ptr<TLevel> TLevel_Builder::generateLevel_fromImage(sf::Image& map)
+	{
+		std::unique_ptr<TLevel> level = std::make_unique<TLevel>(gs_);
+
 		// collect texture rects for every type from atlas (by name)
-		std::map< sf::Uint32, tile_type_info> texture_rects_by_tiletype = generateTileTypeInfos(texture_atlas_);
+		if(texture_rects_by_tiletype_.size() == 0)
+			texture_rects_by_tiletype_ = generateTileTypeInfos(texture_atlas_);
 		
 		// every pixel is an area of the size of a (simple) street
 		const auto size = map.getSize();
-		//int tilesize = road_texture_width_ * background_size_factor;
+		int tilesize = road_texture_width_ * background_size_factor;
 
 		for (int x = 0; x < size.x; x++)
 		{
@@ -40,13 +54,13 @@ namespace tinytrain
 
 				//auto it = texture_rects_by_tiletype.find(col);
 				//if (it != texture_rects_by_tiletype.end())
-				auto cur_type_data = texture_rects_by_tiletype[col.toInteger()];
+				auto cur_type_data = texture_rects_by_tiletype_[col.toInteger()];
 
 				// generate background and collision
 				if (cur_type_data.isValid)
 				{	
 					// common tile
-					addMapTile(background_static, curTileRect, cur_type_data.common_bg, false);
+					addMapTile(level->background_static, curTileRect, cur_type_data.common_bg, false);
 
 					if (cur_type_data.tex_coords.size())
 					{
@@ -59,9 +73,9 @@ namespace tinytrain
 						tile_type_info::texture_layer_set chosen_texture_set = iter->second;
 
 						// add layers if there is any
-						addMapTile(background_static, curTileRect, chosen_texture_set.bg, rotate);
-						addMapTile(foreground_static, curTileRect, chosen_texture_set.fg, rotate);
-						addMapTile(foreground_dynamic, curTileRect, chosen_texture_set.fg_dyn, rotate);
+						addMapTile(level->background_static, curTileRect, chosen_texture_set.bg, rotate);
+						addMapTile(level->foreground_static, curTileRect, chosen_texture_set.fg, rotate);
+						addMapTile(level->foreground_dynamic, curTileRect, chosen_texture_set.fg_dyn, rotate);
 						//...
 
 						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture(), rotate);
@@ -95,7 +109,7 @@ namespace tinytrain
 						other_neighbours.push_back(sf::Vector2u(x, y + 1));
 
 					if (road_neighbours.size() == 4)
-						addMapTile(background_static, curTileRect, texture_atlas_->getArea("road-4way"));
+						addMapTile(level->background_static, curTileRect, texture_atlas_->getArea("road-4way"));
 					else if (road_neighbours.size() == 3)
 					{
 						if (other_neighbours.size() == 1)
@@ -132,7 +146,7 @@ namespace tinytrain
 								}
 							}
 							
-							addMapTile(background_static, curTileRect, rect, rotate);
+							addMapTile(level->background_static, curTileRect, rect, rotate);
 						}
 							
 						
@@ -173,7 +187,7 @@ namespace tinytrain
 							}
 						}	
 						
-						addMapTile(background_static, curTileRect, rect, rotate);
+						addMapTile(level->background_static, curTileRect, rect, rotate);
 					}
 						
 
@@ -184,11 +198,167 @@ namespace tinytrain
 
 		// random yellow events (collectables, like passengers, construction_workers, bonus_points)
 		// random target zones
+
+		placeTrainTrack(level.get());
+
+		return level;
 	}
 
-	void TLevel_Builder::loadLevel(std::string & filename)
+	std::unique_ptr<TLevel>  TLevel_Builder::generateLevel_random()
 	{
-		return;
+		std::unique_ptr<TLevel> level = std::make_unique<TLevel>(gs_);
+
+		tgf::utilities::CityGenerator city;
+		tgf::utilities::cgSettings settings;
+
+		float factor = 5.0f * background_size_factor;
+		settings.road_crossingMinDist *= factor;
+		settings.road_segLength *= factor;
+		settings.road_chanceToSplitRadius *= factor;
+		settings.road_chanceToContinueRadius *= factor;
+
+		// variants for city generation:
+
+		//// rectangular roads only
+		//settings.road_segAngleRange = 0;
+		//
+		//// larger city radius
+		//settings.road_chanceToSplitRadius *= 5.0f;
+		//settings.road_chanceToContinueRadius *= 5.0f;
+
+		city.applySettings(settings);
+
+		auto t1 = std::clock();
+		city.generate();
+
+		level->roads_debug_.clear();
+		level->roads_debug_.setPrimitiveType(sf::PrimitiveType::Lines);
+		for (auto& road : city.road_segments_)
+		{
+			level->roads_debug_.append(sf::Vertex(road->a, road->col_a));
+			level->roads_debug_.append(sf::Vertex(road->b, road->col_b));
+		}
+
+		int time = std::clock() - t1;
+		printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.size(), (float)time / (float)(city.road_segments_.size()));
+
+		level->roads_ = triangulateRoadSegments(city);
+
+		/************************************************************************/
+		// TODO: passengers to pick up
+
+		placeTrainTrack(level.get());
+		return level;
+	}
+
+	std::unique_ptr<TLevel> TLevel_Builder::loadLevel(std::string & filename)
+	{
+		return std::unique_ptr<TLevel>();
+	}
+
+
+
+	// this function has to place a (train), railtrack, (target zone)
+	void TLevel_Builder::placeTrainTrack(TLevel* level)
+	{
+		/************************************************
+		minimum req to play a level
+		************************************************/
+		// random start location
+		if (level)
+		{
+			level->railtrack_ = std::make_unique<TRailTrack>(gs_);
+			level->train_ = std::make_unique<TTrain>(gs_);
+			level->train_->play();
+
+			level->railtrack_->append(sf::Vector2f(200.0f, 50.f));
+			level->railtrack_->append(sf::Vector2f(200.0f, 100.f));
+			level->railtrack_->append(sf::Vector2f(250.0f, 140.f));
+			level->railtrack_->addLastControlPointToHistory();
+			level->railtrack_->addTrain(level->train_.get());
+			level->train_->initWagons(15);
+		}//*/
+
+		/*longer version
+
+		// create train for the player
+		train_ = std::make_unique<TTrain>(gs_);
+		train_->play();
+
+		// create a railtrack for the train
+		railtrack_ = std::make_unique<TRailTrack>(gs_);
+
+		railtrack_->append(sf::Vector2f(200.0f, 50.f));
+		railtrack_->append(sf::Vector2f(200.0f, 100.f));
+		railtrack_->append(sf::Vector2f(250.0f, 140.f));
+		railtrack_->append(sf::Vector2f(150.0f, 180.f));
+		railtrack_->append(sf::Vector2f(130.0f, 70.f));
+
+		c2v start{ 150.0f, 180.f };
+		c2v end{ 130.0f, 70.f };
+		float dist = 10.0f;
+		int angle_range = 20;
+		angle_range *= 100;
+		
+		//c2v seg = c2Sub(end, start);
+		//// 57.295779513 := rad to degre conversion (rad * 180.0/pi)
+		//float angle = atan2(seg.y, seg.x) * RAD_TO_DEG;
+		//
+		//for (size_t i = 0; i < 10; i++)
+		//{
+		//angle += ((rand() % angle_range) - angle_range * 0.5f)/100.0f;
+		//
+		////lastPos.x += rand() % 200 - 100;
+		////lastPos.y += rand() % 200 - 100;
+		//
+		////lastPos.x += rand() % 30;
+		////lastPos.y += rand() % 30;
+		//
+		//start = end;
+		//end.x += dist * cos(angle / RAD_TO_DEG);
+		//end.y += dist * sin(angle / RAD_TO_DEG);
+		//
+		//railtrack_->append(sf::Vector2f(end.x, end.y));
+		//}
+		
+		railtrack_->addLastControlPointToHistory();
+		railtrack_->addTrain(train_.get());
+		train_->initWagons(15);
+
+		// create obstacles for the games to be lost
+		auto zone = std::make_unique<TObstacle>(gs_, false);
+		zone->drawable_->setPosition(+30.0f, +30.0f);
+		zone->updateCollisionShape();
+
+
+
+		// create temporary component by constructor to use in copy constructor
+		tgf::components::InterpolateToPoint c(zone->getPosition(), zone->getPosition() + sf::Vector2f(50.f, 0.0f), 2.0f, tgf::components::MovementType::TwoWay, true, false);
+		c.start();
+		zone->addNewComponent<tgf::components::InterpolateToPoint>(c);
+		obstacles_.push_back(std::move(zone));
+
+		// create target zone for the game to be won
+		auto target_zone = std::make_unique<TObstacle>(gs_, true);
+		target_zone->setPosition(-30.0f, -30.0f);
+		target_zone->updateCollisionShape();
+
+		// change duration and line for the target_zone
+		c.duration_ = 1.0f;
+		c.setControlPoints(target_zone->getPosition(), target_zone->getPosition() + sf::Vector2f(-30.f, -30.0f));
+		target_zone->addNewComponent<tgf::components::InterpolateToPoint>(c);
+
+		// create movement component by variables
+		//auto movement_comp = std::make_unique<tgf::components::InterpolateToPoint>();
+		//movement_comp->setControlPoints(target_zone->getPosition(), target_zone->getPosition() + sf::Vector2f(-30.f, -30.0f));
+		//movement_comp->duration_ = 1.0f;
+		//movement_comp->type_ = tgf::components::MovementType::TwoWay;
+		//movement_comp->repeat_ = false;
+		//movement_comp->start();
+		//target_zone->addComponent(std::move(movement_comp));
+
+		obstacles_.push_back(std::move(target_zone));
+		*/
 	}
 
 	std::map < sf::Uint32, tile_type_info> TLevel_Builder::generateTileTypeInfos(tgf::utilities::TextureAtlas* atlas)
@@ -260,57 +430,7 @@ namespace tinytrain
 
 		// use area to create an obstacle (cPoly?)
 	}
-	void TLevel_Builder::generateLevel_random()
-	{
-		/**************************************************************************
-		SIMPLE LEVEL CREATED BY CODE -- this is the minimum requirement for a level
-		***************************************************************************/
-		tgf::utilities::CityGenerator city;
-		tgf::utilities::cgSettings settings;
-
-		float factor = 5.0f * background_size_factor;
-		settings.road_crossingMinDist *= factor;
-		settings.road_segLength *= factor;
-		settings.road_chanceToSplitRadius *= factor;
-		settings.road_chanceToContinueRadius *= factor;
-
-		// variants for city generation:
-		 
-		//// rectangular roads only
-		//settings.road_segAngleRange = 0;
-		//
-		//// larger city radius
-		//settings.road_chanceToSplitRadius *= 5.0f;
-		//settings.road_chanceToContinueRadius *= 5.0f;
-		
-		city.applySettings(settings);
-
-		auto t1 = std::clock();
-		city.generate();
-
-		roads_debug_.clear();
-		roads_debug_.setPrimitiveType(sf::PrimitiveType::Lines);
-		for (auto& road : city.road_segments_)
-		{
-			roads_debug_.append(sf::Vertex(road->a, road->col_a));
-			roads_debug_.append(sf::Vertex(road->b, road->col_b));
-		}
-
-		int time = std::clock() - t1;
-		printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.size(), (float)time / (float)(city.road_segments_.size()));
-
-		roads_ = triangulateRoadSegments(city);
-
-		
-
-
-
-		/************************************************************************/
-
-		// TODO: passengers to pick up
-	}
-
-
+	
 	sf::VertexArray TLevel_Builder::triangulateRoadSegments(tgf::utilities::CityGenerator& city)
 	{
 		sf::VertexArray triangles;
@@ -516,8 +636,7 @@ namespace tinytrain
 
 		return true;
 	}
-
-
+	
 	void tile_type_info::fillFromAtlas(tgf::utilities::TextureAtlas * atlas, const std::string & prefix)
 	{
 		const std::string col = "collision_";

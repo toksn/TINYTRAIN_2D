@@ -18,12 +18,14 @@ namespace tinytrain
 		background_static.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_static.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_dynamic.setPrimitiveType(sf::PrimitiveType::Quads);
-			
+		
+		if (gs_ && gs_->game_)
+			texture_atlas_ = gs_->game_->getTextureAtlas();
 
 		drawDebug_ = false;
-		if (gs)
+		if (gs_)
 		{
-			gs->bindEventCallback(sf::Event::KeyPressed, this, &TLevel::onKeyPressed);
+			gs_->bindEventCallback(sf::Event::KeyPressed, this, &TLevel::onKeyPressed);
 			//...
 		}
 	}
@@ -37,9 +39,13 @@ namespace tinytrain
 
 	void TLevel::onDraw(sf::RenderTarget * target)
 	{
-		target->draw(background_static, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
+		auto renderstate = sf::RenderStates::Default;
+		if(texture_atlas_)
+			renderstate = sf::RenderStates::RenderStates(texture_atlas_->getTexture());
+
+		target->draw(background_static, renderstate);
 		
-		target->draw(roads_, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
+		target->draw(roads_, renderstate);
 		if(drawDebug_)
 			target->draw(roads_debug_);
 		
@@ -49,8 +55,8 @@ namespace tinytrain
 		if (train_)
 			train_->draw(target);
 		
-		target->draw(foreground_static, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
-		target->draw(foreground_dynamic, sf::RenderStates::RenderStates(texture_atlas_->getTexture()));
+		target->draw(foreground_static, renderstate);
+		target->draw(foreground_dynamic, renderstate);
 
 		for (int i = obstacles_.size() - 1; i >= 0; i--)
 		{

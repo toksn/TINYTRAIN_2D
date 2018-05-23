@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "TLevel.h"
+#include "TLevel_Builder.h"
 #include "TPlayer.h"
 #include "Game.h"
 #include "tinyc2.h"
@@ -16,8 +17,7 @@ namespace tinytrain
 
 		collisionMananger_ = std::make_unique<TTrainCollisionManager>();
 
-		level_ = std::make_unique<TLevel>(this);
-		level_->load("data/images/level/map.png");
+		
 
 		player_ = std::make_unique<TPlayer>(this);
 		player_->setColor(sf::Color::Green);
@@ -29,7 +29,7 @@ namespace tinytrain
 		camFlowTime_ = 1.0;
 		camCurrentTime_ = 0.0;
 
-		initCurrentLevel();
+		loadLevel("data/images/level/map.png");
 	}
 
 	GameState_Running::~GameState_Running()
@@ -225,10 +225,34 @@ namespace tinytrain
 
 	void GameState_Running::restart()
 	{
-		if(level_)
-			level_->restart();
+		//if(level_)
+		//	level_->restart();
+		loadLevel();
 
-		initCurrentLevel();
+		//initCurrentLevel();
+	}
+
+	void GameState_Running::loadLevel(std::string file)
+	{
+		//level_->load("data/images/level/map.png");
+		TLevel_Builder level_gen(this);
+
+		if (file.empty())
+		{
+			level_ = level_gen.generateLevel_random();
+		}
+		else
+		{
+			// try to load the file as an image
+			sf::Image map;
+			if (map.loadFromFile(file))
+			{
+				level_ = level_gen.generateLevel_fromImage(map);
+			}
+		}
+
+		if(level_)
+			initCurrentLevel();
 	}
 
 	TTrainCollisionManager* GameState_Running::getCollisionManager()
