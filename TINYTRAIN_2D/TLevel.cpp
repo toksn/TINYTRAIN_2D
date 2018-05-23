@@ -15,9 +15,9 @@ namespace tinytrain
 		//g.addEdge(1, 2, 34.212f);
 		gs_ = gs;
 
-		background_static.setPrimitiveType(sf::PrimitiveType::Quads);
-		foreground_static.setPrimitiveType(sf::PrimitiveType::Quads);
-		foreground_dynamic.setPrimitiveType(sf::PrimitiveType::Quads);
+		background_static_.setPrimitiveType(sf::PrimitiveType::Quads);
+		foreground_static_.setPrimitiveType(sf::PrimitiveType::Quads);
+		foreground_dynamic_.setPrimitiveType(sf::PrimitiveType::Quads);
 		
 		if (gs_ && gs_->game_)
 			texture_atlas_ = gs_->game_->getTextureAtlas();
@@ -42,8 +42,8 @@ namespace tinytrain
 		auto renderstate = sf::RenderStates::Default;
 		if(texture_atlas_)
 			renderstate = sf::RenderStates::RenderStates(texture_atlas_->getTexture());
-
-		target->draw(background_static, renderstate);
+		
+		target->draw(background_static_, renderstate);
 		
 		target->draw(roads_, renderstate);
 		if(drawDebug_)
@@ -55,8 +55,8 @@ namespace tinytrain
 		if (train_)
 			train_->draw(target);
 		
-		target->draw(foreground_static, renderstate);
-		target->draw(foreground_dynamic, renderstate);
+		target->draw(foreground_static_, renderstate);
+		target->draw(foreground_dynamic_, renderstate);
 
 		for (int i = obstacles_.size() - 1; i >= 0; i--)
 		{

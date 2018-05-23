@@ -60,7 +60,7 @@ namespace tinytrain
 				if (cur_type_data.isValid)
 				{	
 					// common tile
-					addMapTile(level->background_static, curTileRect, cur_type_data.common_bg, false);
+					addMapTile(level->background_static_, curTileRect, cur_type_data.common_bg, false);
 
 					if (cur_type_data.tex_coords.size())
 					{
@@ -73,9 +73,9 @@ namespace tinytrain
 						tile_type_info::texture_layer_set chosen_texture_set = iter->second;
 
 						// add layers if there is any
-						addMapTile(level->background_static, curTileRect, chosen_texture_set.bg, rotate);
-						addMapTile(level->foreground_static, curTileRect, chosen_texture_set.fg, rotate);
-						addMapTile(level->foreground_dynamic, curTileRect, chosen_texture_set.fg_dyn, rotate);
+						addMapTile(level->background_static_, curTileRect, chosen_texture_set.bg, rotate);
+						addMapTile(level->foreground_static_, curTileRect, chosen_texture_set.fg, rotate);
+						addMapTile(level->foreground_dynamic_, curTileRect, chosen_texture_set.fg_dyn, rotate);
 						//...
 
 						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture(), rotate);
@@ -109,7 +109,7 @@ namespace tinytrain
 						other_neighbours.push_back(sf::Vector2u(x, y + 1));
 
 					if (road_neighbours.size() == 4)
-						addMapTile(level->background_static, curTileRect, texture_atlas_->getArea("road-4way"));
+						addMapTile(level->background_static_, curTileRect, texture_atlas_->getArea("road-4way"));
 					else if (road_neighbours.size() == 3)
 					{
 						if (other_neighbours.size() == 1)
@@ -146,7 +146,7 @@ namespace tinytrain
 								}
 							}
 							
-							addMapTile(level->background_static, curTileRect, rect, rotate);
+							addMapTile(level->background_static_, curTileRect, rect, rotate);
 						}
 							
 						
@@ -187,7 +187,7 @@ namespace tinytrain
 							}
 						}	
 						
-						addMapTile(level->background_static, curTileRect, rect, rotate);
+						addMapTile(level->background_static_, curTileRect, rect, rotate);
 					}
 						
 

@@ -5,7 +5,6 @@
 #include "CityGenerator.h"
 
 #include "graph_tgf.h"
-using graph = tgf::graph::node_edgelist_graph<int, float>;
 
 namespace tgf
 {
@@ -17,6 +16,20 @@ namespace tgf
 
 namespace tinytrain
 {
+	struct road_connection_info
+	{
+		// todo: absolute or relative? vertexArray or list<sf::vector2f>?
+		std::list<sf::Vector2f> waypoints;
+		struct stopping_info
+		{
+			// should probably be a [0,1] value in relation to the waypoints list
+			float stop_at_dist;
+			std::vector<sf::IntRect> areas_to_check_before_continue;
+		} stopinfo;
+	};
+
+	using graph = tgf::graph::node_edgelist_graph<int, float, tgf::graph::no_data, road_connection_info>;
+
 	class TTrain;
 	class TObstacle;
 	class GameState_Running;	
@@ -51,8 +64,8 @@ namespace tinytrain
 		float road_texture_width_;
 		GameState_Running* gs_;
 
-		sf::VertexArray background_static;
-		sf::VertexArray foreground_static;
-		sf::VertexArray foreground_dynamic;
+		sf::VertexArray background_static_;
+		sf::VertexArray foreground_static_;
+		sf::VertexArray foreground_dynamic_;
 	};
 }
