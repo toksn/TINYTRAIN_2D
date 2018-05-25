@@ -19,7 +19,7 @@ namespace tinytrain
 	struct road_connection_info
 	{
 		// todo: absolute or relative? vertexArray or list<sf::vector2f>?
-		std::list<sf::Vector2f> waypoints;
+		std::vector<sf::Vector2f> waypoints;
 		struct stopping_info
 		{
 			// should probably be a [0,1] value in relation to the waypoints list

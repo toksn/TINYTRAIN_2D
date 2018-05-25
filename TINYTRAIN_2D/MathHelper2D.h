@@ -21,7 +21,21 @@ namespace tgf
 			static bool ray_to_segment_intersection(c2v rayOrigin, c2v rayDirection, c2v s_a, c2v s_b, c2v * intersection = NULL);
 			//static float point_to_segment_distance(c2v pt, c2v s_a, c2v s_b);
 
-			static constexpr c2v calc_point_on_circle(float r, float angle, c2v c = { 0.0f, 0.0f });
+			static c2v calc_point_on_circle(float r, float angle, c2v c = { 0.0f, 0.0f });
+
+			/*
+			static sf::IntRect mirror_rect(sf::IntRect& rect, bool h, bool v)
+			{
+				if(h && v)
+					return sf::IntRect(rect.left + rect.width, rect.top + rect.height, rect.width*-1.0f, rect.height*-1.0f);		// mirror both
+				else if(h)
+					return sf::IntRect(rect.left + rect.width, rect.top, rect.width*-1.0f, rect.height);	// mirror horizontally
+				else if(v)
+					return sf::IntRect(rect.left, rect.top + rect.height, rect.width, rect.height*-1.0f);	// mirror vertically
+				
+				return rect;
+			}*/
+
 		};
 	}
 }
