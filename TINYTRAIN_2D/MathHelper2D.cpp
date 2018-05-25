@@ -198,5 +198,10 @@ namespace tgf
 			}
 			return false;
 		}
+
+		constexpr c2v MathHelper2D::calc_point_on_circle(float r, float angle, c2v c)
+		{
+			return { r*cos(angle) + c.x, r*sin(angle) + c.y };
+		}
 	}
 }

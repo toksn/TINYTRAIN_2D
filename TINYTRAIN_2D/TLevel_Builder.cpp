@@ -59,7 +59,7 @@ namespace tinytrain
 				// generate background and collision
 				if (cur_type_data.isValid)
 				{	
-					// common tile
+					// common background layer
 					addMapTile(level->background_static_, curTileRect, cur_type_data.common_bg, false);
 
 					if (cur_type_data.tex_coords.size())
@@ -81,120 +81,11 @@ namespace tinytrain
 						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture(), rotate);
 					}
 				}
-
-				// generate roadnetwork
-				if (col.toInteger() == tile_colors::road)
-				{
-					// count road neighbours
-					std::vector<sf::Vector2u> road_neighbours;
-					std::list<sf::Vector2u> other_neighbours;
-					if (x + 1 < size.x && map.getPixel(x + 1, y).toInteger() == tile_colors::road)
-						road_neighbours.push_back(sf::Vector2u(x+1, y));
-					else 
-						other_neighbours.push_back(sf::Vector2u(x + 1, y));
-
-					if (x - 1 >= 0 && map.getPixel(x - 1, y).toInteger() == tile_colors::road)
-						road_neighbours.push_back(sf::Vector2u(x - 1, y));
-					else
-						other_neighbours.push_back(sf::Vector2u(x - 1, y));
-					
-					if (y - 1 >= 0 && map.getPixel(x, y-1).toInteger() == tile_colors::road)
-						road_neighbours.push_back(sf::Vector2u(x , y-1));
-					else
-						other_neighbours.push_back(sf::Vector2u(x, y - 1));
-
-					if (y + 1 < size.y && map.getPixel(x, y+1).toInteger() == tile_colors::road)
-						road_neighbours.push_back(sf::Vector2u(x, y+1));
-					else
-						other_neighbours.push_back(sf::Vector2u(x, y + 1));
-
-					if (road_neighbours.size() == 4)
-						addMapTile(level->background_static_, curTileRect, texture_atlas_->getArea("road-4way"));
-					else if (road_neighbours.size() == 3)
-					{
-						if (other_neighbours.size() == 1)
-						{
-							auto rect = texture_atlas_->getArea("road-3way");
-							bool rotate = false;
-							// right check of the _NOT_road
-							if (other_neighbours.front().x != x + 1)
-							{
-								if (other_neighbours.front().x == x - 1)
-								{
-									// mirror both axis
-									rect.left += rect.width;
-									rect.width *= -1.0f;
-
-									rect.top += rect.height;
-									rect.height *= -1.0f;
-								}
-								else 
-								{
-									rotate = true;
-									if (other_neighbours.front().y == y - 1)
-									{
-										// mirror vertically
-										rect.left += rect.width;
-										rect.width *= -1.0f;
-									}
-									else
-									{
-										// mirror horizontally
-										rect.top += rect.height;
-										rect.height *= -1.0f;
-									}
-								}
-							}
-							
-							addMapTile(level->background_static_, curTileRect, rect, rotate);
-						}
-							
-						
-					}
-					else 
-					{
-						auto rect = texture_atlas_->getArea("road");
-						bool rotate = false;
-						if (road_neighbours.size() == 1)
-						{
-							for (auto& pos : road_neighbours)
-							{	// check for left right
-								if (pos.x != x)
-									rotate = true;
-							}
-						}
-						else if (road_neighbours.size() == 2)
-						{
-							if (road_neighbours[0].x == road_neighbours[1].x || road_neighbours[0].y == road_neighbours[1].y)
-								rotate = road_neighbours[0].x != x;
-							else
-							{
-								rect = texture_atlas_->getArea("road-2way");
-								bool v_mirror = road_neighbours[0].x < x || road_neighbours[1].x < x;
-								bool h_mirror = road_neighbours[0].y < y || road_neighbours[1].y < y;
-
-								if (v_mirror)
-								{
-									// mirror both axis
-									rect.left += rect.width;
-									rect.width *= -1.0f;
-								}
-								if (h_mirror)
-								{
-									rect.top += rect.height;
-									rect.height *= -1.0f;
-								}
-							}
-						}	
-						
-						addMapTile(level->background_static_, curTileRect, rect, rotate);
-					}
-						
-
-					// build road network for ai cars to travel					
-				}
 			}
 		}
+
+		// generate road tile and road network
+		generateRoadNetwork_fromImage(map, level.get());
 
 		// random yellow events (collectables, like passengers, construction_workers, bonus_points)
 		// random target zones
@@ -255,8 +146,6 @@ namespace tinytrain
 	{
 		return std::unique_ptr<TLevel>();
 	}
-
-
 
 	// this function has to place a (train), railtrack, (target zone)
 	void TLevel_Builder::placeTrainTrack(TLevel* level)
@@ -391,6 +280,316 @@ namespace tinytrain
 		// ...			
 
 		return info;
+	}
+
+
+	void TLevel_Builder::generateRoadNetwork_fromImage(sf::Image & map, TLevel* level)
+	{
+		if (level == nullptr)
+			return;
+
+		// every pixel is an area of the size of a (simple) street
+		const auto size = map.getSize();
+		int tilesize = road_texture_width_ * background_size_factor;
+
+		sf::IntRect n4 = texture_atlas_->getArea("road-4way");
+
+		// road 3way, not connected dir defines the name, default from texture: 'e'
+		sf::IntRect n3_e = texture_atlas_->getArea("road-3way");
+		sf::IntRect n3_n = n3_e;
+		sf::IntRect n3_s = n3_n;
+		sf::IntRect n3_w = n3_n;
+
+		// road 2way curve, connected dirs define the name, default from texture: 'se'
+		sf::IntRect n2_se = texture_atlas_->getArea("road-2way");
+		sf::IntRect n2_sw = n2_se;
+		sf::IntRect n2_ne = n2_se;
+		sf::IntRect n2_nw = n2_se;
+		
+		// straight road, connected dirs define the name, default from texture: 'ns'
+		sf::IntRect n_ns = texture_atlas_->getArea("road");
+		sf::IntRect n_we = n_ns;
+
+		// create connection table
+		// 0 N, 1 E, 2 S, 3 W
+		road_connection_info foo[4][4];
+		// N>S
+		foo[0][2].waypoints.emplace_back(1.0f / 3.0f, 0.0f);
+		foo[0][2].waypoints.emplace_back(1.0f / 3.0f, 1.0f);
+		
+		// N>E
+		// circle center (64,0) - radius 1/3
+		// 10 steps for waypoint generation 180-270°		
+		float radius = 2.0f / 3.0f * tilesize;
+		float angle = 180.0f;
+		const float step = 10.0f * DEG_TO_RAD;
+		const c2v center{ 64.0f, 0.0f };
+		foo[0][1].waypoints.emplace_back(tilesize-radius, 0.0f);
+		for (int i = 1; i < 9; i++)
+		{
+			angle += step;
+			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle, center);
+			foo[0][1].waypoints.emplace_back(pt.x, pt.y);
+		}
+		foo[0][1].waypoints.emplace_back(64.0f, radius);
+
+		//foo[0][1].waypoints.emplace_back(1.0f / 3.0f, 0.0f);
+		//	// ...more points + stopping_info
+		//foo[0][1].waypoints.emplace_back(1.0f, 2.0f / 3.0f);
+		
+		// N>W
+		// circle center 0,0 - radius 1/3
+		// 10 steps for waypoint generation 0-90°		
+		float radius = 1.0f / 3.0f * tilesize;
+		float angle = 0.0f;
+		const float step = 10.0f * DEG_TO_RAD;
+		foo[0][3].waypoints.emplace_back(radius, 0.0f);
+		for (int i = 1; i < 9; i ++)
+		{
+			angle += step;
+			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle);
+			foo[0][3].waypoints.emplace_back(pt.x, pt.y);
+		}
+		foo[0][3].waypoints.emplace_back(0.0f, radius);
+
+
+		// create rest by rotating the N > X variant counter-clock wise P(x,y) -> P'(y, tilesize - x)
+		// S>E
+		foo[2][1].waypoints.resize(foo[0][3].waypoints.size());
+		foo[1][0].waypoints.resize(foo[0][3].waypoints.size());
+		foo[3][1].waypoints.resize(foo[0][3].waypoints.size());
+		// flip vertically and horizontally
+		for (auto& wp : foo[2][1].waypoints)
+		{
+			wp.x = tilesize - wp.x;
+			wp.y = tilesize - wp.y;
+		}
+		// E>N
+		foo[1][0].waypoints = foo[0][3].waypoints;
+		// flip horizontally and reverse
+		for (auto& wp : foo[1][0].waypoints)
+			wp.x = tilesize - wp.x;
+		foo[1][0].waypoints.reverse();
+		// W>S
+		foo[3][1].waypoints = foo[0][3].waypoints;
+		// flip vertically and reverse
+		for (auto& wp : foo[3][1].waypoints)
+			wp.y = tilesize - wp.y;
+		foo[3][1].waypoints.reverse();
+
+		// S>N
+		foo[2][0].waypoints.emplace_back(2.0f / 3.0f, 1.0f);
+		foo[2][0].waypoints.emplace_back(2.0f / 3.0f, 0.0f);
+		// W>E
+		foo[2][0].waypoints.emplace_back(0.0f, 2.0f / 3.0f);
+		foo[2][0].waypoints.emplace_back(1.0f, 2.0f / 3.0f);
+		// E>W
+		foo[2][0].waypoints.emplace_back(0.0f, 2.0f / 3.0f);
+		foo[2][0].waypoints.emplace_back(1.0f, 2.0f / 3.0f);
+
+
+
+		for (int x = 0; x < size.x; x++)
+		{
+			for (int y = 0; y < size.y; y++)
+			{
+				sf::Color col = map.getPixel(x, y);
+				if (col.toInteger() == tile_colors::road)
+				{
+					sf::IntRect curTileRect(x*tilesize, y*tilesize, tilesize, tilesize);
+
+					// count road neighbours
+					std::vector<sf::Vector2u> road_neighbors;
+					std::vector<sf::Vector2u> other_neighbors;
+					int neighbor_samecolor_count = gatherPixelNeighborInfo_sameColor(map, x, y, &road_neighbors, &other_neighbors, false);
+					
+
+					if (neighbor_samecolor_count == 4)
+						addMapTile(level->background_static_, curTileRect, texture_atlas_->getArea("road-4way"));
+					else if (neighbor_samecolor_count == 3)
+					{
+						if (other_neighbors.size() == 1)
+						{
+							auto rect = texture_atlas_->getArea("road-3way");
+							bool rotate = false;
+							// right check of the _NOT_road
+							if (other_neighbors.front().x != x + 1)
+							{
+								if (other_neighbors.front().x == x - 1)
+								{
+									// mirror both axis
+									rect.left += rect.width;
+									rect.width *= -1.0f;
+
+									rect.top += rect.height;
+									rect.height *= -1.0f;
+								}
+								else
+								{
+									rotate = true;
+									if (other_neighbors.front().y == y - 1)
+									{
+										// mirror vertically
+										rect.left += rect.width;
+										rect.width *= -1.0f;
+									}
+									else
+									{
+										// mirror horizontally
+										rect.top += rect.height;
+										rect.height *= -1.0f;
+									}
+								}
+							}
+
+							addMapTile(level->background_static_, curTileRect, rect, rotate);
+						}
+
+
+					}
+					else
+					{
+						auto rect = texture_atlas_->getArea("road");
+						bool rotate = false;
+						if (neighbor_samecolor_count == 1)
+						{
+							for (auto& pos : road_neighbors)
+							{	// check for left right
+								if (pos.x != x)
+									rotate = true;
+							}
+						}
+						else if (neighbor_samecolor_count == 2)
+						{
+							if (road_neighbors[0].x == road_neighbors[1].x || road_neighbors[0].y == road_neighbors[1].y)
+								rotate = road_neighbors[0].x != x;
+							else
+							{
+								rect = texture_atlas_->getArea("road-2way");
+								bool v_mirror = road_neighbors[0].x < x || road_neighbors[1].x < x;
+								bool h_mirror = road_neighbors[0].y < y || road_neighbors[1].y < y;
+
+								if (v_mirror)
+								{
+									// mirror both axis
+									rect.left += rect.width;
+									rect.width *= -1.0f;
+								}
+								if (h_mirror)
+								{
+									rect.top += rect.height;
+									rect.height *= -1.0f;
+								}
+							}
+						}
+
+						addMapTile(level->background_static_, curTileRect, rect, rotate);
+					}
+				}
+			}
+		}
+	}
+
+	// returns the amount of neighbors with the same color as the input pixel.
+	// coordinates of same and other colored neighbors can be saved into provided vectors of pixelcoords (sf::Vector2u) for easy further processing
+	//		warning: other colored neighbor coordinates may be out of bounds of the given image
+	// can be used in 4 or 8 neighbor mode
+	// todo: can be exported as a static method to some tgf::utilities class
+	//
+	// return -1 in case of an error
+	int TLevel_Builder::gatherPixelNeighborInfo_sameColor(const sf::Image & map, const int x, const int y, std::vector<sf::Vector2u>* same_neighbours, std::vector<sf::Vector2u>* other_neighbours, bool includeDiagonalNeighbors)
+	{
+		auto size = map.getSize();
+		if (x < 0 || y < 0 || x >= size.x || y >= size.y)
+			return -1;
+
+		int samecolor_neighbor_count = 0;
+		const sf::Uint32 col = map.getPixel(x, y).toInteger();
+
+		// check right
+		if (x + 1 < size.x && map.getPixel(x + 1, y).toInteger() == col)
+		{
+			samecolor_neighbor_count++;
+			if(same_neighbours)
+				same_neighbours->push_back(sf::Vector2u(x + 1, y));
+		}			
+		else if (other_neighbours)
+			other_neighbours->push_back(sf::Vector2u(x + 1, y));
+
+		// check left
+		if (x - 1 >= 0 && map.getPixel(x - 1, y).toInteger() == col)
+		{
+			samecolor_neighbor_count++;
+			if (same_neighbours)
+				same_neighbours->push_back(sf::Vector2u(x - 1, y));
+		}
+		else if (other_neighbours)
+			other_neighbours->push_back(sf::Vector2u(x - 1, y));
+
+		// check top
+		if (y - 1 >= 0 && map.getPixel(x, y - 1).toInteger() == col)
+		{
+			samecolor_neighbor_count++;
+			if (same_neighbours)
+				same_neighbours->push_back(sf::Vector2u(x, y - 1));
+		}
+		else if (other_neighbours)
+			other_neighbours->push_back(sf::Vector2u(x, y - 1));
+
+		// check bottom
+		if (y + 1 < size.y && map.getPixel(x, y + 1).toInteger() == col)
+		{
+			samecolor_neighbor_count++;
+			if (same_neighbours)
+				same_neighbours->push_back(sf::Vector2u(x, y + 1));
+		}
+		else if (other_neighbours)
+			other_neighbours->push_back(sf::Vector2u(x, y + 1));
+
+		if (includeDiagonalNeighbors)
+		{
+			// check top right
+			if (x + 1 < size.x && y - 1 >= 0 && map.getPixel(x + 1, y - 1).toInteger() == col)
+			{
+				samecolor_neighbor_count++;
+				if (same_neighbours)
+					same_neighbours->push_back(sf::Vector2u(x + 1, y - 1));
+			}
+			else if (other_neighbours)
+				other_neighbours->push_back(sf::Vector2u(x + 1, y - 1));
+
+			// check top left
+			if (x - 1 >= 0 && y - 1 >= 0 && map.getPixel(x - 1, y - 1).toInteger() == col)
+			{
+				samecolor_neighbor_count++;
+				if (same_neighbours)
+					same_neighbours->push_back(sf::Vector2u(x - 1, y - 1));
+			}
+			else if (other_neighbours)
+				other_neighbours->push_back(sf::Vector2u(x - 1, y - 1));
+
+			// check bottom right
+			if (x + 1 < size.x && y + 1 < size.y && map.getPixel(x + 1, y + 1).toInteger() == col)
+			{
+				samecolor_neighbor_count++;
+				if (same_neighbours)
+					same_neighbours->push_back(sf::Vector2u(x + 1, y + 1));
+			}
+			else if (other_neighbours)
+				other_neighbours->push_back(sf::Vector2u(x + 1, y + 1));
+
+			// check bottom left
+			if (x - 1 >= 0 && y + 1 < size.y && map.getPixel(x - 1, y + 1).toInteger() == col)
+			{
+				samecolor_neighbor_count++;
+				if (same_neighbours)
+					same_neighbours->push_back(sf::Vector2u(x - 1, y + 1));
+			}
+			else if (other_neighbours)
+				other_neighbours->push_back(sf::Vector2u(x - 1, y + 1));
+		}
+
+		return samecolor_neighbor_count;
 	}
 
 	// vertex arrays are supposed to use PrimitiveType::Quads

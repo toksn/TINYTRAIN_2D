@@ -45,15 +45,16 @@ namespace tinytrain
 		std::unique_ptr<TLevel> loadLevel(std::string& filename);
 
 	protected:
+		void placeTrainTrack(TLevel * level);
+
 		sf::VertexArray triangulateRoadSegments(tgf::utilities::CityGenerator & city);
 		bool triangulation_insertSplineCtrlPtsForSegmentAtCrossing(tgf::utilities::roadsegment* seg, tgf::utilities::road_crossing* crossing, std::vector<sf::Vector2f>& ctrl_pts, bool start = false);
 
-		void placeTrainTrack(TLevel * level);
-
 		std::map < sf::Uint32, tile_type_info> generateTileTypeInfos(tgf::utilities::TextureAtlas * atlas);
+		void generateRoadNetwork_fromImage(sf::Image & map, TLevel* level);
+		int gatherPixelNeighborInfo_sameColor(const sf::Image & map, const int x, const int y, std::vector<sf::Vector2u>* same_neighbours = nullptr, std::vector<sf::Vector2u>* other_neighbours = nullptr, bool includeDiagonalNeighbors = false);
 		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotate = false);
 		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture* tex, bool rotate = false);
-
 
 		float road_texture_width_ = 32.0f;
 		GameState_Running* gs_;

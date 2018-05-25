@@ -20,6 +20,8 @@ namespace tgf
 			static bool point_on_segment(c2v pt, c2v s_a, c2v s_b);
 			static bool ray_to_segment_intersection(c2v rayOrigin, c2v rayDirection, c2v s_a, c2v s_b, c2v * intersection = NULL);
 			//static float point_to_segment_distance(c2v pt, c2v s_a, c2v s_b);
+
+			static constexpr c2v calc_point_on_circle(float r, float angle, c2v c = { 0.0f, 0.0f });
 		};
 	}
 }
