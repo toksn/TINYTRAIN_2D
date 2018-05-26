@@ -64,21 +64,21 @@ namespace tinytrain
 
 					if (cur_type_data.tex_coords.size())
 					{
-						bool rotate = cur_type_data.rotationAllowed && rand() % 2;
-
 						// get random element from the list
 						int index = rand() % cur_type_data.tex_coords.size();
 						auto iter = cur_type_data.tex_coords.begin();
 						std::advance(iter, index);
 						tile_type_info::texture_layer_set chosen_texture_set = iter->second;
 
-						// add layers if there is any
-						addMapTile(level->background_static_, curTileRect, chosen_texture_set.bg, rotate);
-						addMapTile(level->foreground_static_, curTileRect, chosen_texture_set.fg, rotate);
-						addMapTile(level->foreground_dynamic_, curTileRect, chosen_texture_set.fg_dyn, rotate);
+						bool rotate_and_mirror = cur_type_data.rotationAllowed && rand() % 2;
+						int rotation = rotate_and_mirror ? -1 : 0;
+						// add layers if there are any
+						addMapTile(level->background_static_, curTileRect, chosen_texture_set.bg, rotation, rotate_and_mirror);
+						addMapTile(level->foreground_static_, curTileRect, chosen_texture_set.fg, rotation, rotate_and_mirror);
+						addMapTile(level->foreground_dynamic_, curTileRect, chosen_texture_set.fg_dyn, rotation, rotate_and_mirror);
 						//...
 
-						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture(), rotate);
+						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture(), rotation, rotate_and_mirror);
 					}
 				}
 			}
@@ -292,30 +292,17 @@ namespace tinytrain
 		const auto size = map.getSize();
 		int tilesize = road_texture_width_ * background_size_factor;
 
-		sf::IntRect n4 = texture_atlas_->getArea("road-4way");
-
-		// how to rotate a rect +90
-		//	0 1			-->		1 2				3 0			width=-height, top+height
-		//	3 2			-->		0 3				2 1			height=width, left-width
-		//
-		//	tl				tl+width			--->	tl+width		tl+width+height		-->	width=height, left-height
-		//  tl+height		tl+widht+height		--->	tl				tl+height			--> height=-width, top+width 
+		sf::IntRect r4 = texture_atlas_->getArea("road-4way");
 
 		// road 3way, not connected dir defines the name, default from texture: 'e'
 		sf::IntRect r3_e = texture_atlas_->getArea("road-3way");
-		sf::IntRect r3_n(r3_e.left-r3_e.height, r3_e.top+ r3_e.width, r3_e.height, -r3_e.width);	// rotate -90		// x=tilesize-y, y=x
-		sf::IntRect r3_s(r3_e.left - r3_e.height, r3_e.top + r3_e.width, r3_e.height, -r3_e.width);	// rotate +90		// x=y, y=tilesize-x
 		sf::IntRect r3_w(r3_e.left+r3_e.width, r3_e.top+ r3_e.height, -r3_e.width, -r3_e.height);		// mirror both
 
 		// road 2way curve, connected dirs define the name, default from texture: 'se'
-		sf::IntRect r2_se = texture_atlas_->getArea("road-2way");
-		sf::IntRect r2_sw(r2_se.left + r2_se.width, r2_se.top, -r2_se.width, r2_se.height);	// mirror horz
-		sf::IntRect r2_ne(r2_se.left, r2_se.top + r2_se.height, r2_se.width, -r2_se.height);	// mirror vert
-		sf::IntRect r2_nw(r2_ne.left + r2_ne.width, r2_ne.top, -r2_ne.width, r2_ne.height);	// mirror both (or mirror horz on NE)
+		sf::IntRect r2_curve = texture_atlas_->getArea("road-2way");
 		
 		// straight road, connected dirs define the name, default from texture: 'ns'
-		sf::IntRect r_ns = texture_atlas_->getArea("road");
-		sf::IntRect r_we(r_ns.left-r_ns.height, r_ns.top+r_ns.width, r_ns.height, -r_ns.width);	// rotate +90 + maybe mirror for easyness		// ??  x=y, y=tilesize-x
+		sf::IntRect r2_straight = texture_atlas_->getArea("road");
 
 		//************************************
 		// create connection table
@@ -411,71 +398,47 @@ namespace tinytrain
 					
 
 					if (neighbor_samecolor_count == 4)
-						addMapTile(level->background_static_, curTileRect, texture_atlas_->getArea("road-4way"));
+						addMapTile(level->background_static_, curTileRect, r4);
 					else if (neighbor_samecolor_count == 3)
 					{
 						if (other_neighbors.size() == 1)
 						{
-							auto rect = texture_atlas_->getArea("road-3way");
-							bool rotate = false;
-							// right check of the _NOT_road
-							if (other_neighbors.front().x != x + 1)
-							{
-								if (other_neighbors.front().x == x - 1)
-								{
-									// mirror both axis
-									rect.left += rect.width;
-									rect.width *= -1.0f;
-
-									rect.top += rect.height;
-									rect.height *= -1.0f;
-								}
-								else
-								{
-									rotate = true;
-									if (other_neighbors.front().y == y - 1)
-									{
-										// mirror vertically
-										rect.left += rect.width;
-										rect.width *= -1.0f;
-									}
-									else
-									{
-										// mirror horizontally
-										rect.top += rect.height;
-										rect.height *= -1.0f;
-									}
-								}
-							}
-
-							addMapTile(level->background_static_, curTileRect, rect, rotate);
+							if (other_neighbors.front().x == x + 1)
+								addMapTile(level->background_static_, curTileRect, r3_e);
+							else if (other_neighbors.front().x == x - 1)
+								addMapTile(level->background_static_, curTileRect, r3_w);
+							else if (other_neighbors.front().y == y + 1)
+								addMapTile(level->background_static_, curTileRect, r3_e, -1);
+							else if (other_neighbors.front().y == y - 1)
+								addMapTile(level->background_static_, curTileRect, r3_e, 1);
 						}
 					}
 					else
 					{
-						auto rect = texture_atlas_->getArea("road");
-						bool rotate = false;
 						if (neighbor_samecolor_count == 1)
 						{
-							for (auto& pos : road_neighbors)
-							{	// check for left right
-								if (pos.x != x)
-									rotate = true;
-							}
+							auto& pos = road_neighbors.front();
+							if (pos.x != x)
+								addMapTile(level->background_static_, curTileRect, r2_straight, 1);
+							else
+								addMapTile(level->background_static_, curTileRect, r2_straight);
 						}
 						else if (neighbor_samecolor_count == 2)
 						{
+							// straight
 							if (road_neighbors[0].x == road_neighbors[1].x || road_neighbors[0].y == road_neighbors[1].y)
-								rotate = road_neighbors[0].x != x;
+								if( road_neighbors[0].x != x )
+									addMapTile(level->background_static_, curTileRect, r2_straight, 1);
+								else
+									addMapTile(level->background_static_, curTileRect, r2_straight);
+							// curve
 							else
 							{
-								rect = texture_atlas_->getArea("road-2way");
+								auto rect = r2_curve;
 								bool v_mirror = road_neighbors[0].x < x || road_neighbors[1].x < x;
 								bool h_mirror = road_neighbors[0].y < y || road_neighbors[1].y < y;
-
 								if (v_mirror)
 								{
-									// mirror both axis
 									rect.left += rect.width;
 									rect.width *= -1.0f;
 								}
@@ -484,10 +447,11 @@ namespace tinytrain
 									rect.top += rect.height;
 									rect.height *= -1.0f;
 								}
+								addMapTile(level->background_static_, curTileRect, rect);
 							}
 						}
 
-						addMapTile(level->background_static_, curTileRect, rect, rotate);
+						
 					}
 				}
 			}
@@ -596,8 +560,8 @@ namespace tinytrain
 		return samecolor_neighbor_count;
 	}
 
-	// vertex arrays are supposed to use PrimitiveType::Quads
-	void TLevel_Builder::addMapTile(sf::VertexArray & vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, bool rotate)
+	// vertex arrays are supposed to use PrimitiveType::Quads, rectangular_rotation is multiplied by 90°
+	void TLevel_Builder::addMapTile(sf::VertexArray & vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, int rectangular_rotation, bool mirror_horizontally, bool mirror_vertically)
 	{
 		int startindex = vertices.getVertexCount();
 
@@ -614,9 +578,11 @@ namespace tinytrain
 		vertices[startindex + 1].texCoords = { (float)texture_rect.left + texture_rect.width, (float)texture_rect.top };
 		vertices[startindex + 2].texCoords = { (float)texture_rect.left + texture_rect.width, (float)texture_rect.top + texture_rect.height };
 		vertices[startindex + 3].texCoords = { (float)texture_rect.left, (float)texture_rect.top + texture_rect.height };
-			
+		
+		/*
+		// special case because it is often used in the game:
 		// rotate and mirror to keep the correct pixel art lighting 
-		if(rotate)
+		if(rectangular_rotation == -1 && mirror_horizontally)
 		{
 			// rotate by -90°(270°) and mirror horizontally
 			// 0 1			-->	3 0			--> 0 3
@@ -624,9 +590,66 @@ namespace tinytrain
 			vertices[startindex + 3].texCoords = vertices[startindex + 1].texCoords;
 			vertices[startindex + 1].texCoords = { (float)texture_rect.left, (float)texture_rect.top + texture_rect.height };
 		}
+		*/
+
+		int rot = rectangular_rotation % 4;
+		if (rot < 0)
+			rot += 4;
+		
+		bool mirror_diagonally = false;
+		if (rot == 1)
+		{
+			// 90 degree rotation can be achieved by mirroring diagonally and h or v for clockwise or counterclockwise
+			// see: https://stackoverflow.com/questions/29336374/90-degree-rotation-using-only-reflections
+			mirror_vertically = !mirror_vertically;
+			mirror_diagonally = true;			
+		}
+		else if (rot == 3)
+		{
+			mirror_horizontally = !mirror_horizontally;
+			mirror_diagonally = true;
+		}
+		else if (rot == 2)
+		{
+			mirror_horizontally = !mirror_horizontally;
+			mirror_vertically = !mirror_vertically;
+		}
+
+		if (mirror_diagonally)
+		{
+			// 0 1	--> 0 3
+			// 3 2	-->	1 2
+			auto temp = vertices[startindex + 3].texCoords;
+			vertices[startindex + 3].texCoords = vertices[startindex + 1].texCoords;
+			vertices[startindex + 1].texCoords = temp;
+		}
+		
+		if (mirror_horizontally)
+		{
+			// 0 1	-->	1 0		
+			// 3 2	--> 2 3
+			auto temp = vertices[startindex + 0].texCoords;
+			vertices[startindex + 0].texCoords = vertices[startindex + 1].texCoords;
+			vertices[startindex + 1].texCoords = temp;
+			temp = vertices[startindex + 2].texCoords;
+			vertices[startindex + 2].texCoords = vertices[startindex + 3].texCoords;
+			vertices[startindex + 3].texCoords = temp;
+		}
+		
+		if(mirror_vertically)
+		{
+			// 0 1	-->	3 2		
+			// 3 2	--> 0 1
+			auto temp = vertices[startindex + 0].texCoords;
+			vertices[startindex + 0].texCoords = vertices[startindex + 3].texCoords;
+			vertices[startindex + 3].texCoords = temp;
+			temp = vertices[startindex + 1].texCoords;
+			vertices[startindex + 1].texCoords = vertices[startindex + 2].texCoords;
+			vertices[startindex + 2].texCoords = temp;			
+		}
 	}
 
-	void TLevel_Builder::addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture * tex, bool rotate)
+	void TLevel_Builder::addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture * tex, int rectangular_rotation, bool mirror_horizontally, bool mirror_vertically)
 	{
 		// circle the texture for black pixels
 		// expand pixels until completed area is found
