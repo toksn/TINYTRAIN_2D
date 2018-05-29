@@ -311,8 +311,8 @@ namespace tinytrain
 		road_connection_info connection_table[4][4];
 
 		// N>S
-		connection_table[0][2].waypoints.emplace_back(1.0f / 3.0f, 0.0f);
-		connection_table[0][2].waypoints.emplace_back(1.0f / 3.0f, 1.0f);
+		connection_table[0][2].waypoints.emplace_back(tilesize / 3.0f, 0.0f);
+		connection_table[0][2].waypoints.emplace_back(tilesize / 3.0f, tilesize);
 		// N>E
 		//	circle center (64,0) - radius 1/3
 		//	10 steps for waypoint generation 180-270°
