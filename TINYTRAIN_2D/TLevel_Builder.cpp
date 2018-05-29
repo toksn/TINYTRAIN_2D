@@ -1,6 +1,7 @@
 #include "TLevel_Builder.h"
 #include "SplineTexture.h"
 #include "GameState_Running.h"
+//#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
 #define background_size_factor 1.0f;
@@ -290,115 +291,48 @@ namespace tinytrain
 
 		// every pixel is an area of the size of a (simple) street
 		const auto size = map.getSize();
-		int tilesize = road_texture_width_ * background_size_factor;
+		const int tilesize = road_texture_width_ * background_size_factor;
 
 		sf::IntRect r4 = texture_atlas_->getArea("road-4way");
-
 		// road 3way, not connected dir defines the name, default from texture: 'e'
 		sf::IntRect r3_e = texture_atlas_->getArea("road-3way");
 		sf::IntRect r3_w(r3_e.left+r3_e.width, r3_e.top+ r3_e.height, -r3_e.width, -r3_e.height);		// mirror both
-
 		// road 2way curve, connected dirs define the name, default from texture: 'se'
-		sf::IntRect r2_curve = texture_atlas_->getArea("road-2way");
-		
+		sf::IntRect r2_curve = texture_atlas_->getArea("road-2way");		
 		// straight road, connected dirs define the name, default from texture: 'ns'
 		sf::IntRect r2_straight = texture_atlas_->getArea("road");
 
-		//************************************
-		// create connection table
-		// 0, 1, 2, 3
-		// N, E, S, W
-		road_connection_info connection_table[4][4];
+		// crossing connection table for waypoints and stop info within a crossing/node
+		// they could be saved within the graph as node_type but since they are always the same anyway, we just save one full crossing info
+		initConnectionTable(level->road_network_, tilesize);
 
-		// N>S
-		connection_table[0][2].waypoints.emplace_back(tilesize / 3.0f, 0.0f);
-		connection_table[0][2].waypoints.emplace_back(tilesize / 3.0f, tilesize);
-		// N>E
-		//	circle center (64,0) - radius 1/3
-		//	10 steps for waypoint generation 180-270°
-		float radius = 2.0f / 3.0f * tilesize;
-		float angle = 180.0f * DEG_TO_RAD;
-		const float step = 10.0f * DEG_TO_RAD;
-		const c2v center{ 64.0f, 0.0f };
-		connection_table[0][1].waypoints.emplace_back(tilesize-radius, 0.0f);
-		for (int i = 1; i < 9; i++)
-		{
-			angle -= step;
-			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle, center);
-			connection_table[0][1].waypoints.emplace_back(pt.x, pt.y);
-		}
-		connection_table[0][1].waypoints.emplace_back(64.0f, radius);
-		// N>W
-		//	circle center 0,0 - radius 1/3
-		//	10 steps for waypoint generation 0-90°		
-		radius = 1.0f / 3.0f * tilesize;
-		angle = 0.0f;
-		connection_table[0][3].waypoints.emplace_back(radius, 0.0f);
-		for (int i = 1; i < 9; i ++)
-		{
-			angle += step;
-			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle);
-			connection_table[0][3].waypoints.emplace_back(pt.x, pt.y);
-		}
-		connection_table[0][3].waypoints.emplace_back(0.0f, radius);
 
-		// create rest of table entries by rotating the N > X variant counter-clock wise
-
-		// reserve space for copiing N>W to W>S to S>E to E>N		// 0 N, 1 E, 2 S, 3 W
-		connection_table[3][2].waypoints.resize(connection_table[0][3].waypoints.size());
-		connection_table[2][1].waypoints.resize(connection_table[0][3].waypoints.size());
-		connection_table[1][0].waypoints.resize(connection_table[0][3].waypoints.size());
-		// reserve space for copiing N>S to W>E to S>N to E>W		// 0 N, 1 E, 2 S, 3 W
-		connection_table[3][1].waypoints.resize(connection_table[0][2].waypoints.size());
-		connection_table[2][0].waypoints.resize(connection_table[0][2].waypoints.size());
-		connection_table[1][3].waypoints.resize(connection_table[0][2].waypoints.size());
-		// reserve space for copiing N>E to W>N to S>W to E>S		// 0 N, 1 E, 2 S, 3 W
-		connection_table[3][0].waypoints.resize(connection_table[0][1].waypoints.size());
-		connection_table[2][3].waypoints.resize(connection_table[0][1].waypoints.size());
-		connection_table[1][2].waypoints.resize(connection_table[0][1].waypoints.size());
-
-		// copy and rotate 3 connections from N (N>S, N>W, N>E) 3 times each, counter clock wise  P(x,y) -> P'(y, tilesize - x)
-		for (int connections = 1; connections < 4; connections++)
-		{
-			std::vector<sf::Vector2f>& origin = connection_table[0][connections].waypoints;
-			int to = connections;
-			// starting point from 3 to connection-1, run 3 times always doing -1 on from,to
-			for (int from = 3; from > 0; from--)
-			{
-				to--;
-				if (to < 0)
-					to = 3;
-
-				// rotate origin counterclock wise (-90°)
-				for (size_t i = 0; i < origin.size(); i++)
-				{
-					connection_table[from][to].waypoints[i].x = origin[i].y;
-					connection_table[from][to].waypoints[i].y = tilesize - origin[i].x;
-				}
-
-				// reset the origin to the currently filled to further rotate with next interation
-				origin = connection_table[from][to].waypoints;
-			}
-		}
 		
-
+		// hit a road / crossing
+		//	start pair of edges for a road / 3 or 4 edge pairs
+		//  while(edge packs available)
+			//	follow edge pack until crossing was found
+			//	add edge(s) from pack to graph
+			//		add edge packs for crossing
+		int i = 0;
 		for (int x = 0; x < size.x; x++)
 		{
 			for (int y = 0; y < size.y; y++)
 			{
 				sf::Color col = map.getPixel(x, y);
+				// hit a road
 				if (col.toInteger() == tile_colors::road)
 				{
 					sf::IntRect curTileRect(x*tilesize, y*tilesize, tilesize, tilesize);
-
 					// count road neighbours
 					std::vector<sf::Vector2u> road_neighbors;
 					std::vector<sf::Vector2u> other_neighbors;
 					int neighbor_samecolor_count = gatherPixelNeighborInfo_sameColor(map, x, y, &road_neighbors, &other_neighbors, false);
 					
-
 					if (neighbor_samecolor_count == 4)
+					{
 						addMapTile(level->background_static_, curTileRect, r4);
+					}
 					else if (neighbor_samecolor_count == 3)
 					{
 						if (other_neighbors.size() == 1)
@@ -454,6 +388,94 @@ namespace tinytrain
 						
 					}
 				}
+			}
+		}
+	}
+
+	void TLevel_Builder::initConnectionTable(road_network& network, float tilesize)
+	{
+		auto& connection_table = network.crossing_connection_table;
+		//************************************
+		// create connection table
+		// 0, 1, 2, 3
+		// N, E, S, W
+		//road_connection_info connection_table[direction::DIR_COUNT][direction::DIR_COUNT];
+
+		// dist = perimeter of the circle / 4 = (pi * 2 * r) / 4 = (pi * 2 * 1/3) / 4 = pi * 2 / 12
+		const float dist_short_curve = tilesize * M_PI * 2.0f / 12.0f;
+		const float dist_long_curve = dist_short_curve * 2.0f; // tilesize * M_PI * 2.0f * 2.0f / 12.0f;
+		//const float dist_straight = tilesize;
+
+		// N>S
+		connection_table[NORTH][SOUTH].waypoints.emplace_back(tilesize / 3.0f, 0.0f);
+		connection_table[NORTH][SOUTH].waypoints.emplace_back(tilesize / 3.0f, tilesize);
+		connection_table[NORTH][SOUTH].distance = tilesize;
+		// N>E
+		//	circle center (64,0) - radius 1/3
+		//	10 steps for waypoint generation 180-270°
+		float radius = 2.0f / 3.0f * tilesize;
+		float angle = 180.0f * DEG_TO_RAD;
+		const float step = 10.0f * DEG_TO_RAD;
+		const c2v center{ 64.0f, 0.0f };
+		connection_table[NORTH][EAST].waypoints.emplace_back(tilesize - radius, 0.0f);
+		for (int i = 1; i < 9; i++)
+		{
+			angle -= step;
+			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle, center);
+			connection_table[NORTH][EAST].waypoints.emplace_back(pt.x, pt.y);
+		}
+		connection_table[NORTH][EAST].waypoints.emplace_back(64.0f, radius);
+		connection_table[NORTH][EAST].distance = dist_long_curve;
+		// N>W
+		//	circle center 0,0 - radius 1/3
+		//	10 steps for waypoint generation 0-90°		
+		radius = 1.0f / 3.0f * tilesize;
+		angle = 0.0f;
+		connection_table[NORTH][WEST].waypoints.emplace_back(radius, 0.0f);
+		for (int i = 1; i < 9; i++)
+		{
+			angle += step;
+			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle);
+			connection_table[NORTH][WEST].waypoints.emplace_back(pt.x, pt.y);
+		}
+		connection_table[NORTH][WEST].waypoints.emplace_back(0.0f, radius);
+		connection_table[NORTH][WEST].distance = dist_short_curve;
+
+		// create rest of table entries by rotating the N > X variant counter-clock wise
+		// reserve space for copiing N>W to W>S to S>E to E>N		// 0 N, 1 E, 2 S, 3 W
+		connection_table[WEST][SOUTH].waypoints.resize(connection_table[NORTH][WEST].waypoints.size());
+		connection_table[SOUTH][EAST].waypoints.resize(connection_table[NORTH][WEST].waypoints.size());
+		connection_table[EAST][NORTH].waypoints.resize(connection_table[NORTH][WEST].waypoints.size());
+		// reserve space for copiing N>S to W>E to S>N to E>W		// 0 N, 1 E, 2 S, 3 W
+		connection_table[WEST][EAST].waypoints.resize(connection_table[NORTH][SOUTH].waypoints.size());
+		connection_table[SOUTH][NORTH].waypoints.resize(connection_table[NORTH][SOUTH].waypoints.size());
+		connection_table[EAST][WEST].waypoints.resize(connection_table[NORTH][SOUTH].waypoints.size());
+		// reserve space for copiing N>E to W>N to S>W to E>S		// 0 N, 1 E, 2 S, 3 W
+		connection_table[WEST][NORTH].waypoints.resize(connection_table[NORTH][EAST].waypoints.size());
+		connection_table[SOUTH][WEST].waypoints.resize(connection_table[NORTH][EAST].waypoints.size());
+		connection_table[EAST][SOUTH].waypoints.resize(connection_table[NORTH][EAST].waypoints.size());
+
+		// copy and rotate 3 connections from N (N>S, N>W, N>E) 3 times each, counter clock wise  P(x,y) -> P'(y, tilesize - x)
+		for (int connections = SOUTH; connections < direction::DIR_COUNT; connections++)
+		{
+			std::vector<sf::Vector2f>& origin = connection_table[NORTH][connections].waypoints;
+			int to = connections;
+			// starting point from 3 to connection-1, run 3 times always doing -1 on from,to
+			for (int from = WEST; from > NORTH; from--)
+			{
+				to--;
+				if (to < 0)
+					to = direction::DIR_COUNT - 1;
+
+				// rotate origin counterclock wise (-90°)
+				for (size_t i = 0; i < origin.size(); i++)
+				{
+					connection_table[from][to].waypoints[i].x = origin[i].y;
+					connection_table[from][to].waypoints[i].y = tilesize - origin[i].x;
+				}
+
+				// reset the origin to the currently filled to further rotate with next interation
+				origin = connection_table[from][to].waypoints;
 			}
 		}
 	}

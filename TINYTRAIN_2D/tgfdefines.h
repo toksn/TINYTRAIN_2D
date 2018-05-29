@@ -3,6 +3,15 @@
 #include <math.h>
 #include <SFML\Graphics.hpp>
 
+enum direction
+{
+	NORTH = 0,	// 0
+	EAST,		// 1
+	SOUTH,		// 2
+	WEST,		// 3
+	DIR_COUNT	// 4
+};
+
 constexpr float RAD_TO_DEG = 180.0f / M_PI;
 constexpr float DEG_TO_RAD = M_PI / 180.0f;
 

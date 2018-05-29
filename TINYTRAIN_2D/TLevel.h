@@ -18,7 +18,7 @@ namespace tinytrain
 {
 	struct road_connection_info
 	{
-		// todo: absolute or relative? vertexArray or list<sf::vector2f>?
+		// todo: absolute or relative? vertexArray or vector<sf::vector2f>?
 		std::vector<sf::Vector2f> waypoints;
 		struct stopping_info
 		{
@@ -27,8 +27,22 @@ namespace tinytrain
 			std::vector<sf::IntRect> areas_to_check_before_continue;
 		} stopinfo;
 	};
+	struct edge_info : road_connection_info
+	{
+		direction out_slot;	// slot on the start crossing/node
+		direction in_slot;		// slot on the destination crossing/node
+	};
+	struct inner_cross_connection_info : road_connection_info
+	{
+		float distance;
+	};
 
-	using graph = tgf::graph::node_edgelist_graph<sf::Vector2f, float, tgf::graph::no_data, road_connection_info, vec2Less<float>>;
+	using graph = tgf::graph::node_edgelist_graph<sf::Vector2f, float, tgf::graph::no_data, edge_info, vec2Less<float>>;
+	struct road_network
+	{
+		graph road_graph;
+		inner_cross_connection_info crossing_connection_table[direction::DIR_COUNT][direction::DIR_COUNT];
+	};
 
 	class TTrain;
 	class TObstacle;
@@ -47,7 +61,7 @@ namespace tinytrain
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;
 		std::vector<std::unique_ptr<TObstacle>> obstacles_;
-		graph road_network_;
+		road_network road_network_;
 
 	protected:
 		// Inherited via Entity
