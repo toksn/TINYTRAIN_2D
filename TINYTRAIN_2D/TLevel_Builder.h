@@ -52,7 +52,9 @@ namespace tinytrain
 
 		std::map < sf::Uint32, tile_type_info> generateTileTypeInfos(tgf::utilities::TextureAtlas * atlas);
 		void generateRoadNetwork_fromImage(sf::Image & map, TLevel* level);
+		int findNextRoadNode(int start_id, std::vector<direction>& edge_directions, sf::Image& map);
 		int gatherPixelNeighborInfo_sameColor(const sf::Image & map, const int x, const int y, std::vector<sf::Vector2u>* same_neighbours = nullptr, std::vector<sf::Vector2u>* other_neighbours = nullptr, bool includeDiagonalNeighbors = false);
+		int gatherPixelNeighborDirs_sameColor(const sf::Image & map, const int x, const int y, std::vector<direction>* same_neighbours = nullptr, std::vector<direction>* other_neighbours = nullptr);
 		void initConnectionTable(road_network & network, float tilesize);
 		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
 		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture* tex, int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);

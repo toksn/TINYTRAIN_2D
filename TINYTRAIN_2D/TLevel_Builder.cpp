@@ -1,6 +1,7 @@
 #include "TLevel_Builder.h"
 #include "SplineTexture.h"
 #include "GameState_Running.h"
+#include <set>
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
@@ -308,12 +309,116 @@ namespace tinytrain
 
 
 		
-		// hit a road / crossing
-		//	start pair of edges for a road / 3 or 4 edge pairs
-		//  while(edge packs available)
-			//	follow edge pack until crossing was found
-			//	add edge(s) from pack to graph
-			//		add edge packs for crossing
+		auto count = size.x * size.y;
+		for (int i = 0; i < count; i++)
+		{
+			int y = i / size.y;
+			int x = i - i * y;
+			sf::Color col = map.getPixel(x, y);
+
+			// hit a road
+			if (col.toInteger() == tile_colors::road)
+			{
+				std::vector<std::pair<int, direction>> availableEdgeStarts;
+				std::set<int> setVisitedNodes;
+
+				// count road neighbours
+				std::vector<sf::Vector2u> road_neighbors;
+				std::vector<sf::Vector2u> other_neighbors;
+				int neighbor_samecolor_count = gatherPixelNeighborInfo_sameColor(map, x, y, &road_neighbors, &other_neighbors, false);
+				
+				if (neighbor_samecolor_count > 2 || neighbor_samecolor_count == 1)
+				{
+					//availableEdgeStarts.push_back(std::make_pair(i, NORTH));
+					//availableEdgeStarts.push_back(std::make_pair(i, EAST));
+					//availableEdgeStarts.push_back(std::make_pair(i, SOUTH));
+					//availableEdgeStarts.push_back(std::make_pair(i, WEST));
+					
+					for (auto& n : road_neighbors)
+					{
+						direction dir = NORTH;
+						if (n.x == x)
+						{
+							if (n.y > y)
+								dir = SOUTH;
+						}
+						else
+						{
+							if (n.x > x)
+								dir = EAST;
+							else
+								dir = WEST;
+						}
+						
+						availableEdgeStarts.push_back(std::make_pair(i, dir));
+					}
+					setVisitedNodes.insert(i);
+				}
+				else if(neighbor_samecolor_count == 2)
+				{
+					// special case, hit straight road first
+					// find next node to add to available crossingSlots
+				}
+				else
+				{
+					// todo: special case neighbor_count == 0, single road tile
+					// nothing to add to available crossingSlots
+				}
+
+				while (availableEdgeStarts.size())
+				{
+					auto pair = availableEdgeStarts.begin();
+					availableEdgeStarts.erase(pair);
+					int cur_edge_start_id = pair->first;
+					std::vector<direction> cur_edge_directions;
+					cur_edge_directions.push_back(pair->second);
+					int cur_edge_end_id = findNextRoadNode(cur_edge_start_id, cur_edge_directions);
+
+					// gather waypoints and distances
+					// addEdge(start, end, waypoints1, dist1)
+					// addEdge(end, start, waypoints2, dist2)
+
+					auto end_incoming_dir = cur_edge_directions.back();
+					direction before_end_outgoing_dir = (direction)(end_incoming_dir + 2 % direction::DIR_COUNT);
+
+					neighbor_samecolor_count = gatherPixelNeighborInfo_sameColor(map, x, y, &road_neighbors, &other_neighbors, false);
+					
+					// not visited the found node before
+					if (setVisitedNodes.count(i) == 0)
+					{
+						setVisitedNodes.insert(i);
+
+						// add mew available edges, expect the direction we just used
+						for (auto& n : road_neighbors)
+						{
+							direction dir = NORTH;
+							if (n.x == x)
+							{
+								if (n.y > y)
+									dir = SOUTH;
+							}
+							else
+							{
+								if (n.x > x)
+									dir = EAST;
+								else
+									dir = WEST;
+							}
+
+							if (dir != before_end_outgoing_dir)
+								availableEdgeStarts.push_back(std::make_pair(i, dir));
+						}						
+					}
+					// visited the node before -> do not add the edges from that node because they are in already
+					else
+					{
+						// remove the edge that may come from the other side
+						std::remove(availableEdgeStarts.begin(), availableEdgeStarts.end(), std::make_pair(cur_edge_end_id, before_end_outgoing_dir));
+					}					
+				}
+			}
+		}
+
 		int i = 0;
 		for (int x = 0; x < size.x; x++)
 		{
@@ -390,6 +495,67 @@ namespace tinytrain
 				}
 			}
 		}
+	}
+
+	int TLevel_Builder::findNextRoadNode(int start_index, std::vector<direction>& edge_directions, sf::Image& map)
+	{
+		int end_index = start_index;		
+		int neighbor_count = 0;
+			
+		auto size = map.getSize();
+		sf::Vector2u cur_pix;
+		sf::Vector2u prev_pix;
+		prev_pix.y = start_index / size.y;
+		prev_pix.x = start_index - start_index * prev_pix.y;
+
+		std::vector<direction> neighbors;
+		neighbors.reserve(4);
+
+		do
+		{	
+			//should always have zero or one, because initialized or neighbor_count == 2 - 1
+			if (neighbors.size() == 1)
+			{
+				edge_directions.push_back(neighbors[0]);
+			}
+
+			direction dir = edge_directions.back();
+			direction next_in = (direction)(dir + 2 % direction::DIR_COUNT);
+			cur_pix = prev_pix;
+			if (dir == NORTH)
+			{
+				cur_pix.y--;
+				end_index -= size.y;
+			}
+			else if (dir == SOUTH)
+			{
+				cur_pix.y++;
+				end_index += size.y;
+			}
+			else if (dir == EAST)
+			{
+				cur_pix.x++;
+				end_index++;
+			}
+			else if (dir == WEST)
+			{
+				cur_pix.x--;
+				end_index--;
+			}
+
+
+			
+
+			neighbors.clear();
+			neighbor_count = gatherPixelNeighborDirs_sameColor(map, cur_pix.x, cur_pix.y, &neighbors);
+			
+			edge_directions.push_back(next_in);
+			std::remove(neighbors.begin(), neighbors.end(), next_in);
+						
+			prev_pix = cur_pix;
+		} while (neighbor_count == 2 && end_index != start_index);
+
+		return end_index;
 	}
 
 	void TLevel_Builder::initConnectionTable(road_network& network, float tilesize)
@@ -578,6 +744,58 @@ namespace tinytrain
 			else if (other_neighbours)
 				other_neighbours->push_back(sf::Vector2u(x - 1, y + 1));
 		}
+
+		return samecolor_neighbor_count;
+	}
+
+	int TLevel_Builder::gatherPixelNeighborDirs_sameColor(const sf::Image & map, const int x, const int y, std::vector<direction>* same_neighbours, std::vector<direction>* other_neighbours)
+	{
+		auto size = map.getSize();
+		if (x < 0 || y < 0 || x >= size.x || y >= size.y)
+			return -1;
+
+		int samecolor_neighbor_count = 0;
+		const sf::Uint32 col = map.getPixel(x, y).toInteger();
+
+		// check EAST
+		if (x + 1 < size.x && map.getPixel(x + 1, y).toInteger() == col)
+		{
+			samecolor_neighbor_count++;
+			if (same_neighbours)
+				same_neighbours->push_back(EAST);
+		}
+		else if (other_neighbours)
+			other_neighbours->push_back(EAST);
+
+		// check WEST
+		if (x - 1 >= 0 && map.getPixel(x - 1, y).toInteger() == col)
+		{
+			samecolor_neighbor_count++;
+			if (same_neighbours)
+				same_neighbours->push_back(WEST);
+		}
+		else if (other_neighbours)
+			other_neighbours->push_back(WEST);
+
+		// check NORTH
+		if (y - 1 >= 0 && map.getPixel(x, y - 1).toInteger() == col)
+		{
+			samecolor_neighbor_count++;
+			if (same_neighbours)
+				same_neighbours->push_back(NORTH);
+		}
+		else if (other_neighbours)
+			other_neighbours->push_back(NORTH);
+
+		// check SOUTH
+		if (y + 1 < size.y && map.getPixel(x, y + 1).toInteger() == col)
+		{
+			samecolor_neighbor_count++;
+			if (same_neighbours)
+				same_neighbours->push_back(SOUTH);
+		}
+		else if (other_neighbours)
+			other_neighbours->push_back(SOUTH);
 
 		return samecolor_neighbor_count;
 	}
