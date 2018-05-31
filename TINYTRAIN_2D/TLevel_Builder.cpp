@@ -312,8 +312,8 @@ namespace tinytrain
 		auto count = size.x * size.y;
 		for (int i = 0; i < count; i++)
 		{
-			int y = i / size.y;
-			int x = i - i * y;
+			int y = i / size.x;
+			int x = i - y * size.x;
 			sf::Color col = map.getPixel(x, y);
 
 			// hit a road
@@ -323,9 +323,9 @@ namespace tinytrain
 				std::set<int> setVisitedNodes;
 
 				// count road neighbours
-				std::vector<sf::Vector2u> road_neighbors;
-				std::vector<sf::Vector2u> other_neighbors;
-				int neighbor_samecolor_count = gatherPixelNeighborInfo_sameColor(map, x, y, &road_neighbors, &other_neighbors, false);
+				std::vector<direction> road_neighbors;
+				//std::vector<sf::Vector2u> other_neighbors;
+				int neighbor_samecolor_count = gatherPixelNeighborDirs_sameColor(map, x, y, &road_neighbors);//, &other_neighbors, false);
 				
 				if (neighbor_samecolor_count > 2 || neighbor_samecolor_count == 1)
 				{
@@ -335,23 +335,8 @@ namespace tinytrain
 					//availableEdgeStarts.push_back(std::make_pair(i, WEST));
 					
 					for (auto& n : road_neighbors)
-					{
-						direction dir = NORTH;
-						if (n.x == x)
-						{
-							if (n.y > y)
-								dir = SOUTH;
-						}
-						else
-						{
-							if (n.x > x)
-								dir = EAST;
-							else
-								dir = WEST;
-						}
-						
-						availableEdgeStarts.push_back(std::make_pair(i, dir));
-					}
+						availableEdgeStarts.push_back(std::make_pair(i, n));
+
 					setVisitedNodes.insert(i);
 				}
 				else if(neighbor_samecolor_count == 2)
@@ -368,52 +353,48 @@ namespace tinytrain
 				while (availableEdgeStarts.size())
 				{
 					auto pair = availableEdgeStarts.begin();
-					availableEdgeStarts.erase(pair);
+					
 					int cur_edge_start_id = pair->first;
 					std::vector<direction> cur_edge_directions;
 					cur_edge_directions.push_back(pair->second);
-					int cur_edge_end_id = findNextRoadNode(cur_edge_start_id, cur_edge_directions);
+
+					availableEdgeStarts.erase(pair);
+					
+					int cur_edge_end_id = findNextRoadNode(cur_edge_start_id, cur_edge_directions, map);
 
 					// gather waypoints and distances
-					// addEdge(start, end, waypoints1, dist1)
-					// addEdge(end, start, waypoints2, dist2)
+					
+					// addMapTiles
+					// removePixels
+					// add edges to road_network
+					level->road_network_.road_graph.addEdge(cur_edge_start_id, cur_edge_end_id, dist1, edge_info1);
+					level->road_network_.road_graph.addEdge(cur_edge_end_id, cur_edge_start_id, dist2, edge_info2);
 
 					auto end_incoming_dir = cur_edge_directions.back();
-					direction before_end_outgoing_dir = (direction)(end_incoming_dir + 2 % direction::DIR_COUNT);
+					
 
-					neighbor_samecolor_count = gatherPixelNeighborInfo_sameColor(map, x, y, &road_neighbors, &other_neighbors, false);
+					road_neighbors.clear();
+					y = cur_edge_end_id / size.x;
+					x = cur_edge_end_id - y * size.x;
+					neighbor_samecolor_count = gatherPixelNeighborDirs_sameColor(map, x, y, &road_neighbors);
 					
 					// not visited the found node before
-					if (setVisitedNodes.count(i) == 0)
+					if (setVisitedNodes.count(cur_edge_end_id) == 0)
 					{
-						setVisitedNodes.insert(i);
+						setVisitedNodes.insert(cur_edge_end_id);
 
-						// add mew available edges, expect the direction we just used
+						// add new available edges, except the direction we just came from
 						for (auto& n : road_neighbors)
 						{
-							direction dir = NORTH;
-							if (n.x == x)
-							{
-								if (n.y > y)
-									dir = SOUTH;
-							}
-							else
-							{
-								if (n.x > x)
-									dir = EAST;
-								else
-									dir = WEST;
-							}
-
-							if (dir != before_end_outgoing_dir)
-								availableEdgeStarts.push_back(std::make_pair(i, dir));
+							if (n != end_incoming_dir)
+								availableEdgeStarts.push_back(std::make_pair(cur_edge_end_id, n));
 						}						
 					}
 					// visited the node before -> do not add the edges from that node because they are in already
 					else
 					{
-						// remove the edge that may come from the other side
-						std::remove(availableEdgeStarts.begin(), availableEdgeStarts.end(), std::make_pair(cur_edge_end_id, before_end_outgoing_dir));
+						// remove the available edge that may come from the end side into the direction we came in
+						availableEdgeStarts.erase(std::remove(availableEdgeStarts.begin(), availableEdgeStarts.end(), std::make_pair(cur_edge_end_id, end_incoming_dir)), availableEdgeStarts.end() );
 					}					
 				}
 			}
@@ -505,32 +486,26 @@ namespace tinytrain
 		auto size = map.getSize();
 		sf::Vector2u cur_pix;
 		sf::Vector2u prev_pix;
-		prev_pix.y = start_index / size.y;
-		prev_pix.x = start_index - start_index * prev_pix.y;
+		prev_pix.y = start_index / size.x;
+		prev_pix.x = start_index - prev_pix.y * size.x;
 
 		std::vector<direction> neighbors;
 		neighbors.reserve(4);
 
 		do
 		{	
-			//should always have zero or one, because initialized or neighbor_count == 2 - 1
-			if (neighbors.size() == 1)
-			{
-				edge_directions.push_back(neighbors[0]);
-			}
-
 			direction dir = edge_directions.back();
-			direction next_in = (direction)(dir + 2 % direction::DIR_COUNT);
+			direction next_in = (direction)((dir + 2) % direction::DIR_COUNT);
 			cur_pix = prev_pix;
 			if (dir == NORTH)
 			{
 				cur_pix.y--;
-				end_index -= size.y;
+				end_index -= size.x;
 			}
 			else if (dir == SOUTH)
 			{
 				cur_pix.y++;
-				end_index += size.y;
+				end_index += size.x;
 			}
 			else if (dir == EAST)
 			{
@@ -550,7 +525,16 @@ namespace tinytrain
 			neighbor_count = gatherPixelNeighborDirs_sameColor(map, cur_pix.x, cur_pix.y, &neighbors);
 			
 			edge_directions.push_back(next_in);
-			std::remove(neighbors.begin(), neighbors.end(), next_in);
+
+			// when neighbor_count == 2 and remove the next_in before adding the other
+			if (neighbors.size() == 2)
+			{
+				if(neighbors[0] == next_in)
+					edge_directions.push_back(neighbors[1]);
+				else
+					edge_directions.push_back(neighbors[0]);				
+			}
+				
 						
 			prev_pix = cur_pix;
 		} while (neighbor_count == 2 && end_index != start_index);
