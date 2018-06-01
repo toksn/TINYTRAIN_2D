@@ -480,7 +480,7 @@ namespace tinytrain
 
 						// gather waypoints (both directions) and distances
 						auto& info = level->road_network_.crossing_connection_table[from][to];
-						auto& reverse = level->road_network_.crossing_connection_table[from][to];
+						auto& reverse = level->road_network_.crossing_connection_table[to][from];
 						for (auto& pt : info.waypoints)
 							edge_info1.waypoints.emplace_back(pt.x + curTileRect.left, pt.y + curTileRect.top);
 						dist1 += info.distance;
@@ -526,6 +526,41 @@ namespace tinytrain
 				}
 			}
 		}
+
+		// add road debug stuff
+		level->roads_debug_.clear();
+		level->roads_debug_.setPrimitiveType(sf::PrimitiveType::Lines);
+		const float halftile = tilesize * 0.5f;
+		for (auto& n : level->road_network_.road_graph.nodes_)
+		{
+			auto p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(n.first, size.x);
+			sf::Vector2f pt_start(p.first * tilesize + halftile, p.second * tilesize + halftile);
+			for (auto& e : n.second.edges_)
+			{
+				p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(e.target_node_, size.x);
+				sf::Vector2f pt_end(p.first * tilesize + halftile, p.second * tilesize + halftile);
+				level->roads_debug_.append(sf::Vertex(pt_start, sf::Color::Red));
+				level->roads_debug_.append(sf::Vertex(pt_end, sf::Color::White));
+				pt_start = pt_end;
+
+				sf::Color col = sf::Color::Green;
+				for (int i = 1; i < e.user_data_.waypoints.size(); i++)
+				{
+					sf::Vector2f pt_a = e.user_data_.waypoints[i - 1];
+					sf::Vector2f pt_b = e.user_data_.waypoints[i];
+					level->roads_debug_.append(sf::Vertex(pt_a, col));
+					level->roads_debug_.append(sf::Vertex(pt_b, col));
+
+					if (col != sf::Color::Green)
+						col = sf::Color::Green;
+					else
+						col = sf::Color::Magenta;
+				}
+			}
+		}
+
+		//int time = std::clock() - t1;
+		//printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.size(), (float)time / (float)(city.road_segments_.size()));
 	}
 
 	int TLevel_Builder::findNextRoadNode(int start_index, std::vector<direction>& edge_directions, sf::Image& map)
@@ -652,9 +687,9 @@ namespace tinytrain
 		connection_table[EAST][SOUTH].waypoints.resize(connection_table[NORTH][EAST].waypoints.size());
 
 		// copy and rotate 3 connections from N (N>S, N>W, N>E) 3 times each, counter clock wise  P(x,y) -> P'(y, tilesize - x)
-		for (int connections = SOUTH; connections < direction::DIR_COUNT; connections++)
+		for (int connections = EAST; connections < direction::DIR_COUNT; connections++)
 		{
-			std::vector<sf::Vector2f>& origin = connection_table[NORTH][connections].waypoints;
+			std::vector<sf::Vector2f>* origin = &connection_table[NORTH][connections].waypoints;
 			int to = connections;
 			// starting point from 3 to connection-1, run 3 times always doing -1 on from,to
 			for (int from = WEST; from > NORTH; from--)
@@ -664,14 +699,14 @@ namespace tinytrain
 					to = direction::DIR_COUNT - 1;
 
 				// rotate origin counterclock wise (-90°)
-				for (size_t i = 0; i < origin.size(); i++)
+				for (size_t i = 0; i < origin->size(); i++)
 				{
-					connection_table[from][to].waypoints[i].x = origin[i].y;
-					connection_table[from][to].waypoints[i].y = tilesize - origin[i].x;
+					connection_table[from][to].waypoints[i].x = origin->at(i).y;
+					connection_table[from][to].waypoints[i].y = tilesize - origin->at(i).x;
 				}
 
 				// reset the origin to the currently filled to further rotate with next interation
-				origin = connection_table[from][to].waypoints;
+				origin = &connection_table[from][to].waypoints;
 			}
 		}
 

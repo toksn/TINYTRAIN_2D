@@ -12,7 +12,7 @@ namespace tgf
 			struct node;
 			struct edge
 			{
-				node* target_node_;
+				node_type target_node_;
 				dist_type distance_;
 				edge_data user_data_;
 			};
@@ -32,7 +32,9 @@ namespace tgf
 				edge e;
 				e.user_data_ = data;
 				e.distance_ = dist;
-				e.target_node_ = &nodes_[to];
+
+				auto temp = nodes_[to];
+				e.target_node_ = to;
 
 				nodes_[from].edges_.push_back(e);
 			};
