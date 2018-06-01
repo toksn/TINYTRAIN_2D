@@ -606,7 +606,7 @@ namespace tinytrain
 		// N>S
 		connection_table[NORTH][SOUTH].waypoints.emplace_back(tilesize / 3.0f, 0.0f);
 		connection_table[NORTH][SOUTH].waypoints.emplace_back(tilesize / 3.0f, tilesize);
-		connection_table[NORTH][SOUTH].distance = tilesize;
+		
 		// N>E
 		//	circle center (64,0) - radius 1/3
 		//	10 steps for waypoint generation 180-270°
@@ -622,7 +622,7 @@ namespace tinytrain
 			connection_table[NORTH][EAST].waypoints.emplace_back(pt.x, pt.y);
 		}
 		connection_table[NORTH][EAST].waypoints.emplace_back(64.0f, radius);
-		connection_table[NORTH][EAST].distance = dist_long_curve;
+		
 		// N>W
 		//	circle center 0,0 - radius 1/3
 		//	10 steps for waypoint generation 0-90°		
@@ -636,8 +636,7 @@ namespace tinytrain
 			connection_table[NORTH][WEST].waypoints.emplace_back(pt.x, pt.y);
 		}
 		connection_table[NORTH][WEST].waypoints.emplace_back(0.0f, radius);
-		connection_table[NORTH][WEST].distance = dist_short_curve;
-
+		
 		// create rest of table entries by rotating the N > X variant counter-clock wise
 		// reserve space for copiing N>W to W>S to S>E to E>N		// 0 N, 1 E, 2 S, 3 W
 		connection_table[WEST][SOUTH].waypoints.resize(connection_table[NORTH][WEST].waypoints.size());
@@ -675,6 +674,24 @@ namespace tinytrain
 				origin = connection_table[from][to].waypoints;
 			}
 		}
+
+		// save distances
+		connection_table[NORTH][SOUTH].distance = tilesize;
+		connection_table[SOUTH][NORTH].distance = tilesize;
+		connection_table[EAST][WEST].distance	= tilesize;
+		connection_table[WEST][EAST].distance	= tilesize;
+
+		connection_table[NORTH][EAST].distance = dist_long_curve;
+		connection_table[EAST][SOUTH].distance = dist_long_curve;
+		connection_table[SOUTH][WEST].distance = dist_long_curve;
+		connection_table[WEST][NORTH].distance = dist_long_curve;
+
+		connection_table[NORTH][WEST].distance = dist_short_curve;
+		connection_table[EAST][NORTH].distance = dist_short_curve;
+		connection_table[SOUTH][EAST].distance = dist_short_curve;
+		connection_table[WEST][SOUTH].distance = dist_short_curve;
+
+
 	}
 
 	// returns the amount of neighbors with the same color as the input pixel.
