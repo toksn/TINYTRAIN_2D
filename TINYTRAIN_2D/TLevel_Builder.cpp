@@ -331,27 +331,55 @@ namespace tinytrain
 				//std::vector<sf::Vector2u> other_neighbors;
 				int neighbor_samecolor_count = gatherPixelNeighborDirs_sameColor(map, x, y, &road_neighbors);//, &other_neighbors, false);
 				
+				
 				if (neighbor_samecolor_count > 2 || neighbor_samecolor_count == 1)
 				{
-					//availableEdgeStarts.push_back(std::make_pair(i, NORTH));
-					//availableEdgeStarts.push_back(std::make_pair(i, EAST));
-					//availableEdgeStarts.push_back(std::make_pair(i, SOUTH));
-					//availableEdgeStarts.push_back(std::make_pair(i, WEST));
-					
 					for (auto& n : road_neighbors)
 						availableEdgeStarts.push_back(std::make_pair(i, n));
 
 					setVisitedNodes.insert(i);
-				}
-				else if(neighbor_samecolor_count == 2)
+				}				
+				else if (neighbor_samecolor_count == 2)
 				{
 					// special case, hit straight road first
 					// find next node to add to available crossingSlots
+					std::vector<direction> dirs;
+					dirs.push_back(road_neighbors.front());
+
+					int startnode = findNextRoadNode(i, dirs, map);
+
+					if (startnode == i)
+					{
+						// loop only, no other crossings or deadends involved
+						setVisitedNodes.insert(startnode);
+						auto dir = dirs.rbegin();
+						if (dir != dirs.rend())
+							availableEdgeStarts.push_back(std::make_pair(startnode, *dir));
+					}
+					else
+					{
+						// redo neighbor calc, so that the crossing/deadend functionality can be initiated
+						p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(startnode, size.x);
+						neighbor_samecolor_count = gatherPixelNeighborDirs_sameColor(map, p.first, p.second, &road_neighbors);//, &other_neighbors, false);
+
+						for (auto& n : road_neighbors)
+							availableEdgeStarts.push_back(std::make_pair(startnode, n));
+
+						setVisitedNodes.insert(startnode);
+					}
 				}
 				else
 				{
-					// todo: special case neighbor_count == 0, single road tile
-					// nothing to add to available crossingSlots
+					// special case neighbor_count == 0, single road tile
+					// just add a node 
+					level->road_network_.road_graph.addVertex(i);
+					setVisitedNodes.insert(i);
+
+					//// maybe add an edge with no waypoints from SOUTH to NORTH, so a car could actually loop?
+					//edge_info e;
+					//e.in_slot = NORTH;
+					//e.out_slot = SOUTH;
+					//level->road_network_.road_graph.addEdge(i, i, 0.0f, e);
 				}
 
 				// gather edges
@@ -425,6 +453,36 @@ namespace tinytrain
 								addMapTile(level->background_static_, curTileRect, r3_e, 1);
 						}
 					}
+					else if (count == 2)
+					{
+						// special case, this can actually only happen when a single loop with no crossings is in the image
+						direction dir1 = same[0];
+						direction dir2 = same[1];
+
+						// sum is even -> straight (0+2, 1+3)
+						if((dir1+dir2)%2 == 0)
+						{
+							// straight
+							if (dir1 == NORTH || dir1 == SOUTH)
+								addMapTile(level->background_static_, curTileRect, r2_straight);
+							else
+								addMapTile(level->background_static_, curTileRect, r2_straight, 1);
+						}
+						// sum is odd -> curve (0+1, 0+3, 1+2, 2+3)
+						else
+						{
+							// curve
+							bool mirror_v = false;
+							bool mirror_h = false;
+
+							if (dir1 == NORTH || dir2 == NORTH)
+								mirror_v = true;
+							if (dir1 == WEST || dir2 == WEST)
+								mirror_h = true;
+
+							addMapTile(level->background_static_, curTileRect, r2_curve, 0, mirror_h, mirror_v);
+						}
+					}
 					else if (count == 1)
 					{
 						if (same.size() == 1)
@@ -436,6 +494,9 @@ namespace tinytrain
 								addMapTile(level->background_static_, curTileRect, r2_straight);
 						}
 					}
+					// may be single road tiles
+					else
+						addMapTile(level->background_static_, curTileRect, r2_straight);
 				}
 				for (auto& idx : setVisitedNodes)
 				{
@@ -559,6 +620,10 @@ namespace tinytrain
 
 		int time = std::clock() - t1;
 		printf("road generation from %ix%i image took %i ms. %zi nodes and %zi edges placed.\n", size.x, size.y, time, level->road_network_.road_graph.nodes_.size(), edgecount);
+		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		// benchmark map_big (419x235px)
+		//		simple tile generation - 580ms 
+		//		tile and roadgraph generation - 2800ms		(5x)
 	}
 
 	int TLevel_Builder::findNextRoadNode(int start_index, std::vector<direction>& edge_directions, sf::Image& map)
@@ -831,6 +896,11 @@ namespace tinytrain
 
 	int TLevel_Builder::gatherPixelNeighborDirs_sameColor(const sf::Image & map, const int x, const int y, std::vector<direction>* same_neighbours, std::vector<direction>* other_neighbours)
 	{
+		if (same_neighbours)
+			same_neighbours->clear();
+		if (other_neighbours)
+			other_neighbours->clear();
+
 		auto size = map.getSize();
 		if (x < 0 || y < 0 || x >= size.x || y >= size.y)
 			return -1;

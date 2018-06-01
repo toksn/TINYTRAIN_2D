@@ -41,16 +41,16 @@ namespace tgf
 
 			void addVertex(node_type id, node_data data = node_data())
 			{
-				nodes[id].user_data_ = data;
+				nodes_[id].user_data_ = data;
 			};
 
 			// create shortest path table for all nodes
-			void init() {};
-			std::vector<node*> getShortestPath(node* start, node* end);
+			//void init() {};
+			//std::vector<node*> getShortestPath(node* start, node* end);
 
 		private:
-			void djikstra(node* start, node* end = nullptr);
-			void djikstra_for_all_nodes();
+			//void djikstra(node* start, node* end = nullptr);
+			//void djikstra_for_all_nodes();
 		};
 	}
 }
