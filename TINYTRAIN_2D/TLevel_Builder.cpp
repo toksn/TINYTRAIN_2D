@@ -295,7 +295,7 @@ namespace tinytrain
 		const int tilesize = road_texture_width_ * background_size_factor;
 
 		sf::IntRect r4 = texture_atlas_->getArea("road-4way");
-		// road 3way, not connected dir defines the name, default from texture: 'e'
+		// road 3way, not connected dir_prevTile_out defines the name, default from texture: 'e'
 		sf::IntRect r3_e = texture_atlas_->getArea("road-3way");
 		sf::IntRect r3_w(r3_e.left+r3_e.width, r3_e.top+ r3_e.height, -r3_e.width, -r3_e.height);		// mirror both
 		// road 2way curve, connected dirs define the name, default from texture: 'se'
@@ -312,14 +312,16 @@ namespace tinytrain
 		auto count = size.x * size.y;
 		for (int i = 0; i < count; i++)
 		{
-			int y = i / size.x;
-			int x = i - y * size.x;
+			auto p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(i, size.x);
+			int y = p.second;
+			int x = p.first;
 			sf::Color col = map.getPixel(x, y);
 
 			// hit a road
 			if (col.toInteger() == tile_colors::road)
 			{
 				std::vector<std::pair<int, direction>> availableEdgeStarts;
+				std::vector<std::tuple<int, int, std::vector<direction>>> foundEdges;
 				std::set<int> setVisitedNodes;
 
 				// count road neighbours
@@ -350,6 +352,7 @@ namespace tinytrain
 					// nothing to add to available crossingSlots
 				}
 
+				// gather edges
 				while (availableEdgeStarts.size())
 				{
 					auto pair = availableEdgeStarts.begin();
@@ -362,20 +365,15 @@ namespace tinytrain
 					
 					int cur_edge_end_id = findNextRoadNode(cur_edge_start_id, cur_edge_directions, map);
 
-					// gather waypoints and distances
-					
-					// addMapTiles
-					// removePixels
-					// add edges to road_network
-					level->road_network_.road_graph.addEdge(cur_edge_start_id, cur_edge_end_id, dist1, edge_info1);
-					level->road_network_.road_graph.addEdge(cur_edge_end_id, cur_edge_start_id, dist2, edge_info2);
-
+					// save edge start/end/dirs to later do:
+					foundEdges.emplace_back(cur_edge_start_id, cur_edge_end_id, cur_edge_directions);
 					auto end_incoming_dir = cur_edge_directions.back();
 					
 
 					road_neighbors.clear();
-					y = cur_edge_end_id / size.x;
-					x = cur_edge_end_id - y * size.x;
+					p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(cur_edge_end_id, size.x);
+					y = p.second;
+					x = p.first;
 					neighbor_samecolor_count = gatherPixelNeighborDirs_sameColor(map, x, y, &road_neighbors);
 					
 					// not visited the found node before
@@ -397,82 +395,134 @@ namespace tinytrain
 						availableEdgeStarts.erase(std::remove(availableEdgeStarts.begin(), availableEdgeStarts.end(), std::make_pair(cur_edge_end_id, end_incoming_dir)), availableEdgeStarts.end() );
 					}					
 				}
-			}
-		}
-
-		int i = 0;
-		for (int x = 0; x < size.x; x++)
-		{
-			for (int y = 0; y < size.y; y++)
-			{
-				sf::Color col = map.getPixel(x, y);
-				// hit a road
-				if (col.toInteger() == tile_colors::road)
+			
+				// process crossing tiles, unset pixel colors for those
+				for (auto& idx : setVisitedNodes)
 				{
-					sf::IntRect curTileRect(x*tilesize, y*tilesize, tilesize, tilesize);
-					// count road neighbours
-					std::vector<sf::Vector2u> road_neighbors;
-					std::vector<sf::Vector2u> other_neighbors;
-					int neighbor_samecolor_count = gatherPixelNeighborInfo_sameColor(map, x, y, &road_neighbors, &other_neighbors, false);
+					auto p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(idx, size.x);
+					sf::Vector2u coords(p.first, p.second);
 					
-					if (neighbor_samecolor_count == 4)
-					{
+					sf::IntRect curTileRect(coords.x*tilesize, coords.y*tilesize, tilesize, tilesize);
+
+					std::vector<direction> same;
+					std::vector<direction> others;
+					int count = gatherPixelNeighborDirs_sameColor(map, coords.x, coords.y, &same, &others);
+					if (count == 4)
 						addMapTile(level->background_static_, curTileRect, r4);
-					}
-					else if (neighbor_samecolor_count == 3)
+					else if (count == 3)
 					{
-						if (other_neighbors.size() == 1)
+						if (others.size() == 1)
 						{
-							if (other_neighbors.front().x == x + 1)
+							if (others.front() == EAST)
 								addMapTile(level->background_static_, curTileRect, r3_e);
-							else if (other_neighbors.front().x == x - 1)
+							else if (others.front() == WEST)
 								addMapTile(level->background_static_, curTileRect, r3_w);
-							else if (other_neighbors.front().y == y + 1)
+							else if (others.front() == SOUTH)
 								addMapTile(level->background_static_, curTileRect, r3_e, -1);
-							else if (other_neighbors.front().y == y - 1)
+							else if (others.front() == NORTH)
 								addMapTile(level->background_static_, curTileRect, r3_e, 1);
 						}
 					}
-					else
+					else if (count == 1)
 					{
-						if (neighbor_samecolor_count == 1)
+						if (same.size() == 1)
 						{
-							auto& pos = road_neighbors.front();
-							if (pos.x != x)
+							// deadend
+							if (same.front() == EAST || same.front() == WEST)
 								addMapTile(level->background_static_, curTileRect, r2_straight, 1);
-							else
+							else //if (same.front() == NORTH || same.front() == SOUTH)
 								addMapTile(level->background_static_, curTileRect, r2_straight);
 						}
-						else if (neighbor_samecolor_count == 2)
+					}
+				}
+				for (auto& idx : setVisitedNodes)
+				{
+					auto p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(idx, size.x);
+					sf::Vector2u coords(p.first, p.second);
+					// unset road pixel color
+					map.setPixel(coords.x, coords.y, sf::Color::Transparent);
+				}					
+				
+				// process edges (add graph info, add map tile, unset pixel color)
+				for (auto& e : foundEdges)
+				{
+					int start = std::get<0>(e);
+					int end = std::get<1>(e);
+					std::vector<direction> dirs = std::get<2>(e);
+
+					auto p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(start, size.x);
+					sf::Vector2u coords(p.first, p.second);
+
+					float dist1 = 0.0f;
+					float dist2 = 0.0f;
+					edge_info edge_info1, edge_info2;
+					
+					edge_info1.out_slot = dirs.front();
+					edge_info1.in_slot = dirs.back();
+					edge_info2.out_slot = edge_info1.in_slot;
+					edge_info2.in_slot = edge_info1.out_slot;
+
+
+					// leave out first and last element in the direction array and do steps = 2
+					for(int i = 1; i < dirs.size()-2; i+=2)
+					{
+						direction dir_prevTile_out = dirs[i - 1];
+						direction from = dirs[i];
+						direction to = dirs[i + 1];
+
+						// move to next tile
+						if (dir_prevTile_out == NORTH) coords.y--;
+						else if (dir_prevTile_out == SOUTH) coords.y++;
+						else if (dir_prevTile_out == WEST) coords.x--;
+						else if (dir_prevTile_out == EAST) coords.x++;
+
+						sf::IntRect curTileRect(coords.x*tilesize, coords.y*tilesize, tilesize, tilesize);
+
+						// gather waypoints (both directions) and distances
+						auto& info = level->road_network_.crossing_connection_table[from][to];
+						auto& reverse = level->road_network_.crossing_connection_table[from][to];
+						for (auto& pt : info.waypoints)
+							edge_info1.waypoints.emplace_back(pt.x + curTileRect.left, pt.y + curTileRect.top);
+						dist1 += info.distance;
+
+						// filling the waypoint vector from reverse direction from back to front to be able to use emplace_back (fast) 
+						// and std::reverse once the edge_info2 is complete
+						for (auto pt = reverse.waypoints.rbegin(); pt != reverse.waypoints.rend(); ++pt)
+							edge_info2.waypoints.emplace_back(pt->x + curTileRect.left, pt->y + curTileRect.top);
+						dist2 += reverse.distance;
+
+						// addMapTiles						
+						if (dir_prevTile_out == dirs[i + 1])
 						{
 							// straight
-							if (road_neighbors[0].x == road_neighbors[1].x || road_neighbors[0].y == road_neighbors[1].y)
-								if( road_neighbors[0].x != x )
-									addMapTile(level->background_static_, curTileRect, r2_straight, 1);
-								else
-									addMapTile(level->background_static_, curTileRect, r2_straight);
-							// curve
+							if (dir_prevTile_out == NORTH || dir_prevTile_out == SOUTH)
+								addMapTile(level->background_static_, curTileRect, r2_straight);
 							else
-							{
-								auto rect = r2_curve;
-								bool v_mirror = road_neighbors[0].x < x || road_neighbors[1].x < x;
-								bool h_mirror = road_neighbors[0].y < y || road_neighbors[1].y < y;
-								if (v_mirror)
-								{
-									rect.left += rect.width;
-									rect.width *= -1.0f;
-								}
-								if (h_mirror)
-								{
-									rect.top += rect.height;
-									rect.height *= -1.0f;
-								}
-								addMapTile(level->background_static_, curTileRect, rect);
-							}
+								addMapTile(level->background_static_, curTileRect, r2_straight, 1);
 						}
+						else
+						{
+							// curve
+							bool mirror_v = false;
+							bool mirror_h = false;
+							
+							if (from == NORTH || to == NORTH)
+								mirror_v = true;
+							if (from == WEST || to == WEST)
+								mirror_h = true;
 
-						
+							addMapTile(level->background_static_, curTileRect, r2_curve, 0, mirror_h, mirror_v);
+						}
+						// removePixels
+						map.setPixel(coords.x, coords.y, sf::Color::Transparent);
 					}
+
+					// reverse the edge_info2.waypoints vector because we filled it the wrong way around for performance reasons
+					std::reverse(edge_info2.waypoints.begin(), edge_info2.waypoints.end());
+					
+					// add edges to road_network
+					level->road_network_.road_graph.addEdge(start, end, dist1, edge_info1);
+					level->road_network_.road_graph.addEdge(end, start, dist2, edge_info2);
 				}
 			}
 		}
@@ -485,10 +535,10 @@ namespace tinytrain
 			
 		auto size = map.getSize();
 		sf::Vector2u cur_pix;
-		sf::Vector2u prev_pix;
-		prev_pix.y = start_index / size.x;
-		prev_pix.x = start_index - prev_pix.y * size.x;
-
+		sf::Vector2u ;
+		auto p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(start_index, size.x);
+		sf::Vector2u prev_pix(p.first, p.second);
+		
 		std::vector<direction> neighbors;
 		neighbors.reserve(4);
 
@@ -517,9 +567,6 @@ namespace tinytrain
 				cur_pix.x--;
 				end_index--;
 			}
-
-
-			
 
 			neighbors.clear();
 			neighbor_count = gatherPixelNeighborDirs_sameColor(map, cur_pix.x, cur_pix.y, &neighbors);

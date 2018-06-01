@@ -23,6 +23,13 @@ namespace tgf
 
 			static c2v calc_point_on_circle(float r, float angle, c2v c = { 0.0f, 0.0f });
 
+			static std::pair<int, int> getArrayCoordsFromIndex(int index, int row_len)
+			{
+				int y = index / row_len;
+				int x = index - y * row_len;
+				return std::make_pair(x,y);
+			};
+
 			/*
 			static sf::IntRect mirror_rect(sf::IntRect& rect, bool h, bool v)
 			{

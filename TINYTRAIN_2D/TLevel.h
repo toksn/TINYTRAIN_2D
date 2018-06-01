@@ -37,7 +37,7 @@ namespace tinytrain
 		float distance;
 	};
 
-	using graph = tgf::graph::node_edgelist_graph<sf::Vector2f, float, tgf::graph::no_data, edge_info, vec2Less<float>>;
+	using graph = tgf::graph::node_edgelist_graph<int, float, tgf::graph::no_data, edge_info>;
 	struct road_network
 	{
 		graph road_graph;
