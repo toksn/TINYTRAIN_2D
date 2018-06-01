@@ -290,6 +290,8 @@ namespace tinytrain
 		if (level == nullptr)
 			return;
 
+		int t1 = std::clock();
+
 		// every pixel is an area of the size of a (simple) street
 		const auto size = map.getSize();
 		const int tilesize = road_texture_width_ * background_size_factor;
@@ -531,36 +533,32 @@ namespace tinytrain
 		level->roads_debug_.clear();
 		level->roads_debug_.setPrimitiveType(sf::PrimitiveType::Lines);
 		const float halftile = tilesize * 0.5f;
+		size_t edgecount = 0;
 		for (auto& n : level->road_network_.road_graph.nodes_)
 		{
 			auto p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(n.first, size.x);
 			sf::Vector2f pt_start(p.first * tilesize + halftile, p.second * tilesize + halftile);
 			for (auto& e : n.second.edges_)
 			{
+				edgecount++;
 				p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(e.target_node_, size.x);
 				sf::Vector2f pt_end(p.first * tilesize + halftile, p.second * tilesize + halftile);
-				level->roads_debug_.append(sf::Vertex(pt_start, sf::Color::Red));
-				level->roads_debug_.append(sf::Vertex(pt_end, sf::Color::White));
-				pt_start = pt_end;
+				level->roads_debug_.append(sf::Vertex(pt_start, sf::Color::Blue));
+				level->roads_debug_.append(sf::Vertex(pt_end, sf::Color::Blue));
 
-				sf::Color col = sf::Color::Green;
+				sf::Color col = sf::Color::Magenta;
 				for (int i = 1; i < e.user_data_.waypoints.size(); i++)
 				{
 					sf::Vector2f pt_a = e.user_data_.waypoints[i - 1];
 					sf::Vector2f pt_b = e.user_data_.waypoints[i];
 					level->roads_debug_.append(sf::Vertex(pt_a, col));
 					level->roads_debug_.append(sf::Vertex(pt_b, col));
-
-					if (col != sf::Color::Green)
-						col = sf::Color::Green;
-					else
-						col = sf::Color::Magenta;
 				}
 			}
 		}
 
-		//int time = std::clock() - t1;
-		//printf("road generation took %i ms. %zi segments placed making %fms per segment\n", time, city.road_segments_.size(), (float)time / (float)(city.road_segments_.size()));
+		int time = std::clock() - t1;
+		printf("road generation from %ix%i image took %i ms. %zi nodes and %zi edges placed.\n", size.x, size.y, time, level->road_network_.road_graph.nodes_.size(), edgecount);
 	}
 
 	int TLevel_Builder::findNextRoadNode(int start_index, std::vector<direction>& edge_directions, sf::Image& map)

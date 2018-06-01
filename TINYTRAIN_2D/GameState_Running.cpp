@@ -29,6 +29,7 @@ namespace tinytrain
 		camFlowTime_ = 1.0;
 		camCurrentTime_ = 0.0;
 
+		// todo: level selection
 		loadLevel("data/images/level/map.png");
 	}
 
