@@ -350,6 +350,7 @@ namespace tinytrain
 
 					if (startnode == i)
 					{
+						printf("road generation warning: road loop detected. may not be intentional?\n");
 						// loop only, no other crossings or deadends involved
 						setVisitedNodes.insert(startnode);
 						auto dir = dirs.rbegin();
@@ -370,6 +371,7 @@ namespace tinytrain
 				}
 				else
 				{
+					printf("road generation warning: single road tile detected. may not be intentional?\n");
 					// special case neighbor_count == 0, single road tile
 					// just add a node 
 					level->road_network_.road_graph.addVertex(i);
