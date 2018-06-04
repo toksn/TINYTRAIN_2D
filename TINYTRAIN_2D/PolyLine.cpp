@@ -33,7 +33,7 @@ namespace tgf
 			{
 				float a_dist = getLength()*a_time;
 				indexHint = getSegmentStartIndexAtDist(a_dist, indexHint);
-				if (indexHint < 0 || indexHint >= poly_.size())
+				if (indexHint < 0 || indexHint >= poly_.size()-1)
 					return sf::Vector2f();
 
 				// segment
@@ -78,7 +78,7 @@ namespace tgf
 			else
 			{
 				indexHint = getSegmentStartIndexAtDist(getLength()*a_time, indexHint);
-				if (indexHint < 0 || indexHint >= poly_.size())
+				if (indexHint < 0 || indexHint >= poly_.size()-1)
 					return 0.0f;
 
 				start = { poly_[indexHint].x, poly_[indexHint].y };
@@ -105,6 +105,9 @@ namespace tgf
 		{
 			size_t size = poly_.size();
 			lengths_.resize(size);
+
+			if (size == 0)
+				return;
 
 			// first point always has length zero
 			if (startindex == 0)
@@ -133,7 +136,7 @@ namespace tgf
 
 			size_t size = poly_.size();
 
-			if (size < 0)
+			if (size < 2)
 				return -1;
 			else if (size > 1)
 			{

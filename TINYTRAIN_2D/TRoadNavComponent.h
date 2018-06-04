@@ -28,17 +28,17 @@ namespace tinytrain
 			NavType type_ = NavType::RANDOM;
 		protected:
 			bool updateNavigation();
-			bool addEdge(graph::edge* e, bool removePassedWaypoints = false);
+			void addEdge(graph::edge* e, bool removePassedWaypoints = false);
 
-			// distance travelled on the current edge
+			// distance travelled on the current waypoints poly
 			float distance_;
 
 			// current final edge to travel
 			graph::edge* final_edge_;
 			tgf::math::PolyLine waypoints_;
 			
-			float time_ = 0.0f;
-			bool running_ = false;
+			//float time_ = 0.0f;
+			bool running_;
 		};
 	}
 }

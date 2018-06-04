@@ -2,6 +2,8 @@
 #include "SplineTexture.h"
 #include "GameState_Running.h"
 #include <set>
+#include "TObstacle.h"
+#include "TRoadNavComponent.h"
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
@@ -168,6 +170,19 @@ namespace tinytrain
 			level->railtrack_->addLastControlPointToHistory();
 			level->railtrack_->addTrain(level->train_.get());
 			level->train_->initWagons(15);
+
+			// create obstacles for the games to be lost
+			auto car = std::make_unique<TObstacle>(gs_, false);
+			//zone->drawable_->setPosition(+30.0f, +30.0f);
+			car->updateCollisionShape();
+
+
+
+			// create temporary component by constructor to use in copy constructor
+			components::TRoadNavComponent c(&level->road_network_);
+			//c.start();
+			car->addNewComponent<components::TRoadNavComponent>(c);
+			level->obstacles_.push_back(std::move(car));
 		}//*/
 
 		/*longer version

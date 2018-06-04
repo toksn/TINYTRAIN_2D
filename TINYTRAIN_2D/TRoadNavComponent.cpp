@@ -6,6 +6,9 @@ namespace tinytrain
 	{
 		TRoadNavComponent::TRoadNavComponent(road_network * network)
 		{
+			roads_ = network;
+			speed_ = 150.0f;
+			running_ = true;
 		}
 		TRoadNavComponent::~TRoadNavComponent()
 		{
@@ -17,6 +20,38 @@ namespace tinytrain
 
 		void TRoadNavComponent::update(float deltaTime)
 		{
+			bool getinfo = true;
+			if (final_edge_ == nullptr)
+				getinfo = updateNavigation();
+
+			if (running_)
+			{
+				distance_ += deltaTime*speed_;
+
+				// max dist to travel on the current waypoints
+				float maxdist = waypoints_.getLength();
+
+				if (distance_ > maxdist)
+				{
+					getinfo = updateNavigation();
+				}
+				else if (distance_ < 0.0f)
+				{
+					// todo: event of invalid distance
+					distance_ = 0.0f;
+				}
+
+				if (getinfo)
+				{
+					float time = distance_ / maxdist;
+
+					int hintindex = -1;
+					float angle = waypoints_.getDirectionAngleAtTime(time, hintindex, false);
+					sf::Vector2f pos = waypoints_.getLocationAtTime(time, hintindex);
+					owner_->setPosition(pos);
+					owner_->setRotation(angle);
+				}
+			}
 		}
 
 		bool TRoadNavComponent::updateNavigation()
@@ -35,7 +70,8 @@ namespace tinytrain
 						std::advance(e, rand() % n->second.edges_.size());
 						
 						// adding edge as the only edge at the moment (first edge)
-						rc = addEdge(&*e, true);
+						addEdge(&*e, true);
+						rc = true;
 					}
 				}					
 			}
@@ -48,7 +84,6 @@ namespace tinytrain
 				{
 					// respawn. or better stop?
 					final_edge_ = nullptr;
-					rc = true;
 				}
 				// advance current final edge to something else
 				else if (type_ == NavType::RANDOM)
@@ -59,29 +94,28 @@ namespace tinytrain
 					{
 						e = edges.begin();
 						std::advance(e, rand() % edges.size());
-					} while (e->user_data_.out_slot != final_edge_->user_data_.in_slot);
+					} while (e->user_data_.out_slot == final_edge_->user_data_.in_slot);
 
-					rc = addEdge(&*e, true);
+					addEdge(&*e, true);
+					rc = true;
 				}
 			}
 
 			return rc;
 		}
-		bool TRoadNavComponent::addEdge(graph::edge * e, bool removePassedWaypoints)
-		{
-			bool rc = false;
-			
+		void TRoadNavComponent::addEdge(graph::edge * e, bool removePassedWaypoints)
+		{			
 			if (removePassedWaypoints)
 			{
 #if 0
 				// just clear it already
+				distance_ -= waypoints_.getLength();
 				waypoints_.poly_.clear();
-				distance_ = 0.0f;
 #else			
 				if (distance_ >= waypoints_.getLength())
 				{
+					distance_ -= waypoints_.getLength();
 					waypoints_.poly_.clear();
-					distance_ = 0.0f;
 				}
 				else
 				{
@@ -94,7 +128,6 @@ namespace tinytrain
 					}
 				}
 #endif // 1
-				waypoints_.recalcLength();
 			}
 
 			if (e != nullptr)
@@ -115,6 +148,7 @@ namespace tinytrain
 					//auto& crossing_wp = roads_->crossing_connection_table[from][to].waypoints;
 					//waypoints_.poly_.emplace_back(crossing_wp.begin(), crossing_wp.end());
 					
+					// todo: save the node position as node_data? instead of having to calculate it here
 					sf::Vector2f curpos = final_edge_->user_data_.waypoints.back();
 					curpos.x -= roads_->crossing_connection_table[from][to].waypoints.front().x;
 					curpos.y -= roads_->crossing_connection_table[from][to].waypoints.front().y;
@@ -122,14 +156,14 @@ namespace tinytrain
 					for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
 						waypoints_.poly_.emplace_back(pt.x + curpos.x, pt.y + curpos.y);
 				}
+				// set new final edge
+				final_edge_ = e;
 				
 				// add waypoints of the new edge
 				waypoints_.poly_.insert(waypoints_.poly_.end(), final_edge_->user_data_.waypoints.begin(), final_edge_->user_data_.waypoints.end());
-
-				// set new final edge
-				final_edge_ = e;
 			}
-			return rc;
+
+			waypoints_.recalcLength();
 		}
 	}
 }
