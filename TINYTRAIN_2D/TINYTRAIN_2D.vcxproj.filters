@@ -39,6 +39,9 @@
     <Filter Include="GameFramework\utilities">
       <UniqueIdentifier>{180eee21-b337-4b4a-a106-05db9e9b9206}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TinyTrain\components">
+      <UniqueIdentifier>{088ce2cd-8db9-4e96-8537-5c1ccfb9980a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -124,6 +127,12 @@
     </ClCompile>
     <ClCompile Include="TLevel_Builder.cpp">
       <Filter>TinyTrain\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="PolyLine.cpp">
+      <Filter>GameFramework\math</Filter>
+    </ClCompile>
+    <ClCompile Include="TRoadNavComponent.cpp">
+      <Filter>TinyTrain\components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -222,6 +231,12 @@
     </ClInclude>
     <ClInclude Include="TLevel_Builder.h">
       <Filter>TinyTrain\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TRoadNavComponent.h">
+      <Filter>TinyTrain\components</Filter>
+    </ClInclude>
+    <ClInclude Include="PolyLine.h">
+      <Filter>GameFramework\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

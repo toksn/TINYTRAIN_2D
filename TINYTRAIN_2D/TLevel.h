@@ -18,7 +18,7 @@ namespace tinytrain
 {
 	struct road_connection_info
 	{
-		// todo: absolute or relative? vertexArray or vector<sf::vector2f>?
+		// absolute waypoints at the moment
 		std::vector<sf::Vector2f> waypoints;
 		struct stopping_info
 		{
@@ -29,7 +29,7 @@ namespace tinytrain
 	};
 	struct edge_info : road_connection_info
 	{
-		direction out_slot;	// slot on the start crossing/node
+		direction out_slot;		// slot on the start crossing/node
 		direction in_slot;		// slot on the destination crossing/node
 	};
 	struct inner_cross_connection_info : road_connection_info

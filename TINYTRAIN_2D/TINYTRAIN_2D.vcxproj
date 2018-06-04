@@ -149,6 +149,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="GameState_Running.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathHelper2D.cpp" />
+    <ClCompile Include="PolyLine.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineTexture.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
@@ -161,6 +162,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="TObstacle.cpp" />
     <ClCompile Include="TPlayer.cpp" />
     <ClCompile Include="TRailTrack.cpp" />
+    <ClCompile Include="TRoadNavComponent.cpp" />
     <ClCompile Include="TSingleLineInputComponent.cpp" />
     <ClCompile Include="TTrain.cpp" />
     <ClCompile Include="TTrainCollisionManager.cpp" />
@@ -182,6 +184,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="json_tgf.h" />
     <ClInclude Include="MathHelper2D.h" />
     <ClInclude Include="modules\tinyc2.h" />
+    <ClInclude Include="PolyLine.h" />
     <ClInclude Include="Spline.h" />
     <ClInclude Include="SplineTexture.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
@@ -195,6 +198,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="TObstacle.h" />
     <ClInclude Include="TPlayer.h" />
     <ClInclude Include="TRailTrack.h" />
+    <ClInclude Include="TRoadNavComponent.h" />
     <ClInclude Include="TSingleLineInputComponent.h" />
     <ClInclude Include="TTrain.h" />
     <ClInclude Include="TTrainCollisionManager.h" />
