@@ -21,8 +21,8 @@ namespace tgf
 
 		sf::Vector2f PolyLine::getLocationAtTime(float a_time, int& indexHint)
 		{
-			if (poly_.size() == 0)
-				return sf::Vector2f();
+			if (poly_.size() < 2)
+				return sf::Vector2f(0.0f, 0.0f);
 
 			c2v pos;
 			if (a_time == 1.0f)
@@ -34,7 +34,7 @@ namespace tgf
 				float a_dist = getLength()*a_time;
 				indexHint = getSegmentStartIndexAtDist(a_dist, indexHint);
 				if (indexHint < 0 || indexHint >= poly_.size()-1)
-					return sf::Vector2f();
+					return sf::Vector2f(0.0f, 0.0f);
 
 				// segment
 				c2v start = { poly_[indexHint].x, poly_[indexHint].y };
@@ -138,18 +138,21 @@ namespace tgf
 
 			if (size < 2)
 				return -1;
-			else if (size > 1)
+			else
 			{
 				float len = getLength();
+				if (a_dist > len || a_dist < 0)
+					return -1;
 
 				// take indexHint or make an index guess
 				if (indexHint >= 0 && indexHint < size - 1)
 					i = indexHint;
 				else
-					i = c2Max(1, c2Min(((float)(size - 1) * a_dist / len), size - 2));
+					// minimum 0, maximum size-2, calced (count-1*dist/len)
+					i = c2Max(0, c2Min(((float)(size - 1) * a_dist / len), size - 2));
 
 				// keep index range
-				while (i > 0 && i < size - 1)
+				while (i >= 0 && i < size - 1)
 				{
 					if (lengths_[i] <= a_dist)
 					{

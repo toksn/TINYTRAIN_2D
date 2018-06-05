@@ -148,10 +148,10 @@ namespace tinytrain
 					//auto& crossing_wp = roads_->crossing_connection_table[from][to].waypoints;
 					//waypoints_.poly_.emplace_back(crossing_wp.begin(), crossing_wp.end());
 					
-					// todo: save the node position as node_data? instead of having to calculate it here
-					sf::Vector2f curpos = final_edge_->user_data_.waypoints.back();
-					curpos.x -= roads_->crossing_connection_table[from][to].waypoints.front().x;
-					curpos.y -= roads_->crossing_connection_table[from][to].waypoints.front().y;
+					sf::Vector2f curpos(roads_->road_graph.nodes_[final_edge_->target_node_].user_data_.left, roads_->road_graph.nodes_[final_edge_->target_node_].user_data_.top);
+					//sf::Vector2f curpos = final_edge_->user_data_.waypoints.back();
+					//curpos.x -= roads_->crossing_connection_table[from][to].waypoints.front().x;
+					//curpos.y -= roads_->crossing_connection_table[from][to].waypoints.front().y;
 
 					for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
 						waypoints_.poly_.emplace_back(pt.x + curpos.x, pt.y + curpos.y);

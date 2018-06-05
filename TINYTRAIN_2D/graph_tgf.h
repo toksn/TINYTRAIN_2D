@@ -41,7 +41,7 @@ namespace tgf
 				nodes_[from].edges_.push_back(e);
 			};
 
-			void addVertex(node_type id, node_data data = node_data())
+			void addNode(node_type id, node_data data = node_data())
 			{
 				nodes_[id].user_data_ = data;
 			};

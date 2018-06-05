@@ -389,7 +389,8 @@ namespace tinytrain
 					printf("road generation warning: single road tile detected. may not be intentional?\n");
 					// special case neighbor_count == 0, single road tile
 					// just add a node 
-					level->road_network_.road_graph.addVertex(i);
+					auto p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(i, size.x);
+					level->road_network_.road_graph.addNode(i, {p.first*tilesize, p.second*tilesize, tilesize, tilesize});
 					setVisitedNodes.insert(i);
 
 					//// maybe add an edge with no waypoints from SOUTH to NORTH, so a car could actually loop?
@@ -600,6 +601,14 @@ namespace tinytrain
 					// reverse the edge_info2.waypoints vector because we filled it the wrong way around for performance reasons
 					std::reverse(edge_info2.waypoints.begin(), edge_info2.waypoints.end());
 					
+					p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(start, size.x);
+					sf::IntRect r(p.first*tilesize, p.second*tilesize, tilesize, tilesize);
+					level->road_network_.road_graph.addNode(start, r);
+
+					p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(end, size.x);
+					r = { p.first*tilesize, p.second*tilesize, tilesize, tilesize };
+					level->road_network_.road_graph.addNode(end, r);
+
 					// add edges to road_network
 					level->road_network_.road_graph.addEdge(start, end, dist1, edge_info1);
 					level->road_network_.road_graph.addEdge(end, start, dist2, edge_info2);
