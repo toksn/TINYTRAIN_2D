@@ -30,6 +30,9 @@ namespace tinytrain
 			bool updateNavigation();
 			void addEdge(graph::edge* e, bool removePassedWaypoints = false);
 
+			void addNodeConnectionWaypoints(int node_id, direction from, direction to);
+			void clearPassedWaypoints();
+
 			// distance travelled on the current waypoints poly
 			float distance_;
 

@@ -36,14 +36,14 @@ namespace tgf
 				for (int i = 0; i < category->second.size(); i++)
 				{
 					auto collider = category->second[i];
-					if (collider.collision_mask & (short)category->first != 0)
+					if((collider.collision_mask & (short)category->first) != 0)
 					{
 						// only check against upcoming objects from the same category to prevent finding collisions twice
 						for (int j = i + 1; j < category->second.size(); j++)
 						{
 							// check if upcoming object has current category in its collision mask
 							auto other = category->second[j];
-							if (other.collision_mask & (short)category->first != 0)
+							if((other.collision_mask & (short)category->first) != 0)
 								tryCollideObjects(collider, other);
 						}
 					}
@@ -54,12 +54,12 @@ namespace tgf
 					while (upcoming_category != colliders_.end())
 					{
 						// check if this upcoming category is in the collision mask of the object
-						if (collider.collision_mask & (short)upcoming_category->first != 0)
+						if((collider.collision_mask & (short)upcoming_category->first) != 0)
 						{
 							for (auto& other : upcoming_category->second)
 							{
 								// check if object from the upcoming category has current category in its collision mask
-								if (other.collision_mask & (short)category->first != 0)
+								if((other.collision_mask & (short)category->first) != 0)
 									tryCollideObjects(collider, other);
 							}
 						}

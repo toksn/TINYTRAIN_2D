@@ -21,9 +21,7 @@ namespace tinytrain
 		void TRoadNavComponent::update(float deltaTime)
 		{
 			bool getinfo = true;
-			if (final_edge_ == nullptr)
-				getinfo = updateNavigation();
-
+			
 			if (running_)
 			{
 				distance_ += deltaTime*speed_;
@@ -59,7 +57,7 @@ namespace tinytrain
 			bool rc = false;
 			if (final_edge_ == nullptr)
 			{
-				// randomly choose one to start from?
+				// randomly choose one to start from
 				if (roads_ != nullptr && roads_->road_graph.nodes_.size())
 				{
 					auto n = roads_->road_graph.nodes_.begin();
@@ -73,7 +71,8 @@ namespace tinytrain
 						addEdge(&*e, true);
 						rc = true;
 					}
-				}					
+				}
+
 			}
 			else
 			{
@@ -82,8 +81,12 @@ namespace tinytrain
 				// deadend 
 				if (edges.size() <= 1)
 				{
-					// respawn. or better stop?
+					clearPassedWaypoints();
+					addNodeConnectionWaypoints(final_edge_->target_node_, final_edge_->user_data_.in_slot, (direction)((final_edge_->user_data_.in_slot+2)%direction::DIR_COUNT));
+					// respawn when current waypoints are done
 					final_edge_ = nullptr;
+
+					waypoints_.recalcLength();
 				}
 				// advance current final edge to something else
 				else if (type_ == NavType::RANDOM)
@@ -100,9 +103,9 @@ namespace tinytrain
 					rc = true;
 				}
 			}
-
 			return rc;
 		}
+
 		void TRoadNavComponent::addEdge(graph::edge * e, bool removePassedWaypoints)
 		{			
 			if (removePassedWaypoints)
@@ -112,21 +115,7 @@ namespace tinytrain
 				distance_ -= waypoints_.getLength();
 				waypoints_.poly_.clear();
 #else			
-				if (distance_ >= waypoints_.getLength())
-				{
-					distance_ -= waypoints_.getLength();
-					waypoints_.poly_.clear();
-				}
-				else
-				{
-					int remove_index = waypoints_.getSegmentStartIndexAtDist(distance_);
-					float len = waypoints_.lengths_[remove_index];
-					if (remove_index >= 0)
-					{
-						waypoints_.poly_.erase(waypoints_.poly_.begin(), waypoints_.poly_.begin() + remove_index);
-						distance_ = distance_ - len;
-					}
-				}
+				clearPassedWaypoints();
 #endif // 1
 			}
 
@@ -141,20 +130,10 @@ namespace tinytrain
 					//			|
 					//		  (out)
 					//		[CROSSING](in)<-----final (old) edge
-					//
+
 					direction from = final_edge_->user_data_.in_slot;
 					direction to = e->user_data_.out_slot;
-
-					//auto& crossing_wp = roads_->crossing_connection_table[from][to].waypoints;
-					//waypoints_.poly_.emplace_back(crossing_wp.begin(), crossing_wp.end());
-					
-					sf::Vector2f curpos(roads_->road_graph.nodes_[final_edge_->target_node_].user_data_.left, roads_->road_graph.nodes_[final_edge_->target_node_].user_data_.top);
-					//sf::Vector2f curpos = final_edge_->user_data_.waypoints.back();
-					//curpos.x -= roads_->crossing_connection_table[from][to].waypoints.front().x;
-					//curpos.y -= roads_->crossing_connection_table[from][to].waypoints.front().y;
-
-					for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
-						waypoints_.poly_.emplace_back(pt.x + curpos.x, pt.y + curpos.y);
+					addNodeConnectionWaypoints(final_edge_->target_node_, from, to);
 				}
 				// set new final edge
 				final_edge_ = e;
@@ -164,6 +143,37 @@ namespace tinytrain
 			}
 
 			waypoints_.recalcLength();
+		}
+
+		void TRoadNavComponent::addNodeConnectionWaypoints(int node_id, direction from, direction to)
+		{
+			sf::Vector2f curpos(roads_->road_graph.nodes_[node_id].user_data_.left, roads_->road_graph.nodes_[node_id].user_data_.top);
+			
+			//sf::Vector2f curpos = final_edge_->user_data_.waypoints.back();
+			//curpos.x -= roads_->crossing_connection_table[from][to].waypoints.front().x;
+			//curpos.y -= roads_->crossing_connection_table[from][to].waypoints.front().y;
+
+			for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
+				waypoints_.poly_.emplace_back(pt.x + curpos.x, pt.y + curpos.y);
+		}
+
+		void TRoadNavComponent::clearPassedWaypoints()
+		{
+			if (distance_ >= waypoints_.getLength())
+			{
+				distance_ -= waypoints_.getLength();
+				waypoints_.poly_.clear();
+			}
+			else
+			{
+				int remove_index = waypoints_.getSegmentStartIndexAtDist(distance_);
+				float len = waypoints_.lengths_[remove_index];
+				if (remove_index >= 0)
+				{
+					waypoints_.poly_.erase(waypoints_.poly_.begin(), waypoints_.poly_.begin() + remove_index);
+					distance_ = distance_ - len;
+				}
+			}
 		}
 	}
 }
