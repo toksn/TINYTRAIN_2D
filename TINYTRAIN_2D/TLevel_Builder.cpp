@@ -7,7 +7,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 1.0f;
+#define background_size_factor 0.5f;
 
 namespace tinytrain
 {
@@ -172,16 +172,19 @@ namespace tinytrain
 			level->train_->initWagons(15);
 
 			// create obstacles for the games to be lost
+			const int tilesize = road_texture_width_ * background_size_factor;
 			auto car = std::make_unique<TObstacle>(gs_, false);
-			//zone->drawable_->setPosition(+30.0f, +30.0f);
+			auto carsize = sf::Vector2f(tilesize * 0.3f, tilesize * 0.15f);
+			car->drawable_->setSize(carsize);
+			car->drawable_->setOrigin(carsize * 0.5f);
 			car->updateCollisionShape();
-
-
 
 			// create temporary component by constructor to use in copy constructor
 			components::TRoadNavComponent c(&level->road_network_);
-			//c.start();
+			c.speed_ *= background_size_factor;
 			car->addNewComponent<components::TRoadNavComponent>(c);
+
+
 			level->obstacles_.push_back(std::move(car));
 		}//*/
 
@@ -737,7 +740,7 @@ namespace tinytrain
 		float radius = 2.0f / 3.0f * tilesize;
 		float angle = 180.0f * DEG_TO_RAD;
 		const float step = 10.0f * DEG_TO_RAD;
-		const c2v center{ 64.0f, 0.0f };
+		const c2v center{ tilesize, 0.0f };
 		connection_table[NORTH][EAST].waypoints.emplace_back(tilesize - radius, 0.0f);
 		for (int i = 1; i < 9; i++)
 		{
@@ -745,7 +748,7 @@ namespace tinytrain
 			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle, center);
 			connection_table[NORTH][EAST].waypoints.emplace_back(pt.x, pt.y);
 		}
-		connection_table[NORTH][EAST].waypoints.emplace_back(64.0f, radius);
+		connection_table[NORTH][EAST].waypoints.emplace_back(tilesize, radius);
 		
 		// N>W
 		//	circle center 0,0 - radius 1/3
