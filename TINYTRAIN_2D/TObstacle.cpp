@@ -33,7 +33,7 @@ namespace tinytrain
 				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback, TTrainCollisionManager::CollisionCategory::STATIC_CATEGORY_2, 0);
 			else
 				// add to collision colliding with trains and dynamic_category_1
-				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback);
+				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback, TTrainCollisionManager::CollisionCategory::DYNAMIC_CATEGORY_1, 0);
 		}
 	}
 

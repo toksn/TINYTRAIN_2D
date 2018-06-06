@@ -68,11 +68,10 @@ namespace tinytrain
 						std::advance(e, rand() % n->second.edges_.size());
 						
 						// adding edge as the only edge at the moment (first edge)
-						addEdge(&*e, true);
+						addEdgeToNavigation(&*e, true);
 						rc = true;
 					}
 				}
-
 			}
 			else
 			{
@@ -99,14 +98,14 @@ namespace tinytrain
 						std::advance(e, rand() % edges.size());
 					} while (e->user_data_.out_slot == final_edge_->user_data_.in_slot);
 
-					addEdge(&*e, true);
+					addEdgeToNavigation(&*e, true);
 					rc = true;
 				}
 			}
 			return rc;
 		}
 
-		void TRoadNavComponent::addEdge(graph::edge * e, bool removePassedWaypoints)
+		void TRoadNavComponent::addEdgeToNavigation(graph::edge * e, bool removePassedWaypoints)
 		{			
 			if (removePassedWaypoints)
 			{
@@ -121,20 +120,42 @@ namespace tinytrain
 
 			if (e != nullptr)
 			{
-				if (final_edge_ != nullptr && roads_ != nullptr)
+				if (roads_ != nullptr)
 				{
-					// add waypoints of the crossing from in (old edge) to out (new edge)
-					//
-					//			^
-					//			| new edge
-					//			|
-					//		  (out)
-					//		[CROSSING](in)<-----final (old) edge
+					if (final_edge_ != nullptr)
+					{
+						// add waypoints of the crossing from in (old edge) to out (new edge)
+						//
+						//			^
+						//			| new edge
+						//			|
+						//		  (out)
+						//		[CROSSING](in)<-----final (old) edge
 
-					direction from = final_edge_->user_data_.in_slot;
-					direction to = e->user_data_.out_slot;
-					addNodeConnectionWaypoints(final_edge_->target_node_, from, to);
+						direction from = final_edge_->user_data_.in_slot;
+						direction to = e->user_data_.out_slot;
+						addNodeConnectionWaypoints(final_edge_->target_node_, from, to);
+					}
+					else
+					{
+						// no existing edge, this is a new entry into the graph. make sure to use the crossing waypoints as well
+						if (roads_->road_graph.nodes_[e->source_node_].edges_.size() == 1)
+							addNodeConnectionWaypoints(e->source_node_, (direction)((e->user_data_.out_slot + 2) % direction::DIR_COUNT), e->user_data_.out_slot);
+						else
+						{
+							for (auto& fromedge : roads_->road_graph.nodes_[e->source_node_].edges_)
+							{
+								if (&fromedge != e)
+								{
+									addNodeConnectionWaypoints(e->source_node_, fromedge.user_data_.out_slot, e->user_data_.out_slot);
+									break;
+								}
+							}
+						}
+					}
 				}
+				
+
 				// set new final edge
 				final_edge_ = e;
 				

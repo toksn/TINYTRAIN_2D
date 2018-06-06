@@ -28,7 +28,7 @@ namespace tinytrain
 			NavType type_ = NavType::RANDOM;
 		protected:
 			bool updateNavigation();
-			void addEdge(graph::edge* e, bool removePassedWaypoints = false);
+			void addEdgeToNavigation(graph::edge* e, bool removePassedWaypoints = false);
 
 			void addNodeConnectionWaypoints(int node_id, direction from, direction to);
 			void clearPassedWaypoints();
