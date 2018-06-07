@@ -4,6 +4,7 @@
 #include <set>
 #include "TObstacle.h"
 #include "TRoadNavComponent.h"
+#include "TCar.h"
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
@@ -173,20 +174,20 @@ namespace tinytrain
 
 			
 			// create obstacles for the games to be lost
-
-			// create temporary component by constructor to use in copy constructor
-			components::TRoadNavComponent c(&level->road_network_);
-			c.speed_ = 100.0f * background_size_factor;
 			const int tilesize = road_texture_width_ * background_size_factor;
 			for (int i = 0; i < 111; i++)
 			{
-				auto car = std::make_unique<TObstacle>(gs_, false);
+				auto car = std::make_unique<TCar>(gs_, false);
 				auto carsize = sf::Vector2f(tilesize * 0.3f, tilesize * 0.15f);
 				car->drawable_->setSize(carsize);
 				car->drawable_->setOrigin(carsize * 0.5f);
 				car->updateCollisionShape();
 
-				car->addNewComponent<components::TRoadNavComponent>(c);
+				auto c = car->addNewComponent<components::TRoadNavComponent>(&level->road_network_);
+				c->speed_ = 100.0f * background_size_factor;
+				car->navi_ = c;
+				car->vmax_ = 100.0f * background_size_factor;
+				
 
 				level->obstacles_.push_back(std::move(car));
 			}

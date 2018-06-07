@@ -134,6 +134,9 @@
     <ClCompile Include="TRoadNavComponent.cpp">
       <Filter>TinyTrain\components</Filter>
     </ClCompile>
+    <ClCompile Include="TCar.cpp">
+      <Filter>TinyTrain\objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -237,6 +240,9 @@
     </ClInclude>
     <ClInclude Include="PolyLine.h">
       <Filter>GameFramework\math</Filter>
+    </ClInclude>
+    <ClInclude Include="TCar.h">
+      <Filter>TinyTrain\objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
