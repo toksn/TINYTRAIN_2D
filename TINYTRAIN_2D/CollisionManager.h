@@ -26,24 +26,24 @@ namespace tgf
 
 			virtual void update();
 
-			enum class CollisionCategory
+			enum CollisionCategory
 			{
-				STATIC_CATEGORY_1	= 0x0001,
-				STATIC_CATEGORY_2	= 0x0002,
-				STATIC_CATEGORY_3	= 0x0004,
-				STATIC_CATEGORY_4	= 0x0008,
-				STATIC_CATEGORY_5	= 0x0010,
-				DYNAMIC_CATEGORY_1	= 0x0020,
-				DYNAMIC_CATEGORY_2	= 0x0040,
-				DYNAMIC_CATEGORY_3	= 0x0080,
-				DYNAMIC_CATEGORY_4	= 0x0100,
-				DYNAMIC_CATEGORY_5	= 0x0200, 
-				OTHER_CATEGORY_1	= 0x0400,
-				OTHER_CATEGORY_2	= 0x0800,
-				OTHER_CATEGORY_3	= 0x1000,
-				OTHER_CATEGORY_4	= 0x2000,
-				OTHER_CATEGORY_5	= 0x4000,
-				OTHER_CATEGORY_6	= 0x8000
+				STATIC_CATEGORY_1	= (1u << 0),
+				STATIC_CATEGORY_2	= (1u << 1),
+				STATIC_CATEGORY_3	= (1u << 2),
+				STATIC_CATEGORY_4	= (1u << 3),
+				STATIC_CATEGORY_5	= (1u << 4),
+				DYNAMIC_CATEGORY_1	= (1u << 5),
+				DYNAMIC_CATEGORY_2	= (1u << 6),
+				DYNAMIC_CATEGORY_3	= (1u << 7),
+				DYNAMIC_CATEGORY_4	= (1u << 8),
+				DYNAMIC_CATEGORY_5	= (1u << 9), 
+				OTHER_CATEGORY_1	= (1u << 10),
+				OTHER_CATEGORY_2	= (1u << 11),
+				OTHER_CATEGORY_3	= (1u << 12),
+				OTHER_CATEGORY_4	= (1u << 13),
+				OTHER_CATEGORY_5	= (1u << 14),
+				OTHER_CATEGORY_6	= (1u << 15)
 			};
 
 			// obstacles, collide against everything in their mask when the other obj has its mask set to collide against it as well
@@ -71,6 +71,8 @@ namespace tgf
 
 			virtual void removeFromCollision(void* obj);
 
+			std::vector<Entity*> findShapeCollisions(c2Shape shape, short collisionmask);
+			bool checkShapeForCollisions(c2Shape shape, short collisionmask);
 		protected:
 			virtual void tryCollideObjects(collidingObject & obj1, collidingObject & obj2);
 

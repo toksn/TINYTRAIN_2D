@@ -27,6 +27,56 @@ namespace tgf
 			}
 		}
 
+		std::vector<Entity*> CollisionManager::findShapeCollisions(c2Shape shape, short collision_mask)
+		{
+			std::vector<Entity*> collidedEntities;
+
+			if (collision_mask != 0 && shape.shape_ != nullptr)
+			{
+				for (auto& category : colliders_)
+				{
+					if ((collision_mask & (short)category.first) != 0)
+					{
+						for (auto& other : category.second)
+						{
+							auto collider2 = other.obj->getCollisionShape();
+							if (collider2.shape_)
+							{
+								if (c2Collided(shape.shape_, NULL, shape.type_, collider2.shape_, NULL, collider2.type_))
+									collidedEntities.push_back(other.obj);
+							}
+						}
+					}
+				}
+			}
+
+			return collidedEntities;
+		}
+
+		bool CollisionManager::checkShapeForCollisions(c2Shape shape, short collision_mask)
+		{
+			if (collision_mask == 0 || shape.shape_ == nullptr)
+				return false;
+
+			for (auto& category : colliders_)
+			{ 
+				if ((collision_mask & (short)category.first) != 0)
+				{
+					for (auto& other : category.second)
+					{
+						auto collider2 = other.obj->getCollisionShape();
+						if (collider2.shape_ && collider2.shape_ != shape.shape_)
+						{
+							if (c2Collided(shape.shape_, NULL, shape.type_, collider2.shape_, NULL, collider2.type_))
+								return true;
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
 		void CollisionManager::update()
 		{
 			// check all collider object against each other, only test for collision when they have their masks set up properly
