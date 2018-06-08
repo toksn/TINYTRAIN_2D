@@ -33,10 +33,17 @@ namespace tinytrain
 		void reset();
 		void stop();
 
+		sf::FloatRect getAABB();
+		bool debugDraw_;
+
 	protected:
 		// Inherited via Entity
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(const float dt) override;
+
+		void calcAABB();
+		//sf::FloatRect aabb_;
+		sf::VertexArray aabb_;
 
 		GameState_Running* gs_;
 		bool isRunning_;

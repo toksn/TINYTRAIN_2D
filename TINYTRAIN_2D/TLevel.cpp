@@ -99,6 +99,8 @@ namespace tinytrain
 				if (car != nullptr)
 					car->drawDebug_ = drawDebug_;
 			}
+
+			train_->debugDraw_ = drawDebug_;
 		}
 	}
 	

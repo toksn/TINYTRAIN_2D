@@ -35,10 +35,77 @@ namespace tinytrain
 			CollisionManager::removeFromCollision(obj);
 	}
 
+	std::vector<tgf::Entity*> TTrainCollisionManager::tryCollideShape(tgf::collision::c2Shape shape, short collisionmask)
+	{
+		auto rc = CollisionManager::tryCollideShape(shape, collisionmask);
+
+		for (auto train : trains_)
+		{
+			c2AABB train_aabb;
+			auto aabb = train->getAABB();
+			train_aabb.min = { aabb.left, aabb.top };
+			train_aabb.max = { aabb.left + aabb.width, aabb.top + aabb.height };
+			if (c2Collided(shape.shape_, NULL, shape.type_, &train_aabb, NULL, C2_AABB))
+			{
+				c2Poly wagon_rect;
+				for (auto& w : train->wagons_)
+				{
+					auto temp = w.getTransform().transformPoint(w.getPoint(0));
+					wagon_rect.verts[0] = { temp.x, temp.y };
+					temp = w.getTransform().transformPoint(w.getPoint(1));
+					wagon_rect.verts[1] = { temp.x, temp.y };
+					temp = w.getTransform().transformPoint(w.getPoint(2));
+					wagon_rect.verts[2] = { temp.x, temp.y };
+					temp = w.getTransform().transformPoint(w.getPoint(3));
+					wagon_rect.verts[3] = { temp.x, temp.y };
+					wagon_rect.count = 4;
+					if (c2Collided(shape.shape_, NULL, shape.type_, &wagon_rect, NULL, C2_POLY))
+					{
+						rc.push_back(train);
+						break;
+					}
+				}
+			}
+		}
+
+		return rc;
+	}
+
+	bool TTrainCollisionManager::checkShapeForCollisions(tgf::collision::c2Shape shape, short collisionmask)
+	{
+		for (auto& train : trains_)
+		{
+			c2AABB train_aabb;
+			auto aabb = train->getAABB();
+			train_aabb.min = { aabb.left, aabb.top };
+			train_aabb.max = { aabb.left + aabb.width, aabb.top + aabb.height };
+			if (c2Collided(shape.shape_, NULL, shape.type_, &train_aabb, NULL, C2_AABB))
+			{
+				c2Poly wagon_rect;
+				for (auto& w : train->wagons_)
+				{
+					auto temp = w.getTransform().transformPoint(w.getPoint(0));
+					wagon_rect.verts[0] = { temp.x, temp.y };
+					temp = w.getTransform().transformPoint(w.getPoint(1));
+					wagon_rect.verts[1] = { temp.x, temp.y };
+					temp = w.getTransform().transformPoint(w.getPoint(2));
+					wagon_rect.verts[2] = { temp.x, temp.y };
+					temp = w.getTransform().transformPoint(w.getPoint(3));
+					wagon_rect.verts[3] = { temp.x, temp.y };
+					wagon_rect.count = 4;
+					if (c2Collided(shape.shape_, NULL, shape.type_, &wagon_rect, NULL, C2_POLY))
+						return true;
+				}
+			}
+		}
+
+		return CollisionManager::checkShapeForCollisions(shape, collisionmask);
+	}
+
 	void TTrainCollisionManager::update()
 	{
 		// check for collisions of trains against any obstacle based entity (this is special as trains always collide with everything and have no TObstacle base)
-		for (auto train : trains_)
+		for (auto& train : trains_)
 		{
 			for (auto o = colliders_.begin(); o != colliders_.end(); ++o)
 			{
@@ -63,6 +130,7 @@ namespace tinytrain
 
 		if (train->wagons_.size() && collider.shape_)
 		{
+#if 0		// TODO: re-enable when more more than just one wagons are checked
 			auto bb = train->wagons_[0].getGlobalBounds();
 			c2AABB aabb;
 			aabb.min.x = bb.left;
@@ -81,7 +149,11 @@ namespace tinytrain
 					hit = true;
 				}
 				else
+#else		constexpr if(true)
+			{
+#endif
 				{
+					// TODO: check for more than just the first wagon
 					// can make proper hit test now
 					c2Poly train_rect;
 					auto temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(0));

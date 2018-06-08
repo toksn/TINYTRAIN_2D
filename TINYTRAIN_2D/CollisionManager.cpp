@@ -27,7 +27,7 @@ namespace tgf
 			}
 		}
 
-		std::vector<Entity*> CollisionManager::findShapeCollisions(c2Shape shape, short collision_mask)
+		std::vector<Entity*> CollisionManager::tryCollideShape(c2Shape shape, short collision_mask)
 		{
 			std::vector<Entity*> collidedEntities;
 

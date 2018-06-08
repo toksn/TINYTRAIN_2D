@@ -71,8 +71,8 @@ namespace tgf
 
 			virtual void removeFromCollision(void* obj);
 
-			std::vector<Entity*> findShapeCollisions(c2Shape shape, short collisionmask);
-			bool checkShapeForCollisions(c2Shape shape, short collisionmask);
+			virtual std::vector<Entity*> tryCollideShape(c2Shape shape, short collisionmask);
+			virtual bool checkShapeForCollisions(c2Shape shape, short collisionmask);
 		protected:
 			virtual void tryCollideObjects(collidingObject & obj1, collidingObject & obj2);
 
