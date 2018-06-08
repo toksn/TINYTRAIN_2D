@@ -6,6 +6,7 @@
 #include "InterpolateToPoint.h"
 #include "SplineTexture.h"
 #include "GameState_Running.h"
+#include "TCar.h"
 
 namespace tinytrain
 {
@@ -44,9 +45,10 @@ namespace tinytrain
 		target->draw(background_static_, renderstate);
 		
 		target->draw(roads_, renderstate);
-		if(drawDebug_)
+		if (drawDebug_)
+		{
 			target->draw(roads_debug_);
-		
+		}
 
 		if (railtrack_)
 			railtrack_->draw(target);
@@ -86,10 +88,17 @@ namespace tinytrain
 	void TLevel::onKeyPressed(sf::Event& e)
 	{
 		// PAUSE
-		if (e.key.code == sf::Keyboard::F11)
+		if (e.key.code == DEBUG_KEY)
 		{
 			// toggle debug drawing
 			drawDebug_ = !drawDebug_;
+
+			for (auto& o : obstacles_)
+			{
+				auto car = dynamic_cast<TCar*>(o.get());
+				if (car != nullptr)
+					car->drawDebug_ = drawDebug_;
+			}
 		}
 	}
 	

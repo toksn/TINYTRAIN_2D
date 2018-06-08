@@ -3,6 +3,8 @@
 #include "GameStateBase.h"
 #include "TTrainCollisionManager.h"
 
+#define DEBUG_KEY sf::Keyboard::F11
+
 namespace tgf
 {
 	class Entity; 
