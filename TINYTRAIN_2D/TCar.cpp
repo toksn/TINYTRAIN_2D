@@ -16,9 +16,11 @@ namespace tinytrain
 		waitInTraffic_checkingInterval_ = 0.35f;
 		state_ = DrivingState::NORMAL;
 	}
+
 	TCar::~TCar()
 	{
 	}
+
 	void TCar::onDraw(sf::RenderTarget * target)
 	{
 		TObstacle::onDraw(target);
@@ -26,15 +28,18 @@ namespace tinytrain
 		if(drawDebug_)
 			target->draw(collision_quad_);
 	}
+
 	void TCar::onUpdate(float deltaTime)
 	{
 		TObstacle::onUpdate(deltaTime);
 
 		//if (state_ == DrivingState::NORMAL || state_ == DrivingState::WAIT_IN_TRAFFIC)
-		if(state_ != DrivingState::WAIT_FREE_ROAD)
+		if(navi_ && navi_->getState() != components::TRoadNavComponent::NavState::RUNNING_WAIT_FOR_CLEAR_ROAD)
 		{
+			
 			if (state_ == DrivingState::WAIT_IN_TRAFFIC)
 			{
+				drawable_->setFillColor(sf::Color::Red);
 				timeSinceLastCheck_ += deltaTime;
 				if (timeSinceLastCheck_ < waitInTraffic_checkingInterval_)
 				{
@@ -43,6 +48,9 @@ namespace tinytrain
 
 				timeSinceLastCheck_ = 0.0f;
 			}
+			else
+				drawable_->setFillColor(sf::Color::Green);
+			
 
 			// check in front of the car
 			tgf::collision::c2Shape s;
@@ -98,5 +106,7 @@ namespace tinytrain
 				navi_->speed_ = vmax_;
 			}
 		}
+		else
+			drawable_->setFillColor(sf::Color::Cyan);
 	}
 }

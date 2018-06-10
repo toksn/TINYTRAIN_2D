@@ -31,11 +31,14 @@ namespace tinytrain
 			// Inherited via Component
 			virtual void draw(sf::RenderTarget * target) override;
 			virtual void update(float deltaTime) override;
+			NavState getState();
 
 			float speed_;
 			road_network* roads_;
 			NavType type_ = NavType::RANDOM;
 			unsigned int roadCheckingMask = tgf::collision::CollisionManager::CollisionCategory::DYNAMIC_CATEGORY_1;
+			bool debugDraw_;
+
 		protected:
 			bool updateNavigation();
 			void addEdgeToNavigation(graph::edge* e, bool removePassedWaypoints = false);

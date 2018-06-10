@@ -8,7 +8,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 1.5f;
+#define background_size_factor 0.5f;
 
 namespace tinytrain
 {
@@ -180,7 +180,7 @@ namespace tinytrain
 				auto car = std::make_unique<TCar>(gs_, false);
 				auto carsize = sf::Vector2f(tilesize * 0.3f, tilesize * 0.15f);
 				car->drawable_->setSize(carsize);
-				car->drawable_->setOrigin(carsize * 0.5f);
+				car->drawable_->setOrigin(carsize.x, carsize.y * 0.5f);
 				car->updateCollisionShape();
 
 				auto c = car->addNewComponent<components::TRoadNavComponent>(&level->road_network_, gs_->getCollisionManager());
@@ -317,7 +317,7 @@ namespace tinytrain
 
 		// every pixel is an area of the size of a (simple) street
 		const auto size = map.getSize();
-		const int tilesize = road_texture_width_ * background_size_factor;
+		const float tilesize = road_texture_width_ * background_size_factor;
 
 		sf::IntRect r4 = texture_atlas_->getArea("road-4way");
 		// road 3way, not connected dir_prevTile_out defines the name, default from texture: 'e'
@@ -610,7 +610,7 @@ namespace tinytrain
 					std::reverse(edge_info2.waypoints.begin(), edge_info2.waypoints.end());
 					
 					p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(start, size.x);
-					sf::IntRect r(p.first*tilesize, p.second*tilesize, tilesize, tilesize);
+					sf::FloatRect r(p.first*tilesize, p.second*tilesize, tilesize, tilesize);
 					level->road_network_.road_graph.addNode(start, r);
 
 					p = tgf::math::MathHelper2D::getArrayCoordsFromIndex(end, size.x);
@@ -738,7 +738,7 @@ namespace tinytrain
 		// N>S
 		connection_table[NORTH][SOUTH].waypoints.emplace_back(tilesize / 3.0f, 0.0f);
 		connection_table[NORTH][SOUTH].waypoints.emplace_back(tilesize / 3.0f, tilesize);
-		
+
 		// N>E
 		//	circle center (64,0) - radius 1/3
 		//	10 steps for waypoint generation 180-270°
@@ -754,8 +754,7 @@ namespace tinytrain
 			connection_table[NORTH][EAST].waypoints.emplace_back(pt.x, pt.y);
 		}
 		connection_table[NORTH][EAST].waypoints.emplace_back(tilesize, radius);
-		//
-		
+
 		// N>W
 		//	circle center 0,0 - radius 1/3
 		//	10 steps for waypoint generation 0-90°		
@@ -769,7 +768,7 @@ namespace tinytrain
 			connection_table[NORTH][WEST].waypoints.emplace_back(pt.x, pt.y);
 		}
 		connection_table[NORTH][WEST].waypoints.emplace_back(0.0f, radius);
-		
+
 		// create rest of table entries by rotating the N > X variant counter-clock wise
 		// reserve space for copiing N>W to W>S to S>E to E>N		// 0 N, 1 E, 2 S, 3 W
 		connection_table[WEST][SOUTH].waypoints.resize(connection_table[NORTH][WEST].waypoints.size());
@@ -811,8 +810,8 @@ namespace tinytrain
 		// save distances
 		connection_table[NORTH][SOUTH].distance = tilesize;
 		connection_table[SOUTH][NORTH].distance = tilesize;
-		connection_table[EAST][WEST].distance	= tilesize;
-		connection_table[WEST][EAST].distance	= tilesize;
+		connection_table[EAST][WEST].distance = tilesize;
+		connection_table[WEST][EAST].distance = tilesize;
 
 		connection_table[NORTH][EAST].distance = dist_long_curve;
 		connection_table[EAST][SOUTH].distance = dist_long_curve;
@@ -825,6 +824,75 @@ namespace tinytrain
 		connection_table[WEST][SOUTH].distance = dist_short_curve;
 
 
+		/*height: 0.6f should be enough, may be worth going higher and getting blocked by others going straight*/
+		const float lane_width = tilesize * 0.2f;
+		//const float frac = 1.0f / 15.0f;
+		const float left_lane_x = tilesize / 3.0f - lane_width * 0.5f;
+		const float right_lane_x = 2.0f *	tilesize / 3.0f - lane_width * 0.5f;
+
+		// create stopping infos for non blocking stuff (turn left)
+		connection_table[NORTH][EAST].stopinfo.stop_at_dist = 0.0f; // 0.2f * dist_long_curve;
+		connection_table[NORTH][EAST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.45f * tilesize, lane_width, 0.55f * tilesize);
+
+		connection_table[SOUTH][WEST].stopinfo.stop_at_dist = 0.0f; // 0.2f * dist_long_curve;
+		connection_table[SOUTH][WEST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.55f * tilesize);
+
+		// create stopping infos for blocked stuff
+		connection_table[EAST][NORTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
+		connection_table[EAST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.0f, lane_width, 0.9f * tilesize);
+		
+		connection_table[WEST][SOUTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;		
+		connection_table[WEST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, tilesize / 6.0f, lane_width, 0.8f * tilesize);
+		
+		connection_table[EAST][WEST].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
+		connection_table[EAST][WEST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, -tilesize / 5.0f, lane_width, 0.63f * tilesize);
+		connection_table[EAST][WEST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.2f*tilesize, lane_width, 0.77f * tilesize);
+
+		connection_table[WEST][EAST].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
+		connection_table[WEST][EAST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.8f * tilesize);
+		connection_table[WEST][EAST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.55f*tilesize, lane_width, 0.67f * tilesize);
+
+		connection_table[EAST][SOUTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
+		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.2f*tilesize, lane_width, 0.77f * tilesize);
+		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.95f * tilesize);
+
+		connection_table[WEST][NORTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
+		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.8f * tilesize);
+		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.05f * tilesize, lane_width, 0.95f * tilesize);
+
+		// rotate stopinfo once
+		for (int from = 0; from < direction::DIR_COUNT; from++)
+		{
+			for (int to = 0; to < direction::DIR_COUNT; to++)
+			{
+				//get stopping info from rotated both by 90 degree
+				int from_normal = (from - 1) % direction::DIR_COUNT;
+				int to_normal = (to - 1) % direction::DIR_COUNT;
+				if (from_normal < 0)
+					from_normal += direction::DIR_COUNT;
+				if (to_normal < 0)
+					to_normal += direction::DIR_COUNT;
+				connection_table[from][to].rotatedstopinfo = connection_table[from_normal][to_normal].stopinfo;
+				for (auto& r : connection_table[from][to].rotatedstopinfo.areas_to_check_before_continue)
+				{
+					//auto temp = r.top;
+					//r.top = r.left;
+					//r.left = tilesize - temp;
+					//
+					//temp = r.width;
+					//r.width = -r.height;
+					//r.height = temp;
+
+					auto temp = r.left;
+					r.left = r.top;
+					r.top = temp;
+
+					temp = r.width;
+					r.width = r.height;
+					r.height = temp;
+				}
+			}
+		}
 	}
 
 	// returns the amount of neighbors with the same color as the input pixel.

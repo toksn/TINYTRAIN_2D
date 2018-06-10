@@ -25,7 +25,9 @@ namespace tinytrain
 			// should probably be a [0,1] value in relation to the waypoints list
 			float stop_at_dist;
 			std::vector<sf::FloatRect> areas_to_check_before_continue;
-		} stopinfo;
+		};
+		stopping_info stopinfo;
+		stopping_info rotatedstopinfo;
 	};
 	struct edge_info : road_connection_info
 	{
@@ -37,7 +39,7 @@ namespace tinytrain
 		float distance;
 	};
 
-	using graph = tgf::graph::node_edgelist_graph<int, float, sf::IntRect, edge_info>;
+	using graph = tgf::graph::node_edgelist_graph<int, float, sf::FloatRect, edge_info>;
 	struct road_network
 	{
 		graph road_graph;

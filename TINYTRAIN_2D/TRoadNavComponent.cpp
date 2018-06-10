@@ -8,8 +8,9 @@ namespace tinytrain
 		{
 			roads_ = network;
 			collision_ = collision;
-			speed_ = 150.0f;
+			speed_ = 1.0f;
 			running_ = true;
+			debugDraw_ = true;
 		}
 		TRoadNavComponent::~TRoadNavComponent()
 		{
@@ -17,6 +18,25 @@ namespace tinytrain
 
 		void TRoadNavComponent::draw(sf::RenderTarget * target)
 		{
+			if (debugDraw_)
+			{
+				if (stopper_)
+				{
+					for (auto& a : stopper_->areas_to_check_before_continue)
+					{
+						sf::VertexArray v;
+						v.setPrimitiveType(sf::PrimitiveType::LineStrip);
+						v.resize(5);
+						v[0].position.x = v[3].position.x = v[4].position.x = a.left;
+						v[1].position.x = v[2].position.x = a.left + a.width;
+
+						v[0].position.y = v[1].position.y = v[4].position.y = a.top;
+						v[2].position.y = v[3].position.y = a.top + a.height;
+						v[0].color = v[1].color = v[2].color = v[3].color = v[4].color = sf::Color::Cyan;
+						target->draw(v);
+					}
+				}
+			}
 		}
 
 		void TRoadNavComponent::update(float deltaTime)
@@ -25,14 +45,6 @@ namespace tinytrain
 			
 			if (state_ != NavState::STOPPED_ && speed_ > 0.0f)
 			{
-				distance_ += deltaTime*speed_;
-
-				// change for stopping points
-				if (stopper_ && distance_ >= stopper_->stop_at_dist)
-				{
-					state_ = NavState::RUNNING_WAIT_FOR_CLEAR_ROAD;
-				}
-
 				if (state_ == NavState::RUNNING_WAIT_FOR_CLEAR_ROAD)
 				{
 					if (stopper_ && collision_)
@@ -70,8 +82,21 @@ namespace tinytrain
 					}
 				}
 
+				
+
 				if (state_ == NavState::RUNNING_)
 				{
+					distance_ += deltaTime*speed_;
+					// change for stopping points
+					if (stopper_ && distance_ >= stopper_->stop_at_dist)
+					{
+						if (distance_ - stopper_->stop_at_dist < 12.0f)
+						{
+							state_ = NavState::RUNNING_WAIT_FOR_CLEAR_ROAD;
+							return;
+						}
+					}
+
 					// max dist to travel on the current waypoints
 					float maxdist = waypoints_.getLength();
 
@@ -97,6 +122,11 @@ namespace tinytrain
 					}
 				}
 			}
+		}
+
+		TRoadNavComponent::NavState TRoadNavComponent::getState()
+		{
+			return state_;
 		}
 
 		bool TRoadNavComponent::updateNavigation()
@@ -142,8 +172,8 @@ namespace tinytrain
 					// find first edge that doesnt go directly back
 					do
 					{
-						e = edges.begin();
-						std::advance(e, rand() % edges.size());
+					e = edges.begin();
+					std::advance(e, rand() % edges.size());
 					} while (e->user_data_.out_slot == final_edge_->user_data_.in_slot);
 
 					addEdgeToNavigation(&*e, true);
@@ -154,7 +184,7 @@ namespace tinytrain
 		}
 
 		void TRoadNavComponent::addEdgeToNavigation(graph::edge * e, bool removePassedWaypoints)
-		{			
+		{
 			if (removePassedWaypoints)
 			{
 #if 0
@@ -202,11 +232,11 @@ namespace tinytrain
 						}
 					}
 				}
-				
+
 
 				// set new final edge
 				final_edge_ = e;
-				
+
 				// add waypoints of the new edge
 				waypoints_.poly_.insert(waypoints_.poly_.end(), final_edge_->user_data_.waypoints.begin(), final_edge_->user_data_.waypoints.end());
 			}
@@ -216,8 +246,9 @@ namespace tinytrain
 
 		void TRoadNavComponent::addNodeConnectionWaypoints(int node_id, direction from, direction to)
 		{
-			sf::Vector2f curpos(roads_->road_graph.nodes_[node_id].user_data_.left, roads_->road_graph.nodes_[node_id].user_data_.top);
-			
+			auto& node = roads_->road_graph.nodes_[node_id];
+			sf::Vector2f curpos(node.user_data_.left, node.user_data_.top);
+
 			//sf::Vector2f curpos = final_edge_->user_data_.waypoints.back();
 			//curpos.x -= roads_->crossing_connection_table[from][to].waypoints.front().x;
 			//curpos.y -= roads_->crossing_connection_table[from][to].waypoints.front().y;
@@ -225,16 +256,36 @@ namespace tinytrain
 			for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
 				waypoints_.poly_.emplace_back(pt.x + curpos.x, pt.y + curpos.y);
 
-			// when the crossing waypoints (from;to) has areas to check, save that info
-			if (roads_->crossing_connection_table[from][to].stopinfo.areas_to_check_before_continue.size() > 0)
+			// when the crossing waypoints (from;to) has areas to check, save that info				
+			if (node.edges_.size() > 2)
 			{
-				stopper_ = std::make_unique<road_connection_info::stopping_info>(roads_->crossing_connection_table[from][to].stopinfo);
-				for (auto& rect : stopper_->areas_to_check_before_continue)
+				bool rotate = false;
+				if (node.edges_.size() == 3)
 				{
-					rect.top += curpos.y;
-					rect.left += curpos.x;
+					int northSouth_dir = 0;
+					for (auto& e : node.edges_)
+						if (e.user_data_.out_slot % 2 == 0)
+							northSouth_dir++;
+					rotate = northSouth_dir < 2;
+				}
+
+				if (rotate)
+					if(roads_->crossing_connection_table[from][to].rotatedstopinfo.areas_to_check_before_continue.size() > 0)
+						stopper_ = std::make_unique<road_connection_info::stopping_info>(roads_->crossing_connection_table[from][to].rotatedstopinfo);
+				//else
+				//	if (roads_->crossing_connection_table[from][to].stopinfo.areas_to_check_before_continue.size() > 0)
+				//		stopper_ = std::make_unique<road_connection_info::stopping_info>(roads_->crossing_connection_table[from][to].stopinfo);
+
+				if (stopper_)
+				{
+					for (auto& rect : stopper_->areas_to_check_before_continue)
+					{
+						rect.top += curpos.y;
+						rect.left += curpos.x;
+					}
 				}
 			}
+			
 		}
 
 		void TRoadNavComponent::clearPassedWaypoints()
