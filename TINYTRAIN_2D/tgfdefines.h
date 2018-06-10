@@ -12,6 +12,7 @@ enum direction
 	DIR_COUNT	// 4
 };
 
+
 constexpr float RAD_TO_DEG = 180.0f / M_PI;
 constexpr float DEG_TO_RAD = M_PI / 180.0f;
 

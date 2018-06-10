@@ -8,7 +8,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 0.5f;
+#define background_size_factor 1.5f;
 
 namespace tinytrain
 {
@@ -183,7 +183,7 @@ namespace tinytrain
 				car->drawable_->setOrigin(carsize * 0.5f);
 				car->updateCollisionShape();
 
-				auto c = car->addNewComponent<components::TRoadNavComponent>(&level->road_network_);
+				auto c = car->addNewComponent<components::TRoadNavComponent>(&level->road_network_, gs_->getCollisionManager());
 				c->speed_ = 100.0f * background_size_factor;
 				car->navi_ = c;
 				car->vmax_ = 100.0f * background_size_factor;
@@ -754,6 +754,7 @@ namespace tinytrain
 			connection_table[NORTH][EAST].waypoints.emplace_back(pt.x, pt.y);
 		}
 		connection_table[NORTH][EAST].waypoints.emplace_back(tilesize, radius);
+		//
 		
 		// N>W
 		//	circle center 0,0 - radius 1/3

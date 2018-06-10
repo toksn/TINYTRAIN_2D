@@ -4,9 +4,10 @@ namespace tinytrain
 {
 	namespace components
 	{
-		TRoadNavComponent::TRoadNavComponent(road_network * network)
+		TRoadNavComponent::TRoadNavComponent(road_network * network, tgf::collision::CollisionManager * collision)
 		{
 			roads_ = network;
+			collision_ = collision;
 			speed_ = 150.0f;
 			running_ = true;
 		}
@@ -22,32 +23,78 @@ namespace tinytrain
 		{
 			bool getinfo = true;
 			
-			if (running_)
+			if (state_ != NavState::STOPPED_ && speed_ > 0.0f)
 			{
 				distance_ += deltaTime*speed_;
 
-				// max dist to travel on the current waypoints
-				float maxdist = waypoints_.getLength();
-
-				if (distance_ > maxdist)
+				// change for stopping points
+				if (stopper_ && distance_ >= stopper_->stop_at_dist)
 				{
-					getinfo = updateNavigation();
-				}
-				else if (distance_ < 0.0f)
-				{
-					// todo: event of invalid distance
-					distance_ = 0.0f;
+					state_ = NavState::RUNNING_WAIT_FOR_CLEAR_ROAD;
 				}
 
-				if (getinfo)
+				if (state_ == NavState::RUNNING_WAIT_FOR_CLEAR_ROAD)
 				{
-					float time = distance_ / maxdist;
+					if (stopper_ && collision_)
+					{
+						bool roads_clear = true;
+						// check all stopper_->areas_to_check_before_continue to be empty
+						for (auto& rect : stopper_->areas_to_check_before_continue)
+						{
+							c2AABB r;
+							r.min = { rect.left, rect.top };
+							r.max = { rect.left + rect.width, rect.top + rect.height };
+							tgf::collision::c2Shape s;
+							s.shape_ = &r;
+							s.type_ = C2_TYPE::C2_AABB;
+							unsigned int mask = 0;
+							mask |= tgf::collision::CollisionManager::CollisionCategory::DYNAMIC_CATEGORY_1;
+							if (collision_->checkShapeForCollisions(s, mask))
+							{
+								roads_clear = false;
+								break;
+							}
+						}
 
-					int hintindex = -1;
-					float angle = waypoints_.getDirectionAngleAtTime(time, hintindex, false);
-					sf::Vector2f pos = waypoints_.getLocationAtTime(time, hintindex);
-					owner_->setPosition(pos);
-					owner_->setRotation(angle);
+						if (roads_clear)
+						{
+							state_ = NavState::RUNNING_;
+							stopper_.reset(nullptr);
+						}
+							
+					}
+					else
+					{
+						state_ = NavState::RUNNING_;
+						stopper_.reset(nullptr);
+					}
+				}
+
+				if (state_ == NavState::RUNNING_)
+				{
+					// max dist to travel on the current waypoints
+					float maxdist = waypoints_.getLength();
+
+					if (distance_ > maxdist)
+					{
+						getinfo = updateNavigation();
+					}
+					else if (distance_ < 0.0f)
+					{
+						// todo: event of invalid distance
+						distance_ = 0.0f;
+					}
+
+					if (getinfo)
+					{
+						float time = distance_ / maxdist;
+
+						int hintindex = -1;
+						float angle = waypoints_.getDirectionAngleAtTime(time, hintindex, false);
+						sf::Vector2f pos = waypoints_.getLocationAtTime(time, hintindex);
+						owner_->setPosition(pos);
+						owner_->setRotation(angle);
+					}
 				}
 			}
 		}
@@ -57,6 +104,7 @@ namespace tinytrain
 			bool rc = false;
 			if (final_edge_ == nullptr)
 			{
+				// TODO: only use deadends? or check for existing car at that position, move some distance
 				// randomly choose one to start from
 				if (roads_ != nullptr && roads_->road_graph.nodes_.size())
 				{
@@ -176,6 +224,17 @@ namespace tinytrain
 
 			for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
 				waypoints_.poly_.emplace_back(pt.x + curpos.x, pt.y + curpos.y);
+
+			// when the crossing waypoints (from;to) has areas to check, save that info
+			if (roads_->crossing_connection_table[from][to].stopinfo.areas_to_check_before_continue.size() > 0)
+			{
+				stopper_ = std::make_unique<road_connection_info::stopping_info>(roads_->crossing_connection_table[from][to].stopinfo);
+				for (auto& rect : stopper_->areas_to_check_before_continue)
+				{
+					rect.top += curpos.y;
+					rect.left += curpos.x;
+				}
+			}
 		}
 
 		void TRoadNavComponent::clearPassedWaypoints()

@@ -24,7 +24,7 @@ namespace tinytrain
 		{
 			// should probably be a [0,1] value in relation to the waypoints list
 			float stop_at_dist;
-			std::vector<sf::IntRect> areas_to_check_before_continue;
+			std::vector<sf::FloatRect> areas_to_check_before_continue;
 		} stopinfo;
 	};
 	struct edge_info : road_connection_info
