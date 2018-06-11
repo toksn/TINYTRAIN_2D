@@ -80,7 +80,11 @@ namespace tinytrain
 	{
 		TTrain* train = dynamic_cast<TTrain*>(other);
 				
+#if 0		// godmode
+		if (false)
+#else
 		if (train && gs_)
+#endif
 		{
 			// train hit an obstacle
 			if (winningTrigger_)
