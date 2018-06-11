@@ -8,7 +8,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 0.5f;
+#define background_size_factor 1.0f;
 
 namespace tinytrain
 {
@@ -165,9 +165,9 @@ namespace tinytrain
 			level->train_ = std::make_unique<TTrain>(gs_);
 			level->train_->play();
 
-			level->railtrack_->append(sf::Vector2f(200.0f, 50.f));
-			level->railtrack_->append(sf::Vector2f(200.0f, 100.f));
-			level->railtrack_->append(sf::Vector2f(250.0f, 140.f));
+			level->railtrack_->append(sf::Vector2f(-200.0f, -50.f));
+			level->railtrack_->append(sf::Vector2f(-100.0f, -140.f));
+			level->railtrack_->append(sf::Vector2f(180.0f, -100.f));
 			level->railtrack_->addLastControlPointToHistory();
 			level->railtrack_->addTrain(level->train_.get());
 			level->train_->initWagons(15);
@@ -831,10 +831,10 @@ namespace tinytrain
 		const float right_lane_x = 2.0f *	tilesize / 3.0f - lane_width * 0.5f;
 
 		// create stopping infos for non blocking stuff (turn left)
-		connection_table[NORTH][EAST].stopinfo.stop_at_dist = 0.0f; // 0.2f * dist_long_curve;
+		connection_table[NORTH][EAST].stopinfo.stop_at_dist = 0.1f * dist_long_curve;
 		connection_table[NORTH][EAST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.45f * tilesize, lane_width, 0.55f * tilesize);
 
-		connection_table[SOUTH][WEST].stopinfo.stop_at_dist = 0.0f; // 0.2f * dist_long_curve;
+		connection_table[SOUTH][WEST].stopinfo.stop_at_dist = 0.1f * dist_long_curve;
 		connection_table[SOUTH][WEST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.55f * tilesize);
 
 		// create stopping infos for blocked stuff
