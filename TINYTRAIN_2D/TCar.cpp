@@ -56,8 +56,10 @@ namespace tinytrain
 			tgf::collision::c2Shape s;
 
 			sf::Vector2f size = drawable_->getSize();
+			sf::Vector2f origin = drawable_->getOrigin();
 			size.y *= 0.4f;
-			size.x *= 0.6f;
+			size.x *= 1.3f;
+			size.x -= origin.x;
 
 #if 0
 			//AABB checking	 
