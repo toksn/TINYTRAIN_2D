@@ -134,8 +134,9 @@ namespace tinytrain
 			bool rc = false;
 			if (final_edge_ == nullptr)
 			{
+				
 				// TODO: only use deadends? or check for existing car at that position, move some distance
-				// randomly choose one to start from
+				// respawn: randomly choose one to start from
 				if (roads_ != nullptr && roads_->road_graph.nodes_.size())
 				{
 					auto n = roads_->road_graph.nodes_.begin();
@@ -270,11 +271,16 @@ namespace tinytrain
 				}
 
 				if (rotate)
-					if(roads_->crossing_connection_table[from][to].rotatedstopinfo.areas_to_check_before_continue.size() > 0)
+				{
+					if (roads_->crossing_connection_table[from][to].rotatedstopinfo.areas_to_check_before_continue.size() > 0)
 						stopper_ = std::make_unique<road_connection_info::stopping_info>(roads_->crossing_connection_table[from][to].rotatedstopinfo);
-				//else
-				//	if (roads_->crossing_connection_table[from][to].stopinfo.areas_to_check_before_continue.size() > 0)
-				//		stopper_ = std::make_unique<road_connection_info::stopping_info>(roads_->crossing_connection_table[from][to].stopinfo);
+				}
+				else
+				{
+					if (roads_->crossing_connection_table[from][to].stopinfo.areas_to_check_before_continue.size() > 0)
+						stopper_ = std::make_unique<road_connection_info::stopping_info>(roads_->crossing_connection_table[from][to].stopinfo);
+				}
+					
 
 				if (stopper_)
 				{

@@ -740,7 +740,7 @@ namespace tinytrain
 		connection_table[NORTH][SOUTH].waypoints.emplace_back(tilesize / 3.0f, tilesize);
 
 		// N>E
-		//	circle center (64,0) - radius 1/3
+		//	circle center (64,0) - radius 2/3
 		//	10 steps for waypoint generation 180-270°
 		float radius = 2.0f / 3.0f * tilesize;
 		float angle = 180.0f * DEG_TO_RAD;
@@ -831,10 +831,10 @@ namespace tinytrain
 		const float right_lane_x = 2.0f *	tilesize / 3.0f - lane_width * 0.5f;
 
 		// create stopping infos for non blocking stuff (turn left)
-		connection_table[NORTH][EAST].stopinfo.stop_at_dist = 0.1f * dist_long_curve;
+		connection_table[NORTH][EAST].stopinfo.stop_at_dist = 0.0f * dist_long_curve;
 		connection_table[NORTH][EAST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.45f * tilesize, lane_width, 0.55f * tilesize);
 
-		connection_table[SOUTH][WEST].stopinfo.stop_at_dist = 0.1f * dist_long_curve;
+		connection_table[SOUTH][WEST].stopinfo.stop_at_dist = 0.0f * dist_long_curve;
 		connection_table[SOUTH][WEST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.55f * tilesize);
 
 		// create stopping infos for blocked stuff
@@ -855,10 +855,12 @@ namespace tinytrain
 		connection_table[EAST][SOUTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
 		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.2f*tilesize, lane_width, 0.77f * tilesize);
 		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.95f * tilesize);
+		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(-0.1f*tilesize, right_lane_x, tilesize / 3.0f, lane_width);
 
 		connection_table[WEST][NORTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
 		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.8f * tilesize);
 		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.05f * tilesize, lane_width, 0.95f * tilesize);
+//		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x+lane_width, tilesize/6.0f, tilesize - right_lane_x - lane_width, lane_width);
 
 		// rotate stopinfo once
 		for (int from = 0; from < direction::DIR_COUNT; from++)
@@ -884,11 +886,11 @@ namespace tinytrain
 					//r.height = temp;
 
 					auto temp = r.left;
-					r.left = r.top;
+					r.left = tilesize - r.top;
 					r.top = temp;
 
 					temp = r.width;
-					r.width = r.height;
+					r.width = -r.height;
 					r.height = temp;
 				}
 			}
