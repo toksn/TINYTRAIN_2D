@@ -63,6 +63,7 @@ namespace tinytrain
 			// stopping points and collision manager
 			std::unique_ptr<road_connection_info::stopping_info> stopper_;
 			tgf::collision::CollisionManager* collision_;
+			sf::VertexArray debugCrossingWaypoints_;
 
 			NavState state_;
 			

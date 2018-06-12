@@ -58,7 +58,7 @@ namespace tinytrain
 			sf::Vector2f size = drawable_->getSize();
 			sf::Vector2f origin = drawable_->getOrigin();
 			size.y *= 0.4f;
-			size.x *= 1.3f;
+			size.x *= 1.1f;
 			size.x -= origin.x;
 
 #if 0

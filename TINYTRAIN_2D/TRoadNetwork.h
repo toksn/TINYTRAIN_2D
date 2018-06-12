@@ -41,6 +41,7 @@ namespace tinytrain
 			ICrossingUser* user;
 			direction from;
 			direction to;
+			bool fromQuadReleased = false;
 
 			crossing_entry() {};
 
@@ -49,13 +50,16 @@ namespace tinytrain
 				user = u;
 				from = f;
 				to = t;
+				fromQuadReleased = false;
 			}
 		};
 
-		struct crossing_users
+		struct crossing_info
 		{
 			std::vector<crossing_entry> waiting;
 			std::vector<crossing_entry> running;
+
+			bool crossingQuadrants_inUse[direction::DIR_COUNT] = { false };
 		};
 
 	public:
@@ -66,7 +70,8 @@ namespace tinytrain
 
 		void applyToCrossing(ICrossingUser* user, int node_id, direction from, direction to);
 		void removeFromCrossing(ICrossingUser* user, int node_id);
+		void updateCrossingProgression(ICrossingUser* user, int node_id, float progression);
 	private:
-		std::map<int, crossing_users> crossing_usage;
+		std::map<int, crossing_info> crossing_usage;
 	};
 }

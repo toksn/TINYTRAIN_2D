@@ -13,6 +13,7 @@ namespace tinytrain
 			debugDraw_ = true;
 
 			cur_node_startdist_ = -1.0f;
+			debugCrossingWaypoints_.setPrimitiveType(sf::PrimitiveType::LinesStrip);
 		}
 		TRoadNavComponent::~TRoadNavComponent()
 		{
@@ -22,6 +23,7 @@ namespace tinytrain
 		{
 			if (debugDraw_)
 			{
+#if USE_STOPPING_POINTS
 				if (stopper_)
 				{
 					for (auto& a : stopper_->areas_to_check_before_continue)
@@ -38,6 +40,10 @@ namespace tinytrain
 						target->draw(v);
 					}
 				}
+#else
+				if(state_ == NavState::RUNNING_WAIT_FOR_CLEAR_ROAD)
+					target->draw(debugCrossingWaypoints_);
+#endif
 			}
 		}
 
@@ -109,8 +115,8 @@ namespace tinytrain
 							state_ = NavState::RUNNING_;
 							roads_->removeFromCrossing(this, cur_node_id_);
 						}
-						//else
-						//	roads_->updateProgression(distance_ / cur_node_dist_);
+						else if(cur_node_dist_ > 0.0f)
+							roads_->updateCrossingProgression(this, cur_node_id_, distance_ / cur_node_dist_);
 					}
 					else if (state_ == NavState::RUNNING_)
 					{
@@ -331,6 +337,11 @@ namespace tinytrain
 					}
 				}
 			}
+#else
+			debugCrossingWaypoints_.resize(roads_->crossing_connection_table[from][to].waypoints.size());
+			int i = 0;
+			for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
+				debugCrossingWaypoints_[i++].position = { pt.x + curpos.x, pt.y + curpos.y };
 #endif
 			
 		}
