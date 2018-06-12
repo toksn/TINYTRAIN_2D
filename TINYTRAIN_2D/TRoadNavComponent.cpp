@@ -90,10 +90,11 @@ namespace tinytrain
 					// change for stopping points
 					if (stopper_ && distance_ >= stopper_->stop_at_dist)
 					{
+						distance_ = stopper_->stop_at_dist;
 						if (distance_ - stopper_->stop_at_dist < 12.0f)
 						{
 							state_ = NavState::RUNNING_WAIT_FOR_CLEAR_ROAD;
-							return;
+							//return;
 						}
 					}
 
