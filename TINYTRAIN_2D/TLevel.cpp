@@ -75,6 +75,8 @@ namespace tinytrain
 		if (railtrack_)
 			railtrack_->update(deltaTime);
 
+		road_network_.update(deltaTime);
+
 		for (int i = obstacles_.size()-1; i >= 0; i--)
 		{
 			auto o = obstacles_[i].get();

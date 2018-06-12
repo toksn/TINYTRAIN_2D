@@ -11,6 +11,8 @@ namespace tinytrain
 			speed_ = 1.0f;
 			running_ = true;
 			debugDraw_ = true;
+
+			cur_node_startdist_ = -1.0f;
 		}
 		TRoadNavComponent::~TRoadNavComponent()
 		{
@@ -45,6 +47,7 @@ namespace tinytrain
 			
 			if (state_ != NavState::STOPPED_ && speed_ > 0.0f)
 			{
+#if USE_STOPPING_POINTS
 				if (state_ == NavState::RUNNING_WAIT_FOR_CLEAR_ROAD)
 				{
 					if (stopper_ && collision_)
@@ -81,12 +84,13 @@ namespace tinytrain
 						stopper_.reset(nullptr);
 					}
 				}
-
-				
-
-				if (state_ == NavState::RUNNING_)
+#endif				
+				if( state_ != NavState::RUNNING_WAIT_FOR_CLEAR_ROAD )
+				//if (state_ == NavState::RUNNING_ || state_ == NavState::RUNNING_ON_CROSSING)
 				{
 					distance_ += deltaTime*speed_;
+
+#if USE_STOPPING_POINTS
 					// change for stopping points
 					if (stopper_ && distance_ >= stopper_->stop_at_dist)
 					{
@@ -97,6 +101,35 @@ namespace tinytrain
 							//return;
 						}
 					}
+#else
+					if (state_ == NavState::RUNNING_ON_CROSSING)
+					{
+						if (distance_ >= cur_node_dist_)
+						{
+							state_ = NavState::RUNNING_;
+							roads_->removeFromCrossing(this, cur_node_id_);
+						}
+						//else
+						//	roads_->updateProgression(distance_ / cur_node_dist_);
+					}
+					else if (state_ == NavState::RUNNING_)
+					{
+						if (cur_node_startdist_ >= 0.0f && distance_ >= cur_node_startdist_)
+						{
+							
+							cur_node_startdist_ = -1.0f;
+							
+							if (roads_->road_graph.nodes_[cur_node_id_].edges_.size() > 2)
+							{
+								distance_ = cur_node_startdist_;
+								state_ = NavState::RUNNING_WAIT_FOR_CLEAR_ROAD;
+								roads_->applyToCrossing(this, cur_node_id_, cur_node_from, cur_node_to);
+							}
+							//else
+							//	state_ = NavState::RUNNING_ON_CROSSING;
+						}
+					}
+#endif
 
 					// max dist to travel on the current waypoints
 					float maxdist = waypoints_.getLength();
@@ -255,9 +288,15 @@ namespace tinytrain
 			//curpos.x -= roads_->crossing_connection_table[from][to].waypoints.front().x;
 			//curpos.y -= roads_->crossing_connection_table[from][to].waypoints.front().y;
 
+			cur_node_id_ = node_id;
+			cur_node_startdist_ = waypoints_.getLength();
+			cur_node_from = from;
+			cur_node_to = to;
+
 			for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
 				waypoints_.poly_.emplace_back(pt.x + curpos.x, pt.y + curpos.y);
 
+#if USE_STOPPING_POINTS
 			// when the crossing waypoints (from;to) has areas to check, save that info				
 			if (node.edges_.size() > 2)
 			{
@@ -292,6 +331,7 @@ namespace tinytrain
 					}
 				}
 			}
+#endif
 			
 		}
 
@@ -312,6 +352,12 @@ namespace tinytrain
 					distance_ = distance_ - len;
 				}
 			}
+		}
+
+		void TRoadNavComponent::startCrossing(int node_id, direction from, direction to)
+		{
+			state_ = NavState::RUNNING_ON_CROSSING;
+			cur_node_dist_ = roads_->crossing_connection_table[from][to].distance;
 		}
 	}
 }

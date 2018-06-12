@@ -3,7 +3,7 @@
 #include "Entity.h"
 #include "TRailTrack.h"
 #include "CityGenerator.h"
-
+#include "TRoadNetwork.h"
 #include "graph_tgf.h"
 
 namespace tgf
@@ -16,36 +16,6 @@ namespace tgf
 
 namespace tinytrain
 {
-	struct road_connection_info
-	{
-		// absolute waypoints at the moment
-		std::vector<sf::Vector2f> waypoints;
-		struct stopping_info
-		{
-			// should probably be a [0,1] value in relation to the waypoints list
-			float stop_at_dist;
-			std::vector<sf::FloatRect> areas_to_check_before_continue;
-		};
-		stopping_info stopinfo;
-		stopping_info rotatedstopinfo;
-	};
-	struct edge_info : road_connection_info
-	{
-		direction out_slot;		// slot on the start crossing/node
-		direction in_slot;		// slot on the destination crossing/node
-	};
-	struct inner_cross_connection_info : road_connection_info
-	{
-		float distance;
-	};
-
-	using graph = tgf::graph::node_edgelist_graph<int, float, sf::FloatRect, edge_info>;
-	struct road_network
-	{
-		graph road_graph;
-		inner_cross_connection_info crossing_connection_table[direction::DIR_COUNT][direction::DIR_COUNT];
-	};
-
 	class TTrain;
 	class TObstacle;
 	class GameState_Running;	

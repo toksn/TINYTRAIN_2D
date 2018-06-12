@@ -9,7 +9,7 @@ namespace tinytrain
 	namespace components
 	{
 		
-		class TRoadNavComponent : public tgf::Component
+		class TRoadNavComponent : public tgf::Component, public ICrossingUser
 		{
 		public:
 
@@ -21,6 +21,7 @@ namespace tinytrain
 			enum class NavState
 			{
 				RUNNING_,
+				RUNNING_ON_CROSSING,
 				RUNNING_WAIT_FOR_CLEAR_ROAD,
 				STOPPED_
 			};
@@ -53,6 +54,12 @@ namespace tinytrain
 			graph::edge* final_edge_;
 			tgf::math::PolyLine waypoints_;
 
+			// current node travelling
+			int cur_node_id_;
+			float cur_node_dist_;		// used as start and end dist for the crossing
+			float cur_node_startdist_;	// used as start dist for the next crossing
+			direction cur_node_from; direction cur_node_to;
+
 			// stopping points and collision manager
 			std::unique_ptr<road_connection_info::stopping_info> stopper_;
 			tgf::collision::CollisionManager* collision_;
@@ -61,6 +68,9 @@ namespace tinytrain
 			
 			//float time_ = 0.0f;
 			bool running_;
+
+			// Inherited via ICrossingUser
+			virtual void startCrossing(int node_id, direction from, direction to) override;
 		};
 	}
 }

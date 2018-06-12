@@ -164,6 +164,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="TPlayer.cpp" />
     <ClCompile Include="TRailTrack.cpp" />
     <ClCompile Include="TRoadNavComponent.cpp" />
+    <ClCompile Include="TRoadNetwork.cpp" />
     <ClCompile Include="TSingleLineInputComponent.cpp" />
     <ClCompile Include="TTrain.cpp" />
     <ClCompile Include="TTrainCollisionManager.cpp" />
@@ -201,6 +202,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="TPlayer.h" />
     <ClInclude Include="TRailTrack.h" />
     <ClInclude Include="TRoadNavComponent.h" />
+    <ClInclude Include="TRoadNetwork.h" />
     <ClInclude Include="TSingleLineInputComponent.h" />
     <ClInclude Include="TTrain.h" />
     <ClInclude Include="TTrainCollisionManager.h" />
