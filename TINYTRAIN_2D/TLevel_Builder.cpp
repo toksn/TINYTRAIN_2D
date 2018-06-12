@@ -832,14 +832,16 @@ namespace tinytrain
 
 		// create stopping infos for non blocking stuff (turn left)
 		connection_table[NORTH][EAST].stopinfo.stop_at_dist = 0.0f * dist_long_curve;
-		connection_table[NORTH][EAST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.45f * tilesize, lane_width, 0.55f * tilesize);
+		connection_table[NORTH][EAST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.45f * tilesize, lane_width, 0.5f * tilesize);
+		connection_table[NORTH][SOUTH].stopinfo.stop_at_dist = 0.0f * dist_long_curve;
+		connection_table[NORTH][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.45f * tilesize, lane_width, 0.5f * tilesize);
 
 		connection_table[SOUTH][WEST].stopinfo.stop_at_dist = 0.0f * dist_long_curve;
-		connection_table[SOUTH][WEST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.55f * tilesize);
+		connection_table[SOUTH][WEST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.05f, lane_width, 0.5f * tilesize);
 
 		// create stopping infos for blocked stuff
 		connection_table[EAST][NORTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
-		connection_table[EAST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.0f, lane_width, 0.9f * tilesize);
+		connection_table[EAST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.05f, lane_width, 0.9f * tilesize);
 		
 		connection_table[WEST][SOUTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;		
 		connection_table[WEST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, tilesize / 6.0f, lane_width, 0.8f * tilesize);
@@ -849,16 +851,16 @@ namespace tinytrain
 		connection_table[EAST][WEST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.2f*tilesize, lane_width, 0.77f * tilesize);
 
 		connection_table[WEST][EAST].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
-		connection_table[WEST][EAST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.8f * tilesize);
-		connection_table[WEST][EAST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.55f*tilesize, lane_width, 0.67f * tilesize);
+		connection_table[WEST][EAST].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.05f, lane_width, 0.8f * tilesize);
+		connection_table[WEST][EAST].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.55f*tilesize, lane_width, 0.4f * tilesize);
 
 		connection_table[EAST][SOUTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
 		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.2f*tilesize, lane_width, 0.77f * tilesize);
-		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.95f * tilesize);
+		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.05f, lane_width, 0.95f * tilesize);
 		connection_table[EAST][SOUTH].stopinfo.areas_to_check_before_continue.emplace_back(-0.1f*tilesize, right_lane_x, tilesize / 3.0f, lane_width);
 
 		connection_table[WEST][NORTH].stopinfo.stop_at_dist = 0.0f; //0.02f * dist_short_curve;
-		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.0f, lane_width, 0.8f * tilesize);
+		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(left_lane_x, 0.05f, lane_width, 0.8f * tilesize);
 		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x, 0.05f * tilesize, lane_width, 0.95f * tilesize);
 //		connection_table[WEST][NORTH].stopinfo.areas_to_check_before_continue.emplace_back(right_lane_x+lane_width, tilesize/6.0f, tilesize - right_lane_x - lane_width, lane_width);
 
