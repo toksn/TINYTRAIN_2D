@@ -731,8 +731,8 @@ namespace tinytrain
 		//road_connection_info connection_table[direction::DIR_COUNT][direction::DIR_COUNT];
 
 		// dist = perimeter of the circle / 4 = (pi * 2 * r) / 4 = (pi * 2 * 1/3) / 4 = pi * 2 / 12
-		const float dist_short_curve = tilesize * M_PI * 2.0f / 12.0f;
-		const float dist_long_curve = dist_short_curve * 2.0f; // tilesize * M_PI * 2.0f * 2.0f / 12.0f;
+		
+		
 		//const float dist_straight = tilesize;
 
 		// N>S
@@ -746,13 +746,20 @@ namespace tinytrain
 		float angle = 180.0f * DEG_TO_RAD;
 		const float step = 10.0f * DEG_TO_RAD;
 		const c2v center{ tilesize, 0.0f };
+		
+		//float dist_long_curve = dist_short_curve * 2.0f; // tilesize * M_PI * 2.0f * 2.0f / 12.0f;
+		float dist_long_curve = 0.0f;
+		c2v lastPt{ tilesize - radius, 0.0f };
 		connection_table[NORTH][EAST].waypoints.emplace_back(tilesize - radius, 0.0f);
 		for (int i = 1; i < 9; i++)
 		{
 			angle -= step;
 			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle, center);
 			connection_table[NORTH][EAST].waypoints.emplace_back(pt.x, pt.y);
+			dist_long_curve += c2Len(c2Sub(pt, lastPt));
+			lastPt = pt;
 		}
+		dist_long_curve += c2Len(c2Sub(c2v{ tilesize, radius }, lastPt));
 		connection_table[NORTH][EAST].waypoints.emplace_back(tilesize, radius);
 
 		// N>W
@@ -760,14 +767,22 @@ namespace tinytrain
 		//	10 steps for waypoint generation 0-90°		
 		radius = 1.0f / 3.0f * tilesize;
 		angle = 0.0f;
+		//float dist_short_curve = tilesize * M_PI * 2.0f / 12.0f;
+		float dist_short_curve = 0.0f; // tilesize * M_PI * 2.0f * 2.0f / 12.0f;
+		lastPt.x = radius;
+		lastPt.y = 0.0f ;
 		connection_table[NORTH][WEST].waypoints.emplace_back(radius, 0.0f);
 		for (int i = 1; i < 9; i++)
 		{
 			angle += step;
 			c2v pt = tgf::math::MathHelper2D::calc_point_on_circle(radius, angle);
 			connection_table[NORTH][WEST].waypoints.emplace_back(pt.x, pt.y);
+
+			dist_short_curve += c2Len(c2Sub(pt, lastPt));
+			lastPt = pt;
 		}
 		connection_table[NORTH][WEST].waypoints.emplace_back(0.0f, radius);
+		dist_short_curve += c2Len(c2Sub(c2v{ 0.0f, radius }, lastPt));
 
 		// create rest of table entries by rotating the N > X variant counter-clock wise
 		// reserve space for copiing N>W to W>S to S>E to E>N		// 0 N, 1 E, 2 S, 3 W
