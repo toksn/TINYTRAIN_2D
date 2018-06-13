@@ -37,12 +37,14 @@ namespace tgf
 			return ptr;
 		}
 
+		std::vector<std::unique_ptr<Component>> components_;
+		bool drawDebug_;
+
 	protected:
 		virtual void onDraw(sf::RenderTarget * target) = 0;
 		virtual void onUpdate(float deltaTime) = 0;
 
 		//std::vector<std::unique_ptr<Component>> components_removed;
-		std::vector<std::unique_ptr<Component>> components_;
 	};
 }
 

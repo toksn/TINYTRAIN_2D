@@ -15,6 +15,7 @@ namespace tgf
 		virtual std::unique_ptr<Component> detachFrom(Entity* entity);
 		virtual std::unique_ptr<Component> detachFromOwner();
 
+		bool drawDebug_;
 	protected:
 		//virtual void onDraw(sf::RenderTarget * target) = 0;
 		//virtual void onUpdate(float deltaTime) = 0;

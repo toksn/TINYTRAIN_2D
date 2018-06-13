@@ -10,7 +10,7 @@ namespace tinytrain
 			collision_ = collision;
 			speed_ = 1.0f;
 			running_ = true;
-			debugDraw_ = false;
+			drawDebug_ = false;
 
 			debugCrossingWaypoints_.setPrimitiveType(sf::PrimitiveType::LinesStrip);
 		}
@@ -20,7 +20,7 @@ namespace tinytrain
 
 		void TRoadNavComponent::draw(sf::RenderTarget * target)
 		{
-			if (debugDraw_)
+			if (drawDebug_)
 			{
 #if USE_STOPPING_POINTS
 				if (stopper_)

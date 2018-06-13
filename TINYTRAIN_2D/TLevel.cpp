@@ -99,7 +99,11 @@ namespace tinytrain
 			{
 				auto car = dynamic_cast<TCar*>(o.get());
 				if (car != nullptr)
+				{
 					car->drawDebug_ = drawDebug_;
+					for (auto& comp : car->components_)
+						comp->drawDebug_ = drawDebug_;
+				}					
 			}
 
 			train_->debugDraw_ = drawDebug_;

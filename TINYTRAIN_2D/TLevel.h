@@ -44,7 +44,6 @@ namespace tinytrain
 
 		sf::VertexArray roads_;
 		sf::VertexArray roads_debug_;
-		bool drawDebug_;
 
 		tgf::utilities::TextureAtlas* texture_atlas_ = nullptr;
 		float road_texture_width_;

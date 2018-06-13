@@ -25,7 +25,6 @@ namespace tinytrain
 
 		float vmax_;
 		components::TRoadNavComponent* navi_;
-		bool drawDebug_;
 	private:
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(float deltaTime) override;
