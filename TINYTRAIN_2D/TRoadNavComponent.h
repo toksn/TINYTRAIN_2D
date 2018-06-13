@@ -12,6 +12,15 @@ namespace tinytrain
 		class TRoadNavComponent : public tgf::Component, public ICrossingUser
 		{
 		public:
+			struct node_travel_info
+			{
+				int node_id_;
+				float distEnd_;		// used as start and end dist for the crossing
+				float distStart_;	// used as start dist for the next crossing
+				direction from; 
+				direction to;
+				bool started = false;
+			};
 
 			enum class NavType
 			{
@@ -55,10 +64,7 @@ namespace tinytrain
 			tgf::math::PolyLine waypoints_;
 
 			// current node travelling
-			int cur_node_id_;
-			float cur_node_dist_;		// used as start and end dist for the crossing
-			float cur_node_startdist_;	// used as start dist for the next crossing
-			direction cur_node_from; direction cur_node_to;
+			std::unique_ptr<node_travel_info> cur_node_;
 
 			// stopping points and collision manager
 			std::unique_ptr<road_connection_info::stopping_info> stopper_;

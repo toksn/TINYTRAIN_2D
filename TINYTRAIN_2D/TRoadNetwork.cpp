@@ -99,8 +99,7 @@ namespace tinytrain
 				}
 			}
 		}
-
-		printf("remove from crossing failed. should not happen?\n");
+		printf("TRoadNetwork error: an crossing user tried to remove itself from the crossing but was not found.\n");
 	}
 	
 	void road_network::updateCrossingProgression(ICrossingUser * user, int node_id, float progression)

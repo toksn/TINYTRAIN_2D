@@ -10,9 +10,8 @@ namespace tinytrain
 			collision_ = collision;
 			speed_ = 1.0f;
 			running_ = true;
-			debugDraw_ = true;
+			debugDraw_ = false;
 
-			cur_node_startdist_ = -1.0f;
 			debugCrossingWaypoints_.setPrimitiveType(sf::PrimitiveType::LinesStrip);
 		}
 		TRoadNavComponent::~TRoadNavComponent()
@@ -108,31 +107,33 @@ namespace tinytrain
 						}
 					}
 #else
-					if (state_ == NavState::RUNNING_ON_CROSSING)
+					if (cur_node_)
 					{
-						if (distance_ >= cur_node_dist_)
+						if (state_ == NavState::RUNNING_ON_CROSSING)
 						{
-							state_ = NavState::RUNNING_;
-							roads_->removeFromCrossing(this, cur_node_id_);
-						}
-						else if(cur_node_dist_ > 0.0f)
-							roads_->updateCrossingProgression(this, cur_node_id_, distance_ / cur_node_dist_);
-					}
-					else if (state_ == NavState::RUNNING_)
-					{
-						if (cur_node_startdist_ >= 0.0f && distance_ >= cur_node_startdist_)
-						{
-							
-							cur_node_startdist_ = -1.0f;
-							
-							if (roads_->road_graph.nodes_[cur_node_id_].edges_.size() > 2)
+							if (distance_ >= cur_node_->distEnd_)
 							{
-								distance_ = cur_node_startdist_;
-								state_ = NavState::RUNNING_WAIT_FOR_CLEAR_ROAD;
-								roads_->applyToCrossing(this, cur_node_id_, cur_node_from, cur_node_to);
+								state_ = NavState::RUNNING_;
+								roads_->removeFromCrossing(this, cur_node_->node_id_);
+								cur_node_.reset(nullptr);
 							}
-							//else
-							//	state_ = NavState::RUNNING_ON_CROSSING;
+							else if (cur_node_->distEnd_ > 0.0f)
+								roads_->updateCrossingProgression(this, cur_node_->node_id_, distance_ / cur_node_->distEnd_);
+						}
+						else if (state_ == NavState::RUNNING_)
+						{
+							if (cur_node_->started == false && distance_ >= cur_node_->distStart_)
+							{
+								cur_node_->started = true;
+								if (roads_->road_graph.nodes_[cur_node_->node_id_].edges_.size() > 2)
+								{
+									distance_ = cur_node_->distStart_;
+									state_ = NavState::RUNNING_WAIT_FOR_CLEAR_ROAD;
+									roads_->applyToCrossing(this, cur_node_->node_id_, cur_node_->from, cur_node_->to);
+								}
+								else
+									cur_node_.reset(nullptr);
+							}
 						}
 					}
 #endif
@@ -294,10 +295,21 @@ namespace tinytrain
 			//curpos.x -= roads_->crossing_connection_table[from][to].waypoints.front().x;
 			//curpos.y -= roads_->crossing_connection_table[from][to].waypoints.front().y;
 
-			cur_node_id_ = node_id;
-			cur_node_startdist_ = waypoints_.getLength();
-			cur_node_from = from;
-			cur_node_to = to;
+			if(roads_->road_graph.nodes_[node_id].edges_.size() > 2)
+			{
+				if (cur_node_)
+				{
+					printf("TRoadNav error: trying to override node_travel_info without completing the current one!\n");
+				}
+				else
+				{
+					cur_node_ = std::make_unique<node_travel_info>();
+					cur_node_->node_id_ = node_id;
+					cur_node_->distStart_ = waypoints_.getLength();
+					cur_node_->from = from;
+					cur_node_->to = to;
+				}
+			}
 
 			for (auto& pt : roads_->crossing_connection_table[from][to].waypoints)
 				waypoints_.poly_.emplace_back(pt.x + curpos.x, pt.y + curpos.y);
@@ -368,7 +380,8 @@ namespace tinytrain
 		void TRoadNavComponent::startCrossing(int node_id, direction from, direction to)
 		{
 			state_ = NavState::RUNNING_ON_CROSSING;
-			cur_node_dist_ = roads_->crossing_connection_table[from][to].distance;
+			if(cur_node_)
+				cur_node_->distEnd_ = roads_->crossing_connection_table[from][to].distance;
 		}
 	}
 }
