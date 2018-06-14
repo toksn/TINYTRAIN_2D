@@ -13,6 +13,8 @@ namespace tinytrain
 			drawDebug_ = false;
 
 			debugCrossingWaypoints_.setPrimitiveType(sf::PrimitiveType::LinesStrip);
+
+			respawn(false);
 		}
 		TRoadNavComponent::~TRoadNavComponent()
 		{
@@ -170,28 +172,55 @@ namespace tinytrain
 			return state_;
 		}
 
+		bool TRoadNavComponent::respawn(bool onlyDeadends)
+		{
+			if (roads_ == nullptr)
+				return false;
+
+
+			// TODO: only use deadends? or check for existing car at that position, move some distance
+			if (onlyDeadends)
+			{
+				if (roads_->deadends.size())
+				{
+					int deadend_node_id = roads_->deadends[rand() % roads_->deadends.size()];
+					auto& n = roads_->road_graph.nodes_[deadend_node_id];
+
+					if (n.edges_.size() == 1)
+					{
+						auto& e = n.edges_.front();
+
+						// adding edge as the only edge at the moment (first edge)
+						addEdgeToNavigation(&e, true);
+						return true;
+					}
+				}
+			}
+			// respawn: randomly choose one to start from
+			else if (roads_ != nullptr && roads_->road_graph.nodes_.size())
+			{
+				auto n = roads_->road_graph.nodes_.begin();
+				std::advance(n, rand() % roads_->road_graph.nodes_.size());
+				if (n->second.edges_.size())
+				{
+					auto e = n->second.edges_.begin();
+					std::advance(e, rand() % n->second.edges_.size());
+
+					// adding edge as the only edge at the moment (first edge)
+					addEdgeToNavigation(&*e, true);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		bool TRoadNavComponent::updateNavigation()
 		{
 			bool rc = false;
 			if (final_edge_ == nullptr)
 			{
-				
-				// TODO: only use deadends? or check for existing car at that position, move some distance
-				// respawn: randomly choose one to start from
-				if (roads_ != nullptr && roads_->road_graph.nodes_.size())
-				{
-					auto n = roads_->road_graph.nodes_.begin();
-					std::advance(n, rand() % roads_->road_graph.nodes_.size());
-					if (n->second.edges_.size())
-					{
-						auto e = n->second.edges_.begin();
-						std::advance(e, rand() % n->second.edges_.size());
-						
-						// adding edge as the only edge at the moment (first edge)
-						addEdgeToNavigation(&*e, true);
-						rc = true;
-					}
-				}
+				rc = respawn(true);
 			}
 			else
 			{

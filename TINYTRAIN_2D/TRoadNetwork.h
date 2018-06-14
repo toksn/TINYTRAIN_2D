@@ -71,6 +71,8 @@ namespace tinytrain
 		void applyToCrossing(ICrossingUser* user, int node_id, direction from, direction to);
 		void removeFromCrossing(ICrossingUser* user, int node_id);
 		void updateCrossingProgression(ICrossingUser* user, int node_id, float progression);
+
+		std::vector<int> deadends;
 	private:
 		std::map<int, crossing_info> crossing_usage;
 	};

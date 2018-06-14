@@ -189,7 +189,7 @@ namespace tinytrain
 				car->vmax_ = 100.0f * background_size_factor;
 				
 
-				level->obstacles_.push_back(std::move(car));
+				level->obstacles_.emplace_back(std::move(car));
 			}
 		}//*/
 
@@ -623,6 +623,11 @@ namespace tinytrain
 				}
 			}
 		}
+
+		// count deadends
+		for (auto& n : level->road_network_.road_graph.nodes_)
+			if (n.second.edges_.size() == 1)
+				level->road_network_.deadends.emplace_back(n.first);
 
 		// add road debug stuff
 		level->roads_debug_.clear();

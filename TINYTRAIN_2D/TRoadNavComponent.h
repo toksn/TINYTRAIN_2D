@@ -49,6 +49,7 @@ namespace tinytrain
 			unsigned int roadCheckingMask = tgf::collision::CollisionManager::CollisionCategory::DYNAMIC_CATEGORY_1;
 
 		protected:
+			bool respawn(bool onlyDeadends);
 			bool updateNavigation();
 			void addEdgeToNavigation(graph::edge* e, bool removePassedWaypoints = false);
 
