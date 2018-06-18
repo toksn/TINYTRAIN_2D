@@ -82,8 +82,8 @@ namespace tinytrain
 						addMapTile(level->foreground_static_, curTileRect, chosen_texture_set.fg, rotation, rotate_and_mirror);
 						addMapTile(level->foreground_dynamic_, curTileRect, chosen_texture_set.fg_dyn, rotation, rotate_and_mirror);
 						//...
-
-						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getTexture(), rotation, rotate_and_mirror);
+												
+						addCollision(curTileRect, chosen_texture_set.collision, texture_atlas_->getImage(), rotation, rotate_and_mirror);
 					}
 				}
 			}
@@ -1167,12 +1167,33 @@ namespace tinytrain
 		}
 	}
 
-	void TLevel_Builder::addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Texture * tex, int rectangular_rotation, bool mirror_horizontally, bool mirror_vertically)
+	// TODO: move collision image conversion to init tile types
+	void TLevel_Builder::addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Image * img, int rectangular_rotation, bool mirror_horizontally, bool mirror_vertically)
 	{
 		// circle the texture for black pixels
 		// expand pixels until completed area is found
+		const int rowend = collision_texture_data.left + collision_texture_data.width;
+		const int colend = collision_texture_data.top + collision_texture_data.height;
+		if (rowend > img->getSize().x || colend > img->getSize().y)
+			return;
 
-		// use area to create an obstacle (cPoly?)
+		for (unsigned int x = collision_texture_data.left; x < rowend; x++)
+		{
+			for (unsigned int y = collision_texture_data.top; y < colend; y++)
+			{
+				if (img->getPixel(x, y) == sf::Color::Black)
+				{
+					// collect all black pixels that are 4way neighbors
+					std::vector<sf::Vector2u> neighbors;
+					while (gatherPixelNeighborInfo_sameColor(*img, x, y, &neighbors))
+					{
+
+					}
+				}
+			}
+		}
+
+		
 	}
 	
 	sf::VertexArray TLevel_Builder::triangulateRoadSegments(tgf::utilities::CityGenerator& city)
