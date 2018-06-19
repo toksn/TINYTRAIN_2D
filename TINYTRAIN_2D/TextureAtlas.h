@@ -15,7 +15,7 @@ namespace tgf
 
 			bool init(std::string texture_file_path, std::string jsondata_file_path = "");
 
-			const sf::Image* getImage();
+			sf::Image* getImage();
 			sf::Texture* getTexture();
 			sf::IntRect getArea(std::string texture_name);
 

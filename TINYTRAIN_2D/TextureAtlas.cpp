@@ -94,7 +94,7 @@ namespace tgf
 			return false;
 		}
 
-		const sf::Image * TextureAtlas::getImage()
+		sf::Image * TextureAtlas::getImage()
 		{
 			return img_.get();
 		}
