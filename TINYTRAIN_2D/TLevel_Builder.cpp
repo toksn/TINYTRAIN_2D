@@ -1176,24 +1176,77 @@ namespace tinytrain
 		const int colend = collision_texture_data.top + collision_texture_data.height;
 		if (rowend > img->getSize().x || colend > img->getSize().y)
 			return;
-
+				
 		for (unsigned int x = collision_texture_data.left; x < rowend; x++)
 		{
 			for (unsigned int y = collision_texture_data.top; y < colend; y++)
 			{
 				if (img->getPixel(x, y) == sf::Color::Black)
 				{
-					// collect all black pixels that are 4way neighbors
-					std::vector<sf::Vector2u> neighbors;
-					while (gatherPixelNeighborInfo_sameColor(*img, x, y, &neighbors))
+					std::vector<direction> chain;
+					std::vector<direction> dirs;
+					sf::Vector2u coords(x, y);
+					if (gatherPixelNeighborDirs_sameColor(*img, coords.x, coords.y, &dirs))
 					{
+						direction startdir = dirs[0];
+						chain.push_back(startdir);
 
+						// go around the block clockwise
+						do
+						{
+							auto curdir = chain.back();
+							switch (curdir)
+							{
+							case NORTH:
+								coords.y--;
+								break;
+							case EAST:
+								coords.x++;
+								break;
+							case SOUTH:
+								coords.y++;
+								break;
+							case WEST:
+								coords.x--;
+								break;
+							}
+							dirs.clear();
+							gatherPixelNeighborDirs_sameColor(*img, coords.x, coords.y, &dirs);
+							
+							//find lowest direction from curdir-1
+							int to_find = curdir - 1;
+							if (to_find < 0) to_find += direction::DIR_COUNT;
+
+							direction found_dir = direction::DIR_COUNT;
+							for(auto& d : dirs)
+							{
+								if (d == to_find)
+								{
+									chain.push_back(d);
+									break;
+								}
+								// d-curdir will always be >= 0 because to_find is the only direction to put it below zero (and is filtered)
+								else if (d - curdir < found_dir)	
+									found_dir = (direction)(d - curdir);
+							}
+
+							// when there are two new directions (NORTH >> (EAST) >> SOUTH)
+							if (abs(found_dir - curdir) == 2)
+							{
+								direction in_between = (direction)(curdir + 1);
+								if (in_between == direction::DIR_COUNT)
+									in_between = direction::NORTH;
+
+								chain.push_back(in_between);
+							}
+							chain.push_back(found_dir);
+						} while (coords.x != x &&coords.y != y && chain.back() == startdir);
+
+						// iterate the direction chain from a starting point, add point whenever direction is changed
 					}
 				}
 			}
 		}
-
-		
 	}
 	
 	sf::VertexArray TLevel_Builder::triangulateRoadSegments(tgf::utilities::CityGenerator& city)
