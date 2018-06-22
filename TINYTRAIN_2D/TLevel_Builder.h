@@ -25,7 +25,7 @@ namespace tinytrain
 			sf::IntRect bg;
 			sf::IntRect fg;
 			sf::IntRect fg_dyn;
-			std::vector<tgf::collision::c2Shape> collision_polys;
+			std::vector<c2AABB> collision_polys;
 		};
 		sf::IntRect common_bg;
 		std::map<std::string, texture_layer_set> tex_coords;
@@ -33,7 +33,8 @@ namespace tinytrain
 		bool isValid = false;
 
 		void fillFromAtlas(tgf::utilities::TextureAtlas* atlas, const std::string & prefix);
-		std::vector<tgf::collision::c2Shape> extractCollisionPolys(sf::IntRect & collision_texture_data, sf::Image * img);
+		std::vector<c2AABB> extractCollisionPolys(sf::IntRect & collision_texture_data, sf::Image * img);
+		std::vector<direction> detectBorder_clockwiseDirChain(sf::Image * img, const sf::Vector2u startCoords, int * checked, bool onlyConvex = false);
 	};
 
 	class TLevel_Builder
@@ -60,7 +61,7 @@ namespace tinytrain
 		static int gatherPixelNeighborDirs_sameColor(const sf::Image & map, const int x, const int y, std::vector<direction>* same_neighbours = nullptr, std::vector<direction>* other_neighbours = nullptr);
 		void initConnectionTable(road_network & network, float tilesize);
 		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
-		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Image* img, int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
+		void addCollision(TLevel * level, sf::IntRect tile_rect, std::vector<c2AABB>& collisions,   int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
 
 		float road_texture_width_ = 32.0f;
 		GameState_Running* gs_;
