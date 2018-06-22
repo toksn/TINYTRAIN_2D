@@ -203,5 +203,29 @@ namespace tgf
 		{
 			return { r*cosf(angle) + c.x, r*sinf(angle) + c.y };
 		}
+		void MathHelper2D::convertRectangularRotationToMirrorOps(int rectangular_rotation, bool & mirror_horizontally, bool & mirror_vertically, bool & mirror_diagonally)
+		{
+			int rot = rectangular_rotation % 4;
+			if (rot < 0)
+				rot += 4;
+
+			if (rot == 1)
+			{
+				// 90 degree rotation can be achieved by mirroring diagonally and h or v for clockwise or counterclockwise
+				// see: https://stackoverflow.com/questions/29336374/90-degree-rotation-using-only-reflections
+				mirror_vertically = !mirror_vertically;
+				mirror_diagonally = !mirror_diagonally;
+			}
+			else if (rot == 3)
+			{
+				mirror_horizontally = !mirror_horizontally;
+				mirror_diagonally = !mirror_diagonally;
+			}
+			else if (rot == 2)
+			{
+				mirror_horizontally = !mirror_horizontally;
+				mirror_vertically = !mirror_vertically;
+			}
+		};
 	}
 }

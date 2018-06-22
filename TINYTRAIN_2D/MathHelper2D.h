@@ -31,6 +31,13 @@ namespace tgf
 				return std::make_pair(x,y);
 			};
 
+			// this function converts any number of 90° degree rotations into up to three mirroring operations
+			// in: rot in number of 90° rectangular rotations, can be positive and negative
+			// in/out: initial and resulting mirror_horizontally operation
+			// in/out: initial and resulting mirror_vertically operation
+			// in/out: initial and resulting mirror_diagonally operation
+			static void convertRectangularRotationToMirrorOps(int rectangular_rotation, bool& mirror_horizontally, bool& mirror_vertically, bool& mirror_diagonally);
+			
 			/*
 			static sf::IntRect mirror_rect(sf::IntRect& rect, bool h, bool v)
 			{
