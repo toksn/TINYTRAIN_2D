@@ -1277,7 +1277,7 @@ namespace tinytrain
 						chain.push_back(EAST);
 						chain.push_back(SOUTH);
 						chain.push_back(WEST);
-						//chain.push_back(NORTH);
+						chain.push_back(NORTH);
 					}
 
 					sf::VertexArray collision_debug;
@@ -1286,7 +1286,7 @@ namespace tinytrain
 						if (chain.front() == chain.back())
 							chain.pop_back();
 						else
-							printf("error: this should not happen? maybe this border detection failed.\n");
+							printf("error: border detection does not seem to create a closed polygon. maybe this border detection failed.\n");
 
 						sf::Vector2f start(x*pixelsize, y * pixelsize);
 						sf::Vector2f pt = start;
@@ -1569,9 +1569,176 @@ namespace tinytrain
 				else if (suffix.length() > col.length() && suffix.compare(0, col.length(), col) == 0)
 				{
 					suffix = suffix.substr(col.length());
-					tex_coords[suffix].collision = it->second;
+					auto& collision_rect = it->second;
+					tex_coords[suffix].collision_polys = extractCollisionPolys(collision_rect, atlas->getImage());
 				}
 			}
 		}
 	}
+
+	std::vector<tgf::collision::c2Shape> tile_type_info::extractCollisionPolys(sf::IntRect& collision_texture_data, sf::Image * img)
+	{
+		// circle the texture for black pixels
+		// expand pixels until completed area is found
+		const int rowend = collision_texture_data.left + collision_texture_data.width;
+		const int colend = collision_texture_data.top + collision_texture_data.height;
+		if (rowend > img->getSize().x || colend > img->getSize().y)
+			return std::vector<tgf::collision::c2Shape>();
+
+		int* checked = new int[collision_texture_data.width*collision_texture_data.height]{ 0 };
+
+		for (unsigned int x = collision_texture_data.left; x < rowend; x++)
+		{
+			sf::Vector2u tex_coords;
+			std::vector<c2Poly> colPolys;
+			for (unsigned int y = collision_texture_data.top; y < colend; y++)
+			{
+				tex_coords.x = x - collision_texture_data.left;
+				tex_coords.y = y - collision_texture_data.top;
+				if (img->getPixel(x, y) == sf::Color::Black && checked[tex_coords.x + tex_coords.y*collision_texture_data.width] == 0)
+				{
+					std::vector<direction> chain;
+					std::vector<direction> dirs;
+					sf::Vector2u coords(x, y);
+					int neighbor_count = TLevel_Builder::gatherPixelNeighborDirs_sameColor(*img, coords.x, coords.y, &dirs);
+
+					// border pixel found
+					if (neighbor_count > 0 && neighbor_count < 4)
+					{
+						direction startdir = dirs[0];
+						chain.push_back(startdir);
+
+						// go around the block clockwise
+						do
+						{
+							checked[tex_coords.x + tex_coords.y * collision_texture_data.width] = 1;
+
+							auto curdir = chain.back();
+							switch (curdir)
+							{
+							case NORTH:
+								coords.y--;
+								break;
+							case EAST:
+								coords.x++;
+								break;
+							case SOUTH:
+								coords.y++;
+								break;
+							case WEST:
+								coords.x--;
+								break;
+							}
+							tex_coords.x = coords.x - collision_texture_data.left;
+							tex_coords.y = coords.y - collision_texture_data.top;
+
+							dirs.clear();
+							TLevel_Builder::gatherPixelNeighborDirs_sameColor(*img, coords.x, coords.y, &dirs);
+
+							//find lowest direction from curdir-1
+							int to_find = curdir - 1;
+							if (to_find < 0) to_find += direction::DIR_COUNT;
+
+							direction found_dir = direction::DIR_COUNT;
+							int found_diff = direction::DIR_COUNT;
+							for (auto& d : dirs)
+							{
+								if (d == to_find)
+								{
+									found_dir = d;
+									break;
+								}
+								// d-curdir will always be >= 0 because to_find is the only direction to put it below zero (and is filtered)
+								else
+								{
+									int diff = d - curdir;
+									if (diff < 0)
+										diff += direction::DIR_COUNT;
+
+									if (diff < found_diff)
+									{
+										found_diff = diff;
+										found_dir = d;
+									}
+
+								}
+							}
+
+							// when there are two new directions (NORTH >> (EAST) >> SOUTH)
+							if (abs(found_dir - curdir) == 2)
+							{
+								direction in_between = (direction)(curdir + 1);
+								if (in_between == direction::DIR_COUNT)
+									in_between = direction::NORTH;
+
+								chain.push_back(in_between);
+							}
+							chain.push_back(found_dir);
+						} while (coords.x != x || coords.y != y || chain.back() != startdir);
+
+						// iterate the direction chain from a starting point, add point whenever direction is changed
+					}
+					else if (neighbor_count == 0)
+					{
+						// TODO: special case - single pixel found
+						chain.push_back(NORTH);
+						chain.push_back(EAST);
+						chain.push_back(SOUTH);
+						chain.push_back(WEST);
+						chain.push_back(NORTH);
+					}
+
+					sf::VertexArray collision_debug;
+					if (chain.size() > 1)
+					{
+						if (chain.front() == chain.back())
+							chain.pop_back();
+						else
+							printf("error: border detection does not seem to create a closed polygon. maybe this border detection failed.\n");
+
+						sf::Vector2f start(x, y);
+						sf::Vector2f pt = start;
+						collision_debug.append(sf::Vertex(pt));
+						
+
+						direction prevDir = chain.front();
+						auto it = chain.begin();
+						int  border_pixel_len = 0;
+
+						while (it != chain.end())
+						{
+							// count the same direction
+							border_pixel_len = 0;
+							do
+							{
+								++it;
+								border_pixel_len++;
+							} while (it != chain.end() && *it == prevDir);
+
+							float step = border_pixel_len;
+							if (prevDir == NORTH)
+								pt.y -= step;
+							else if (prevDir == SOUTH)
+								pt.y += step;
+							else if (prevDir == EAST)
+								pt.x += step;
+							else if (prevDir == WEST)
+								pt.x -= step;
+							
+							collision_debug.append(sf::Vertex(pt));
+
+							// set prev dir to new direction
+							if (it != chain.end())
+								prevDir = *it;
+						}
+					}
+
+					collision_debug.setPrimitiveType(sf::PrimitiveType::LineStrip);
+				}
+			}
+		}
+
+		delete[] checked;
+	}
+
 }

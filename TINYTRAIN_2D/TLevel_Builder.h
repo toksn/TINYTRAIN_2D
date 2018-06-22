@@ -3,6 +3,7 @@
 #include "CityGenerator.h"
 #include "TextureAtlas.h"
 #include "TLevel.h"
+#include "CollisionManager.h"
 
 namespace tinytrain
 {
@@ -24,7 +25,7 @@ namespace tinytrain
 			sf::IntRect bg;
 			sf::IntRect fg;
 			sf::IntRect fg_dyn;
-			sf::IntRect collision;
+			std::vector<tgf::collision::c2Shape> collision_polys;
 		};
 		sf::IntRect common_bg;
 		std::map<std::string, texture_layer_set> tex_coords;
@@ -32,10 +33,12 @@ namespace tinytrain
 		bool isValid = false;
 
 		void fillFromAtlas(tgf::utilities::TextureAtlas* atlas, const std::string & prefix);
+		std::vector<tgf::collision::c2Shape> extractCollisionPolys(sf::IntRect & collision_texture_data, sf::Image * img);
 	};
 
 	class TLevel_Builder
 	{
+		friend class tile_type_info;
 	public:
 		TLevel_Builder(GameState_Running* gs);
 		~TLevel_Builder();
@@ -53,8 +56,8 @@ namespace tinytrain
 		std::map < sf::Uint32, tile_type_info> generateTileTypeInfos(tgf::utilities::TextureAtlas * atlas);
 		void generateRoadNetwork_fromImage(sf::Image & map, TLevel* level);
 		int findNextRoadNode(int start_id, std::vector<direction>& edge_directions, sf::Image& map);
-		int gatherPixelNeighborInfo_sameColor(const sf::Image & map, const int x, const int y, std::vector<sf::Vector2u>* same_neighbours = nullptr, std::vector<sf::Vector2u>* other_neighbours = nullptr, bool includeDiagonalNeighbors = false);
-		int gatherPixelNeighborDirs_sameColor(const sf::Image & map, const int x, const int y, std::vector<direction>* same_neighbours = nullptr, std::vector<direction>* other_neighbours = nullptr);
+		static int gatherPixelNeighborInfo_sameColor(const sf::Image & map, const int x, const int y, std::vector<sf::Vector2u>* same_neighbours = nullptr, std::vector<sf::Vector2u>* other_neighbours = nullptr, bool includeDiagonalNeighbors = false);
+		static int gatherPixelNeighborDirs_sameColor(const sf::Image & map, const int x, const int y, std::vector<direction>* same_neighbours = nullptr, std::vector<direction>* other_neighbours = nullptr);
 		void initConnectionTable(road_network & network, float tilesize);
 		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
 		void addCollision(sf::IntRect tile_rect, sf::IntRect collision_texture_data, sf::Image* img, int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
