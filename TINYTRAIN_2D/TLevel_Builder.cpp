@@ -1167,6 +1167,7 @@ namespace tinytrain
 		}
 	}
 
+	// TODO: this does not mirror correctly yet
 	void TLevel_Builder::addCollision(TLevel* level, sf::IntRect tile_rect, std::vector<c2AABB>& collisions, int rectangular_rotation, bool mirror_horizontally, bool mirror_vertically)
 	{
 		bool mirror_diagonally = false;
@@ -1174,49 +1175,66 @@ namespace tinytrain
 
 		for (auto& col : collisions)
 		{
-			std::vector<sf::Vector2f> vertices;
-			vertices.reserve(4);
-			vertices.emplace_back(tile_rect.left + col.min.x, tile_rect.top + col.min.y);
-			vertices.emplace_back(tile_rect.left + col.max.x, tile_rect.top + col.min.y);
-			vertices.emplace_back(tile_rect.left + col.max.x, tile_rect.top + col.max.y);
-			vertices.emplace_back(tile_rect.left + col.min.x, tile_rect.top + col.max.y);
+			std::vector<sf::Vector2f> rect_pts;
+			rect_pts.reserve(4);
+			rect_pts.emplace_back(col.min.x, col.min.y);
+			rect_pts.emplace_back(col.max.x, col.min.y);
+			rect_pts.emplace_back(col.max.x, col.max.y);
+			rect_pts.emplace_back(col.min.x, col.max.y);
 
 			if (mirror_diagonally)
 			{
 				// 0 1	--> 0 3
 				// 3 2	-->	1 2
-				auto temp = vertices[3];
-				vertices[3] = vertices[1];
-				vertices[1] = temp;
+				for (auto& pt : rect_pts)
+				{
+					auto temp = pt.x;
+					pt.x = pt.y;
+					pt.y = temp;
+				}
 			}
 
 			if (mirror_horizontally)
 			{
 				// 0 1	-->	1 0		
 				// 3 2	--> 2 3
-				auto temp = vertices[0];
-				vertices[0] = vertices[1];
-				vertices[1] = temp;
-				temp = vertices[2];
-				vertices[2] = vertices[3];
-				vertices[3] = temp;
+				for (auto& pt : rect_pts)
+					pt.x = tile_rect.width - pt.x;
 			}
 
 			if (mirror_vertically)
 			{
 				// 0 1	-->	3 2		
 				// 3 2	--> 0 1
-				auto temp = vertices[0];
-				vertices[0] = vertices[3];
-				vertices[3] = temp;
-				temp = vertices[1];
-				vertices[1] = vertices[2];
-				vertices[2] = temp;
+				for (auto& pt : rect_pts)
+					pt.y = tile_rect.height - pt.y;
 			}
+			
+			sf::Vector2f min = rect_pts[0];
+			sf::Vector2f max = rect_pts[2];
+			// any mirror operation -> recalc the min max of the rect
+			if (mirror_diagonally || mirror_horizontally || mirror_vertically)
+			{
+				//min = rect_pts[0];
+				max = rect_pts[0];
+				for (int i = 1; i < rect_pts.size(); i++)
+				{
+					min.x = c2Min(min.x, rect_pts[i].x);
+					min.y = c2Min(min.y, rect_pts[i].y);
 
+					max.x = c2Max(max.x, rect_pts[i].x);
+					max.y = c2Max(max.y, rect_pts[i].y);
+				}
+			}
+			
+			min.x += tile_rect.left;
+			max.x += tile_rect.left;
+			min.y += tile_rect.top;
+			max.y += tile_rect.top;
 			std::unique_ptr<TObstacle> obstacle = std::make_unique<TObstacle>(gs_);
-			obstacle->drawable_->setPosition(vertices[0]);
-			obstacle->drawable_->setSize(vertices[2]-vertices[0]);
+			obstacle->drawable_->setPosition(min);
+			obstacle->drawable_->setSize(max-min);
+			obstacle->drawable_->setOrigin(0.0f, 0.0f);
 
 			level->obstacles_.emplace_back(std::move(obstacle));
 		}
