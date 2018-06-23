@@ -1502,7 +1502,7 @@ namespace tinytrain
 			std::vector<c2Poly> colPolys;
 			for (unsigned int y = 0; y < area_img.getSize().y; y++)
 			{
-				if (area_img.getPixel(x, y) == sf::Color::Black && checked[x + y*area_img.getSize().x] == 0)
+				if (area_img.getPixel(x, y) != sf::Color::Transparent && checked[x + y*area_img.getSize().x] == 0)
 				{
 					bool onlyConvex = true;
 					auto chain = detectBorder_clockwiseDirChain(&area_img, { x, y }, checked, onlyConvex);
