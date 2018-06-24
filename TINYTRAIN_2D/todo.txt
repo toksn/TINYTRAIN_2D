@@ -1,10 +1,17 @@
-TODO:	
+************
+**  TODO  **
+************
+
 - proc gen of city
 	- road gen 
 	- road triangulation
 	- obstacle gen (houses, walls, trees, lakes, streetlamps)
 	- other background gen (grass)
+
+	- hitbox : obstacle for houses/lake
+	- redo collision images to contain only convex polys (multicolor)
 	- create 2 renderTextures from all static city elements. ground + above_train
+
 
 - add on-screen instructions (controls, goals, hints)
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
@@ -28,7 +35,10 @@ TODO:
 - saving/loading of levels from files
 	- define level saving format
 
-QUESTIONABLE:
+********************
+**	QUESTIONABLE  **
+********************
+
 - spline undo: (optional) copy removed triangles vertices and apply them to another texture of a construction site
 - add spline redo
 - make collisionmanager running in an own thread calling callbacks on overlap ?
@@ -38,7 +48,10 @@ QUESTIONABLE:
 	- end: as is?
 	- level_interface: load(), restart()
 
-DONE:
+
+************
+**	DONE  **
+************
 - add un-do of spline
 	- use controlpoints (tags) for undo/redo. when undo happend, just cut the spline at the calculated pointcount.
 	- when undo happened, redo is possible until a new controlpoint was appended
