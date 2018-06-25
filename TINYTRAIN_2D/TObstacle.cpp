@@ -79,12 +79,8 @@ namespace tinytrain
 	void TObstacle::onTriggerEnter(class Entity* other)
 	{
 		TTrain* train = dynamic_cast<TTrain*>(other);
-				
-#if 1		// godmode
-		if (false)
-#else
+	
 		if (train && gs_)
-#endif
 		{
 			// train hit an obstacle
 			if (winningTrigger_)

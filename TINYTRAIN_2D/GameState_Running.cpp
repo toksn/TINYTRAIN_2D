@@ -184,6 +184,8 @@ namespace tinytrain
 
 	void GameState_Running::won(TTrain * train)
 	{
+		
+#if 0		// 0 for ghost mode
 		train->pause();
 
 		if (game_)
@@ -194,10 +196,12 @@ namespace tinytrain
 
 			game_->pushState(std::move(endscreen));
 		}
+#endif
 		printf("you win.\n");
 	}
 	void GameState_Running::lost(TTrain * train)
 	{
+#if 0		// 0 for ghost mode
 		train->pause();
 		if (game_)
 		{
@@ -207,7 +211,7 @@ namespace tinytrain
 
 			game_->pushState(std::move(endscreen));
 		}
-
+#endif
 		printf("you loose.\n");
 	}
 
