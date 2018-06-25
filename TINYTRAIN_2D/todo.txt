@@ -7,17 +7,17 @@
 	- road triangulation
 	- obstacle gen (houses, walls, trees, lakes, streetlamps)
 	- other background gen (grass)
-
-	- hitbox : obstacle for houses/lake
 	- redo collision images to contain only convex polys (multicolor)
+	- TCollisionZone for houses
+	
+	- TCollisionZone for lake
 	- create 2 renderTextures from all static city elements. ground + above_train
-
 
 - add on-screen instructions (controls, goals, hints)
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
 
 - train vs train collision
-- check all wagons of a train for collision
+- check all wagons of a train for collision [only against non-static categories]
 
 - spline undo 
 	- apply penalty player (cooldown, penalty time to not build a new seg, money, uses (fillable by picking up construction site workers?))
