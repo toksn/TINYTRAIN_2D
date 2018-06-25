@@ -15,7 +15,7 @@ namespace tinytrain
 		~TObstacle();
 
 		virtual tgf::collision::c2Shape getCollisionShape() override;
-		virtual void updateCollisionShape() override;
+		virtual void updateCollisionShape();
 
 		virtual void onTriggerEnter(Entity* a_other);
 		const bool winningTrigger_;

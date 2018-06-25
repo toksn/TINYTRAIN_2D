@@ -154,6 +154,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="SplineTexture.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
     <ClCompile Include="TCar.cpp" />
+    <ClCompile Include="TCollisionZone.cpp" />
     <ClCompile Include="TextureAtlas.cpp" />
     <ClCompile Include="TLevel_Builder.cpp" />
     <ClCompile Include="TLineInputInterface.cpp" />
@@ -191,6 +192,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="SplineTexture.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
     <ClInclude Include="TCar.h" />
+    <ClInclude Include="TCollisionZone.h" />
     <ClInclude Include="TextureAtlas.h" />
     <ClInclude Include="tgfdefines.h" />
     <ClInclude Include="TLevel_Builder.h" />

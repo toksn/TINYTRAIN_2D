@@ -10,7 +10,7 @@ namespace tgf
 		{
 		public:
 			virtual c2Shape getCollisionShape() = 0;
-			virtual void updateCollisionShape() = 0;
+			//virtual void updateCollisionShape() = 0;
 		};
 	}
 }

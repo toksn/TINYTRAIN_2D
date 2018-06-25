@@ -140,6 +140,9 @@
     <ClCompile Include="TRoadNetwork.cpp">
       <Filter>TinyTrain\utils</Filter>
     </ClCompile>
+    <ClCompile Include="TCollisionZone.cpp">
+      <Filter>TinyTrain\objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -249,6 +252,9 @@
     </ClInclude>
     <ClInclude Include="TRoadNetwork.h">
       <Filter>TinyTrain\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TCollisionZone.h">
+      <Filter>TinyTrain\objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
