@@ -4,7 +4,6 @@
 
 namespace tinytrain
 {
-	class TObstacle;
 	class TTrainCollisionManager : public tgf::collision::CollisionManager
 	{
 	public:

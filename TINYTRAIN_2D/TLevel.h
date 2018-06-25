@@ -18,6 +18,7 @@ namespace tinytrain
 {
 	class TTrain;
 	class TObstacle;
+	class TCollisionZone;
 	class GameState_Running;	
 
 	class TLevel : public tgf::Entity
@@ -33,6 +34,7 @@ namespace tinytrain
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;
 		std::vector<std::unique_ptr<TObstacle>> obstacles_;
+		std::vector<std::unique_ptr<TCollisionZone>> static_collision_;
 		road_network road_network_;
 
 	protected:

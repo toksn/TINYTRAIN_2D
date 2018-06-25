@@ -54,63 +54,61 @@ namespace tinytrain
 	{
 	}
 
-	void TCollisionZone::setCollisionShape(C2_TYPE type, void* shape)
+	void TCollisionZone::setCollisionShape_AABB(c2v min, c2v max)
 	{
-		collisionShape_.type_ = type;
-		collisionShape_.shape_ = shape;
+		if (aabb_shape_ == nullptr)
+			aabb_shape_ = std::make_unique<c2AABB>();
 
-		if (type == C2_POLY)
-		{
-			c2Poly* p = (c2Poly*)shape;
-			if (p->count != debugShape_.getVertexCount())
-				debugShape_.resize(p->count);
+		aabb_shape_->min = min;
+		aabb_shape_->max = max;
 
-			debugShape_.setPrimitiveType(sf::LineStrip);
-			for (int i = 0; i < p->count; i++)
-			{
-				debugShape_[i].position.x = p->verts[i].x;
-				debugShape_[i].position.y = p->verts[i].y;
-				debugShape_[i].color = sf::Color::Red;
-			}				
-		}
-		else if(debugShape_.getVertexCount() != 4)
+		collisionShape_.type_ = C2_AABB;
+		collisionShape_.shape_ = aabb_shape_.get();
+
+		if(debugShape_.getVertexCount() != 5)
 		{
-			debugShape_.resize(4);
+			debugShape_.resize(5);
 			debugShape_[0].color = sf::Color::Red;
 			debugShape_[1].color = sf::Color::Red;
 			debugShape_[2].color = sf::Color::Red;
 			debugShape_[3].color = sf::Color::Red;
+			//debugShape_[4].color = sf::Color::Red;
 
-			debugShape_.setPrimitiveType(sf::Quads);
+			debugShape_.setPrimitiveType(sf::LineStrip);
 		}
 
-		c2Circle* c = nullptr;
-		c2AABB* s = nullptr;
+		debugShape_[0].position.x = debugShape_[3].position.x = aabb_shape_->min.x;
+		debugShape_[1].position.x = debugShape_[2].position.x = aabb_shape_->max.x;
+		debugShape_[0].position.y = debugShape_[1].position.y = aabb_shape_->min.y;
+		debugShape_[2].position.y = debugShape_[3].position.y = aabb_shape_->max.y;
+		debugShape_[4] = debugShape_[0];
+	}
+
+	void TCollisionZone::setCollisionShape_Poly(const c2Poly poly)
+	{
+		if (poly_shape_ == nullptr)
+			poly_shape_ = std::make_unique<c2Poly>();
+
+		aabb_shape_.reset(nullptr);
+
+		poly_shape_->count = poly.count;
 		
-		switch (type)
+		collisionShape_.type_ = C2_POLY;
+		collisionShape_.shape_ = poly_shape_.get();
+
+		if (debugShape_.getVertexCount() != poly_shape_->count)
 		{
-		case C2_CIRCLE:
-			c = (c2Circle*)shape;
-			debugShape_[0].position.x = debugShape_[3].position.x = c->p.x - c->r;
-			debugShape_[1].position.x = debugShape_[2].position.x = c->p.x + c->r;
-			debugShape_[0].position.y = debugShape_[1].position.y = c->p.y - c->r;
-			debugShape_[2].position.y = debugShape_[3].position.y = c->p.y + c->r;
-			break;
-		case C2_AABB:
-		case C2_CAPSULE:
-			s = (c2AABB*)shape;
-			debugShape_[0].position.x = debugShape_[3].position.x = s->min.x;
-			debugShape_[1].position.x = debugShape_[2].position.x = s->max.x;
-			debugShape_[0].position.y = debugShape_[1].position.y = s->min.y;
-			debugShape_[2].position.y = debugShape_[3].position.y = s->max.y;
-			break;
-		/*case C2_CAPSULE:
-			c2Capsule* s = (c2Capsule*)shape;
-			debugShape_[0].position.x = debugShape_[3].position.x = s->min.x;
-			debugShape_[1].position.x = debugShape_[2].position.x = s->max.x;
-			debugShape_[0].position.y = debugShape_[1].position.y = s->min.y;
-			debugShape_[2].position.y = debugShape_[3].position.y = s->max.y;
-			break;*/
+			debugShape_.resize(5);
+			debugShape_.setPrimitiveType(sf::LineStrip);
+		}
+
+		for (int i = 0; i < poly_shape_->count; i++)
+		{
+			debugShape_[i].color = sf::Color::Red;
+			debugShape_[i].position = { poly_shape_->verts[i].x, poly_shape_->verts[i].y };
+
+			poly_shape_->norms[i] = poly.norms[i];
+			poly_shape_->verts[i] = poly.verts[i];
 		}
 	}
 

@@ -6,6 +6,7 @@
 #include "InterpolateToPoint.h"
 #include "SplineTexture.h"
 #include "GameState_Running.h"
+#include "TCollisionZone.h"
 #include "TCar.h"
 
 namespace tinytrain
@@ -66,6 +67,9 @@ namespace tinytrain
 			else
 				obstacles_.erase(obstacles_.begin() + i);
 		}
+
+		for (auto& c : static_collision_)
+			c->draw(target);
 	}
 
 	void TLevel::onUpdate(float deltaTime)
@@ -84,7 +88,10 @@ namespace tinytrain
 				o->update(deltaTime);
 			else
 				obstacles_.erase(obstacles_.begin()+i);
-		}			
+		}	
+
+		for (auto& c : static_collision_)
+			c->update(deltaTime);
 	}
 
 	void TLevel::onKeyPressed(sf::Event& e)
@@ -105,6 +112,9 @@ namespace tinytrain
 						comp->drawDebug_ = drawDebug_;
 				}					
 			}
+
+			for (auto& c : static_collision_)
+				c->drawDebug_ = drawDebug_;
 
 			train_->debugDraw_ = drawDebug_;
 		}

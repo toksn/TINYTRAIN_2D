@@ -1,6 +1,5 @@
 #include "TTrainCollisionManager.h"
-#include "TObstacle.h"
-
+#include "CollisionEntity.h"
 
 namespace tinytrain
 {

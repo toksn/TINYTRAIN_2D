@@ -1,6 +1,7 @@
 #pragma once
 #include "tinyc2.h"
 #include "CollisionEntity.h"
+//#include "CollisionManager.h"
 #include <memory>
 
 namespace tinytrain
@@ -14,13 +15,14 @@ namespace tinytrain
 		TCollisionZone(GameState_Running* gs, bool wintrigger = false, tgf::collision::CollisionManager::CollisionCategory cat = tgf::collision::CollisionManager::CollisionCategory::STATIC_CATEGORY_1);
 		~TCollisionZone();
 
-		void setCollisionShape(C2_TYPE type, void * shape);
-		virtual tgf::collision::c2Shape getCollisionShape() override;
 		void setCollisionCategory(tgf::collision::CollisionManager::CollisionCategory cat);
+		void setCollisionShape_AABB(c2v min, c2v max);
+		void setCollisionShape_Poly(const c2Poly poly);
+		virtual tgf::collision::c2Shape getCollisionShape() override;
 
 		virtual void onTriggerEnter(Entity* a_other);
 		virtual void onTriggerLeave(Entity* a_other);
-		
+				
 		const bool winningTrigger_;
 		
 		bool drawDebug_;
@@ -32,5 +34,9 @@ namespace tinytrain
 		tgf::collision::c2Shape collisionShape_;
 		sf::VertexArray debugShape_;
 		GameState_Running* gs_;
+
+		// TODO: c++17 std::variant
+		std::unique_ptr<c2AABB> aabb_shape_;
+		std::unique_ptr<c2Poly> poly_shape_;
 	};
 }

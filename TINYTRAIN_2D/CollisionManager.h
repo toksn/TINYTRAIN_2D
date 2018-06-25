@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+//#include "CollisionEntity.h"
 #include <memory>
 #include <functional>
 #include "tinyc2.h"

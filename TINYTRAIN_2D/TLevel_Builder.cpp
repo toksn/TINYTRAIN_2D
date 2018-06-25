@@ -3,6 +3,7 @@
 #include "GameState_Running.h"
 #include <set>
 #include "TObstacle.h"
+#include "TCollisionZone.h"
 #include "TRoadNavComponent.h"
 #include "TCar.h"
 //#include "tgfdefines.h"
@@ -1210,13 +1211,14 @@ namespace tinytrain
 					pt.y = tile_rect.height - pt.y;
 			}
 			
-			sf::Vector2f min = rect_pts[0];
-			sf::Vector2f max = rect_pts[2];
+			
+			c2v min = { rect_pts[0].x, rect_pts[0].y };
+			c2v max = { rect_pts[2].x, rect_pts[2].y };
 			// any mirror operation -> recalc the min max of the rect
 			if (mirror_diagonally || mirror_horizontally || mirror_vertically)
 			{
 				//min = rect_pts[0];
-				max = rect_pts[0];
+				max = { rect_pts[0].x, rect_pts[0].y };
 				for (int i = 1; i < rect_pts.size(); i++)
 				{
 					min.x = c2Min(min.x, rect_pts[i].x);
@@ -1231,12 +1233,11 @@ namespace tinytrain
 			max.x += tile_rect.left;
 			min.y += tile_rect.top;
 			max.y += tile_rect.top;
-			std::unique_ptr<TObstacle> obstacle = std::make_unique<TObstacle>(gs_);
-			obstacle->drawable_->setPosition(min);
-			obstacle->drawable_->setSize(max-min);
-			obstacle->drawable_->setOrigin(0.0f, 0.0f);
+			std::unique_ptr<TCollisionZone> obstacle = std::make_unique<TCollisionZone>(gs_, false, tgf::collision::CollisionManager::STATIC_CATEGORY_1);
+						
+			obstacle->setCollisionShape_AABB(min, max);
 
-			level->obstacles_.emplace_back(std::move(obstacle));
+			level->static_collision_.emplace_back(std::move(obstacle));
 		}
 	}
 	
