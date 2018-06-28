@@ -28,7 +28,7 @@ namespace tinytrain
 			std::vector<c2AABB> collision_polys;
 		};
 		sf::IntRect common_bg;
-		std::map<std::string, texture_layer_set> tex_coords;
+		std::map<std::string, texture_layer_set> texture_layer_info;
 		bool rotationAllowed = true;
 		bool isValid = false;
 

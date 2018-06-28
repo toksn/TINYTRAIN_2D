@@ -68,11 +68,11 @@ namespace tinytrain
 					// common background layer
 					addMapTile(level->background_static_, curTileRect, cur_type_data.common_bg, false);
 
-					if (cur_type_data.tex_coords.size())
+					if (cur_type_data.texture_layer_info.size())
 					{
 						// get random element from the list
-						int index = rand() % cur_type_data.tex_coords.size();
-						auto iter = cur_type_data.tex_coords.begin();
+						int index = rand() % cur_type_data.texture_layer_info.size();
+						auto iter = cur_type_data.texture_layer_info.begin();
 						std::advance(iter, index);
 						tile_type_info::texture_layer_set chosen_texture_set = iter->second;
 
@@ -297,6 +297,10 @@ namespace tinytrain
 
 		info[tile_colors::water] = tile_type_info(cur);
 		info[tile_colors::water].common_bg = common_bg_water;
+		c2AABB aabb;
+		aabb.min = c2V(0.0f, 0.0f);
+		aabb.max = c2V(common_bg_water.width, common_bg_water.height);
+		info[tile_colors::water].texture_layer_info["01"].collision_polys.emplace_back(aabb);
 
 		// residental search for "house" strings in atlas
 		info[tile_colors::residental].fillFromAtlas(atlas, "house_");
@@ -1463,23 +1467,23 @@ namespace tinytrain
 				if (suffix.length() > bg.length() && suffix.compare(0, bg.length(), bg) == 0)
 				{
 					suffix = suffix.substr(bg.length());
-					tex_coords[suffix].bg = it->second;
+					texture_layer_info[suffix].bg = it->second;
 				}
 				else if (suffix.length() > fg.length() && suffix.compare(0, fg.length(), fg) == 0)
 				{
 					suffix = suffix.substr(fg.length());
-					tex_coords[suffix].fg = it->second;
+					texture_layer_info[suffix].fg = it->second;
 				}
 				else if (suffix.length() > fg_dyn.length() && suffix.compare(0, fg_dyn.length(), fg_dyn) == 0)
 				{
 					suffix = suffix.substr(fg_dyn.length());
-					tex_coords[suffix].fg_dyn = it->second;
+					texture_layer_info[suffix].fg_dyn = it->second;
 				}
 				else if (suffix.length() > col.length() && suffix.compare(0, col.length(), col) == 0)
 				{
 					suffix = suffix.substr(col.length());
 					auto& collision_rect = it->second;
-					tex_coords[suffix].collision_polys = extractCollisionPolys(collision_rect, atlas->getImage());
+					texture_layer_info[suffix].collision_polys = extractCollisionPolys(collision_rect, atlas->getImage());
 				}
 			}
 		}

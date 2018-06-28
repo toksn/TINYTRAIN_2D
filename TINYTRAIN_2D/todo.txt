@@ -9,8 +9,9 @@
 	- other background gen (grass)
 	- redo collision images to contain only convex polys (multicolor)
 	- TCollisionZone for houses
-	
 	- TCollisionZone for lake
+
+	- trees
 	- create 2 renderTextures from all static city elements. ground + above_train
 
 - add on-screen instructions (controls, goals, hints)
