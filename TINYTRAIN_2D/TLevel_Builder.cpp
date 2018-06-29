@@ -84,7 +84,14 @@ namespace tinytrain
 						addMapTile(level->foreground_dynamic_, curTileRect, chosen_texture_set.fg_dyn, rotation, rotate_and_mirror);
 						//...
 												
+						// add collision
 						addCollision(level.get(), curTileRect, chosen_texture_set.collision_polys, rotation, rotate_and_mirror);
+
+						// generate trees [min, max]
+						auto treecount = chosen_texture_set.tree_count_range.min + (rand() % (chosen_texture_set.tree_count_range.max - chosen_texture_set.tree_count_range.min));
+						std::vector<sf::Vector2u> treepositions = tryPlacingTrees(chosen_texture_set.collision_polys, treecount);
+						for(auto& treepos : treepositions)
+							plantTree(treepos, curTileRect, texture_rects_by_tiletype_[tile_colors::trees]);
 					}
 				}
 			}
@@ -291,6 +298,9 @@ namespace tinytrain
 		cur.common_bg = common_bg_grass;		
 
 		info[tile_colors::forest] = tile_type_info(cur);
+		info[tile_colors::forest].tree_count_range.min = 10;
+		info[tile_colors::forest].tree_count_range.max = 20;
+
 		info[tile_colors::road] = tile_type_info(cur);
 		info[tile_colors::residental] = tile_type_info(cur);
 		info[tile_colors::industrial] = tile_type_info(cur);
@@ -308,6 +318,13 @@ namespace tinytrain
 		// industrial search for "industrial" strings in atlas
 		info[tile_colors::industrial].fillFromAtlas(atlas, "house_"); //"industrial_"
 		// ...			
+
+
+		// get tree info as non valid data for tree placement
+		info[tile_colors::trees] = tile_type_info();
+		info[tile_colors::trees].isValid = false;
+		info[tile_colors::trees].rotationAllowed = true;
+		info[tile_colors::trees].fillFromAtlas(atlas, "tree_");
 
 		return info;
 	}

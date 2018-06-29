@@ -16,6 +16,8 @@ namespace tinytrain
 		const sf::Uint32 forest(sf::Color(34, 177, 76).toInteger());	//dark green
 		const sf::Uint32 road(sf::Color(127, 127, 127).toInteger());	//grey
 		const sf::Uint32 industrial(sf::Color(255, 201, 14).toInteger());	//yellow
+
+		const sf::Uint32 trees(sf::Color(10, 10, 10, 10).toInteger());	// random color to store tree information (non-valid tile color)
 	}
 
 	struct tile_type_info
