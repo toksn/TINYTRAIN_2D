@@ -9,7 +9,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 1.0f;
+#define background_size_factor 5.0f;
 
 namespace tinytrain
 {
@@ -86,12 +86,21 @@ namespace tinytrain
 												
 						// add collision
 						addCollision(level.get(), curTileRect, chosen_texture_set.collision_polys, rotation, rotate_and_mirror);
+					}
 
-						// generate trees [min, max]
-						auto treecount = chosen_texture_set.tree_count_range.min + (rand() % (chosen_texture_set.tree_count_range.max - chosen_texture_set.tree_count_range.min));
-						std::vector<sf::Vector2u> treepositions = tryPlacingTrees(chosen_texture_set.collision_polys, treecount);
-						for(auto& treepos : treepositions)
-							plantTree(treepos, curTileRect, texture_rects_by_tiletype_[tile_colors::trees]);
+					// generate trees [min, max]
+					int treecount = 0;
+					if (cur_type_data.tree_count_range.x < cur_type_data.tree_count_range.y)
+						treecount = cur_type_data.tree_count_range.x + (rand() % (cur_type_data.tree_count_range.y - cur_type_data.tree_count_range.x));
+					else
+						treecount = cur_type_data.tree_count_range.x;
+
+					if (treecount)
+					{
+						std::vector<c2AABB> ff;
+						std::vector<sf::Vector2u> treepositions = tryToPlaceTrees(curTileRect, ff, treecount);
+						for (auto& treepos : treepositions)
+							plantTree(level.get(), treepos, curTileRect, texture_rects_by_tiletype_[tile_colors::trees]);
 					}
 				}
 			}
@@ -298,8 +307,8 @@ namespace tinytrain
 		cur.common_bg = common_bg_grass;		
 
 		info[tile_colors::forest] = tile_type_info(cur);
-		info[tile_colors::forest].tree_count_range.min = 10;
-		info[tile_colors::forest].tree_count_range.max = 20;
+		info[tile_colors::forest].tree_count_range.x = 10;
+		info[tile_colors::forest].tree_count_range.y = 20;
 
 		info[tile_colors::road] = tile_type_info(cur);
 		info[tile_colors::residental] = tile_type_info(cur);
@@ -1262,6 +1271,74 @@ namespace tinytrain
 		}
 	}
 	
+	std::vector<sf::Vector2u> TLevel_Builder::tryToPlaceTrees(const sf::IntRect & tilerect, const std::vector<c2AABB> & other_colliders, int tree_count)
+	{
+		std::vector<sf::Vector2u> tree_positions;
+
+		const int max_tries = 6;
+		for (int i = 0; i < tree_count; i++)
+		{
+			int tries = 0;
+			bool tree_planted = false;
+			int x = 0;
+			int y = 0;
+			do
+			{
+				tries++;
+
+				x = rand() % tilerect.width;
+				y = rand() % tilerect.height;
+
+				for (auto& t : tree_positions)
+					if (abs((int)t.x - x) < 2 && abs((int)t.y - y))
+						continue;
+
+				for (auto& c : other_colliders)
+					if ((x <= c.max.x && x > c.min.x) && (y <= c.max.y && y >= c.min.y))
+						continue;
+
+				tree_planted = true;
+			} while (tree_planted == false && tries <= max_tries);
+
+			if (tree_planted)
+				tree_positions.emplace_back(x, y);
+		}
+
+		return tree_positions;
+	}
+
+	void TLevel_Builder::plantTree(TLevel* level, const sf::Vector2u &pos, const sf::IntRect & tile_rect, const tile_type_info & tree_info)
+	{
+		sf::Vector2f actual_pos(tile_rect.left + pos.x, tile_rect.top + pos.y);
+
+		auto it = tree_info.texture_layer_info.begin();
+		std::advance(it, rand() % tree_info.texture_layer_info.size());
+
+		// todo: calc the offset from collision point (pos) to upper left corner of the texture
+		// from collision rects
+
+		float top = tile_rect.top + pos.y - 10.0f * background_size_factor;
+		float left = tile_rect.left + pos.x - 10.0f * background_size_factor;
+
+		float width = it->second.fg.width * background_size_factor;
+		float height = it->second.fg.width * background_size_factor;
+
+
+
+		// add four points for the vertex array
+		int startindex = level->foreground_static_.getVertexCount();
+		level->foreground_static_.resize(level->foreground_static_.getVertexCount() + 4);
+
+		level->foreground_static_[startindex + 0].position = { (float)left, (float)top };
+		level->foreground_static_[startindex + 1].position = { (float)left + width, (float)top };
+		level->foreground_static_[startindex + 2].position = { (float)left + width, (float)top + height };
+		level->foreground_static_[startindex + 3].position = { (float)left, (float)top + height };
+
+		level->foreground_static_[startindex + 0].texCoords = { (float)it->second.fg.left, (float)it->second.fg.top };
+		level->foreground_static_[startindex + 1].texCoords = { (float)it->second.fg.left + it->second.fg.width, (float)it->second.fg.top };
+		level->foreground_static_[startindex + 2].texCoords = { (float)it->second.fg.left + it->second.fg.width, (float)it->second.fg.top + it->second.fg.height };
+		level->foreground_static_[startindex + 3].texCoords = { (float)it->second.fg.left, (float)it->second.fg.top + it->second.fg.height };
+	}
 	sf::VertexArray TLevel_Builder::triangulateRoadSegments(tgf::utilities::CityGenerator& city)
 	{
 		sf::VertexArray triangles;

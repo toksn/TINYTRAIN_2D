@@ -33,6 +33,7 @@ namespace tinytrain
 		std::map<std::string, texture_layer_set> texture_layer_info;
 		bool rotationAllowed = true;
 		bool isValid = false;
+		sf::Vector2u tree_count_range; // x = min, y = max
 
 		void fillFromAtlas(tgf::utilities::TextureAtlas* atlas, const std::string & prefix);
 		std::vector<c2AABB> extractCollisionPolys(sf::IntRect & collision_texture_data, sf::Image * img);
@@ -64,6 +65,9 @@ namespace tinytrain
 		void initConnectionTable(road_network & network, float tilesize);
 		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
 		void addCollision(TLevel * level, sf::IntRect tile_rect, std::vector<c2AABB>& collisions,   int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
+		std::vector<sf::Vector2u> tryToPlaceTrees(const sf::IntRect & tilerect, const std::vector<c2AABB>& other_colliders, int tree_count);
+		void plantTree(TLevel * level, const sf::Vector2u & pos, const sf::IntRect & tile_rect, const tile_type_info & tree_info);
+		
 
 		float road_texture_width_ = 32.0f;
 		GameState_Running* gs_;
