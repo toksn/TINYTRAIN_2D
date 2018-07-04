@@ -10,7 +10,7 @@ namespace tinytrain
 
 		wagonsize_ = sf::Vector2f(20.0f, 10.0f);
 		wagongap_ = 5.0f;
-		speed_ = wagonsize_.x * 2.5f;
+		speed_ = wagonsize_.x * 12.0f;
 
 		aabb_.resize(5);
 		aabb_.setPrimitiveType(sf::PrimitiveType::LineStrip);

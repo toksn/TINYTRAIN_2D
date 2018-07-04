@@ -181,7 +181,6 @@ namespace tinytrain
 		{
 			level->railtrack_ = std::make_unique<TRailTrack>(gs_);
 			level->train_ = std::make_unique<TTrain>(gs_);
-			level->train_->speed_ *= background_size_factor;
 			level->train_->play();
 
 			level->railtrack_->append(sf::Vector2f(-200.0f, -50.f));
@@ -1701,8 +1700,8 @@ namespace tinytrain
 							bb.min.x = c2Min(bb.min.x, pt.x);
 							bb.min.y = c2Min(bb.min.y, pt.y);
 
-							bb.max.x = c2Max(bb.max.x, pt.x);
-							bb.max.y = c2Max(bb.max.y, pt.y);
+							bb.max.x = c2Max(bb.max.x, pt.x+1);
+							bb.max.y = c2Max(bb.max.y, pt.y+1);
 
 							// set prev dir to new direction
 							if (it != chain.end())
