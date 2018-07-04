@@ -9,7 +9,6 @@ namespace tinytrain
 #if 0		// first in, last out
 			if (c.second.waiting.size() && c.second.running.empty())
 			{
-				// todo: implement priority logic 
 				auto pickedUserToStart = c.second.waiting.front();
 				c.second.waiting.erase(c.second.waiting.begin());
 				c.second.running.emplace_back(std::move(pickedUserToStart));

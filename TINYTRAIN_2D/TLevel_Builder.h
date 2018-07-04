@@ -64,7 +64,7 @@ namespace tinytrain
 		static int gatherPixelNeighborDirs_sameColor(const sf::Image & map, const int x, const int y, std::vector<direction>* same_neighbours = nullptr, std::vector<direction>* other_neighbours = nullptr);
 		void initConnectionTable(road_network & network, float tilesize);
 		void addMapTile(sf::VertexArray& vertices, sf::IntRect tile_rect, sf::IntRect texture_rect, int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
-		void addCollision(TLevel * level, sf::IntRect tile_rect, std::vector<c2AABB>& collisions,   int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
+		void addCollision(TLevel * level, const sf::IntRect tile_rect, std::vector<c2AABB>& collisions,   int rectangular_rotation = 0, bool mirror_horizontally = false, bool mirror_vertically = false);
 		std::vector<sf::Vector2u> tryToPlaceTrees(const sf::IntRect & tilerect, const std::vector<c2AABB>& other_colliders, int tree_count);
 		void plantTree(TLevel * level, const sf::Vector2u & pos, const sf::IntRect & tile_rect, const tile_type_info & tree_info);
 		

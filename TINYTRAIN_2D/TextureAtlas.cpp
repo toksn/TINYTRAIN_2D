@@ -37,8 +37,6 @@ namespace tgf
 					
 
 				// json data may be empty -> create json path by chaning texture file extension to json
-				// todo: read out json data to fill the map
-				//texture_coords_[texture_name] = sf::IntRect(x, y, w, h);
 				std::ifstream t(jsondata_file_path);
 				std::string str;
 

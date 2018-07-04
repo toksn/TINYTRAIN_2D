@@ -9,7 +9,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 1.5f
+#define background_size_factor 1.0f
 
 namespace tinytrain
 {
@@ -68,15 +68,16 @@ namespace tinytrain
 					// common background layer
 					addMapTile(level->background_static_, curTileRect, cur_type_data.common_bg, false);
 
+					std::vector<c2AABB> collision_data;
 					if (cur_type_data.texture_layer_info.size())
 					{
 						// get random element from the list
 						int index = rand() % cur_type_data.texture_layer_info.size();
 						auto iter = cur_type_data.texture_layer_info.begin();
 						std::advance(iter, index);
-						tile_type_info::texture_layer_set chosen_texture_set = iter->second;
+						tile_type_info::texture_layer_set & chosen_texture_set = iter->second;
 
-						bool rotate_and_mirror = cur_type_data.rotationAllowed && rand() % 2;
+						bool rotate_and_mirror = rotate_and_mirror = cur_type_data.rotationAllowed && rand() % 2;
 						int rotation = rotate_and_mirror ? -1 : 0;
 						// add layers if there are any
 						addMapTile(level->background_static_, curTileRect, chosen_texture_set.bg, rotation, rotate_and_mirror);
@@ -85,7 +86,8 @@ namespace tinytrain
 						//...
 												
 						// add collision
-						addCollision(level.get(), curTileRect, chosen_texture_set.collision_polys, rotation, rotate_and_mirror);
+						collision_data = chosen_texture_set.collision_polys;
+						addCollision(level.get(), curTileRect, collision_data, rotation, rotate_and_mirror);
 					}
 
 					// generate trees [min, max]
@@ -97,8 +99,7 @@ namespace tinytrain
 
 					if (treecount)
 					{
-						std::vector<c2AABB> ff;
-						std::vector<sf::Vector2u> treepositions = tryToPlaceTrees(curTileRect, ff, treecount);
+						std::vector<sf::Vector2u> treepositions = tryToPlaceTrees(curTileRect, collision_data, treecount);
 						for (auto& treepos : treepositions)
 							plantTree(level.get(), treepos, curTileRect, texture_rects_by_tiletype_[tile_colors::trees]);
 					}
@@ -180,6 +181,7 @@ namespace tinytrain
 		{
 			level->railtrack_ = std::make_unique<TRailTrack>(gs_);
 			level->train_ = std::make_unique<TTrain>(gs_);
+			level->train_->speed_ *= background_size_factor;
 			level->train_->play();
 
 			level->railtrack_->append(sf::Vector2f(-200.0f, -50.f));
@@ -307,8 +309,6 @@ namespace tinytrain
 		cur.common_bg = common_bg_grass;		
 
 		info[tile_colors::forest] = tile_type_info(cur);
-		info[tile_colors::forest].tree_count_range.x = 10;
-		info[tile_colors::forest].tree_count_range.y = 20;
 
 		info[tile_colors::road] = tile_type_info(cur);
 		info[tile_colors::residental] = tile_type_info(cur);
@@ -335,6 +335,24 @@ namespace tinytrain
 		info[tile_colors::trees].rotationAllowed = true;
 		info[tile_colors::trees].fillFromAtlas(atlas, "tree_");
 
+
+		info[tile_colors::forest].tree_count_range.x = 10;
+		info[tile_colors::forest].tree_count_range.y = 20;
+
+		info[tile_colors::park].tree_count_range.x = 0;
+		info[tile_colors::park].tree_count_range.y = 2;
+
+		info[tile_colors::water].tree_count_range.x = 0;
+		info[tile_colors::water].tree_count_range.y = 0;
+
+		info[tile_colors::residental].tree_count_range.x = 0;
+		info[tile_colors::residental].tree_count_range.y = 2;
+
+		info[tile_colors::industrial].tree_count_range.x = 0;
+		info[tile_colors::industrial].tree_count_range.y = 1;
+
+		info[tile_colors::road].tree_count_range.x = 0;
+		info[tile_colors::road].tree_count_range.y = 0;
 		return info;
 	}
 
@@ -1198,7 +1216,9 @@ namespace tinytrain
 		}
 	}
 
-	void TLevel_Builder::addCollision(TLevel* level, sf::IntRect tile_rect, std::vector<c2AABB>& collisions, int rectangular_rotation, bool mirror_horizontally, bool mirror_vertically)
+	// level - to be modified
+	// collisions - in/out param of collisions (includes background size factor and rotation/mirrors on out)
+	void TLevel_Builder::addCollision(TLevel* level, const sf::IntRect tile_rect, std::vector<c2AABB>& collisions, int rectangular_rotation, bool mirror_horizontally, bool mirror_vertically)
 	{
 		bool mirror_diagonally = false;
 		MathHelper2D::convertRectangularRotationToMirrorOps(rectangular_rotation, mirror_horizontally, mirror_vertically, mirror_diagonally);
@@ -1208,13 +1228,13 @@ namespace tinytrain
 			std::vector<sf::Vector2f> rect_pts;
 			rect_pts.reserve(4);
 
-			col.min = c2Mulvs(col.min, background_size_factor);
-			col.max = c2Mulvs(col.max, background_size_factor);
+			c2v min = c2Mulvs(col.min, background_size_factor);
+			c2v max = c2Mulvs(col.max, background_size_factor);
 			
-			rect_pts.emplace_back(col.min.x, col.min.y);
-			rect_pts.emplace_back(col.max.x, col.min.y);
-			rect_pts.emplace_back(col.max.x, col.max.y);
-			rect_pts.emplace_back(col.min.x, col.max.y);
+			rect_pts.emplace_back(min.x, min.y);
+			rect_pts.emplace_back(max.x, min.y);
+			rect_pts.emplace_back(max.x, max.y);
+			rect_pts.emplace_back(min.x, max.y);
 			
 			if (mirror_diagonally)
 			{
@@ -1245,8 +1265,8 @@ namespace tinytrain
 			}
 			
 			
-			c2v min = { rect_pts[0].x, rect_pts[0].y };
-			c2v max = { rect_pts[2].x, rect_pts[2].y };
+			min = { rect_pts[0].x, rect_pts[0].y };
+			max = { rect_pts[2].x, rect_pts[2].y };
 			// any mirror operation -> recalc the min max of the rect
 			if (mirror_diagonally || mirror_horizontally || mirror_vertically)
 			{
@@ -1261,6 +1281,9 @@ namespace tinytrain
 					max.y = c2Max(max.y, rect_pts[i].y);
 				}
 			}
+
+			col.min = min;
+			col.max = max;
 			
 			min.x += tile_rect.left;
 			max.x += tile_rect.left;
@@ -1278,13 +1301,14 @@ namespace tinytrain
 	{
 		std::vector<sf::Vector2u> tree_positions;
 
-		const int max_tries = 6;
+		const int max_tries = 600;
 		for (int i = 0; i < tree_count; i++)
 		{
 			int tries = 0;
 			bool tree_planted = false;
 			int x = 0;
 			int y = 0;
+
 			do
 			{
 				tries++;
@@ -1292,7 +1316,7 @@ namespace tinytrain
 				x = rand() % tilerect.width;
 				y = rand() % tilerect.height;
 
-				float mindist = 8.0f * background_size_factor;
+				float mindist = 4.0f * background_size_factor;
 				tree_planted = true;
 
 				for (auto& t : tree_positions)
@@ -1308,6 +1332,7 @@ namespace tinytrain
 				{
 					for (auto& c : other_colliders)
 					{
+						//if ((x <= c.max.x*background_size_factor && x > c.min.x*background_size_factor) && (y <= c.max.y*background_size_factor && y >= c.min.y*background_size_factor))
 						if ((x <= c.max.x && x > c.min.x) && (y <= c.max.y && y >= c.min.y))
 						{
 							tree_planted = false;
@@ -1321,6 +1346,8 @@ namespace tinytrain
 			if (tree_planted)
 				tree_positions.emplace_back(x, y);
 		}
+
+		printf("placed %zd of %d possible trees\n", tree_positions.size(), tree_count);
 
 		return tree_positions;
 	}
@@ -1344,18 +1371,18 @@ namespace tinytrain
 
 
 		// add four points for the vertex array
-		int startindex = level->foreground_static_.getVertexCount();
-		level->foreground_static_.resize(level->foreground_static_.getVertexCount() + 4);
+		int startindex = level->foreground_static2_.getVertexCount();
+		level->foreground_static2_.resize(level->foreground_static2_.getVertexCount() + 4);
 
-		level->foreground_static_[startindex + 0].position = { (float)left, (float)top };
-		level->foreground_static_[startindex + 1].position = { (float)left + width, (float)top };
-		level->foreground_static_[startindex + 2].position = { (float)left + width, (float)top + height };
-		level->foreground_static_[startindex + 3].position = { (float)left, (float)top + height };
+		level->foreground_static2_[startindex + 0].position = { (float)left, (float)top };
+		level->foreground_static2_[startindex + 1].position = { (float)left + width, (float)top };
+		level->foreground_static2_[startindex + 2].position = { (float)left + width, (float)top + height };
+		level->foreground_static2_[startindex + 3].position = { (float)left, (float)top + height };
 
-		level->foreground_static_[startindex + 0].texCoords = { (float)it->second.fg.left, (float)it->second.fg.top };
-		level->foreground_static_[startindex + 1].texCoords = { (float)it->second.fg.left + it->second.fg.width, (float)it->second.fg.top };
-		level->foreground_static_[startindex + 2].texCoords = { (float)it->second.fg.left + it->second.fg.width, (float)it->second.fg.top + it->second.fg.height };
-		level->foreground_static_[startindex + 3].texCoords = { (float)it->second.fg.left, (float)it->second.fg.top + it->second.fg.height };
+		level->foreground_static2_[startindex + 0].texCoords = { (float)it->second.fg.left, (float)it->second.fg.top };
+		level->foreground_static2_[startindex + 1].texCoords = { (float)it->second.fg.left + it->second.fg.width, (float)it->second.fg.top };
+		level->foreground_static2_[startindex + 2].texCoords = { (float)it->second.fg.left + it->second.fg.width, (float)it->second.fg.top + it->second.fg.height };
+		level->foreground_static2_[startindex + 3].texCoords = { (float)it->second.fg.left, (float)it->second.fg.top + it->second.fg.height };
 
 		// TODO: add collision
 	}

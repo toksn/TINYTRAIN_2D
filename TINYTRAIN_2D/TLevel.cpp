@@ -17,6 +17,7 @@ namespace tinytrain
 
 		background_static_.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_static_.setPrimitiveType(sf::PrimitiveType::Quads);
+		foreground_static2_.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_dynamic_.setPrimitiveType(sf::PrimitiveType::Quads);
 		
 		if (gs_ && gs_->game_)
@@ -56,6 +57,7 @@ namespace tinytrain
 		if (train_)
 			train_->draw(target);
 		
+		target->draw(foreground_static2_, renderstate);
 		target->draw(foreground_static_, renderstate);
 		target->draw(foreground_dynamic_, renderstate);
 
