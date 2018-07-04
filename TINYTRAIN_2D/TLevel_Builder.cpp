@@ -9,7 +9,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 5.0f;
+#define background_size_factor 1.5f
 
 namespace tinytrain
 {
@@ -1198,7 +1198,6 @@ namespace tinytrain
 		}
 	}
 
-	// TODO: this does not mirror correctly yet
 	void TLevel_Builder::addCollision(TLevel* level, sf::IntRect tile_rect, std::vector<c2AABB>& collisions, int rectangular_rotation, bool mirror_horizontally, bool mirror_vertically)
 	{
 		bool mirror_diagonally = false;
@@ -1208,11 +1207,15 @@ namespace tinytrain
 		{
 			std::vector<sf::Vector2f> rect_pts;
 			rect_pts.reserve(4);
+
+			col.min = c2Mulvs(col.min, background_size_factor);
+			col.max = c2Mulvs(col.max, background_size_factor);
+			
 			rect_pts.emplace_back(col.min.x, col.min.y);
 			rect_pts.emplace_back(col.max.x, col.min.y);
 			rect_pts.emplace_back(col.max.x, col.max.y);
 			rect_pts.emplace_back(col.min.x, col.max.y);
-
+			
 			if (mirror_diagonally)
 			{
 				// 0 1	--> 0 3
@@ -1289,15 +1292,30 @@ namespace tinytrain
 				x = rand() % tilerect.width;
 				y = rand() % tilerect.height;
 
-				for (auto& t : tree_positions)
-					if (abs((int)t.x - x) < 2 && abs((int)t.y - y))
-						continue;
-
-				for (auto& c : other_colliders)
-					if ((x <= c.max.x && x > c.min.x) && (y <= c.max.y && y >= c.min.y))
-						continue;
-
+				float mindist = 8.0f * background_size_factor;
 				tree_planted = true;
+
+				for (auto& t : tree_positions)
+				{
+					if (abs((int)t.x - x) < mindist || abs((int)t.y - y) < mindist)
+					{
+						tree_planted = false;
+						break;
+					}
+				}
+					
+				if (tree_planted)
+				{
+					for (auto& c : other_colliders)
+					{
+						if ((x <= c.max.x && x > c.min.x) && (y <= c.max.y && y >= c.min.y))
+						{
+							tree_planted = false;
+							break;
+						}
+					}
+				}
+				
 			} while (tree_planted == false && tries <= max_tries);
 
 			if (tree_planted)
@@ -1316,13 +1334,13 @@ namespace tinytrain
 
 		// todo: calc the offset from collision point (pos) to upper left corner of the texture
 		// from collision rects
-
-		float top = tile_rect.top + pos.y - 10.0f * background_size_factor;
-		float left = tile_rect.left + pos.x - 10.0f * background_size_factor;
-
 		float width = it->second.fg.width * background_size_factor;
-		float height = it->second.fg.width * background_size_factor;
+		float height = it->second.fg.height * background_size_factor;
 
+		//float top = tile_rect.top + pos.y - 10.0f * background_size_factor;
+		//float left = tile_rect.left + pos.x - 10.0f * background_size_factor;
+		float top = tile_rect.top + pos.y - height * 0.5f;
+		float left = tile_rect.left + pos.x - width * 0.5f;
 
 
 		// add four points for the vertex array
@@ -1338,7 +1356,11 @@ namespace tinytrain
 		level->foreground_static_[startindex + 1].texCoords = { (float)it->second.fg.left + it->second.fg.width, (float)it->second.fg.top };
 		level->foreground_static_[startindex + 2].texCoords = { (float)it->second.fg.left + it->second.fg.width, (float)it->second.fg.top + it->second.fg.height };
 		level->foreground_static_[startindex + 3].texCoords = { (float)it->second.fg.left, (float)it->second.fg.top + it->second.fg.height };
+
+		// TODO: add collision
 	}
+
+
 	sf::VertexArray TLevel_Builder::triangulateRoadSegments(tgf::utilities::CityGenerator& city)
 	{
 		sf::VertexArray triangles;
@@ -1637,7 +1659,7 @@ namespace tinytrain
 								border_pixel_len++;
 							} while (it != chain.end() && *it == prevDir);
 
-							float step = border_pixel_len * background_size_factor;
+							float step = border_pixel_len;
 							if (prevDir == NORTH)
 								pt.y -= step;
 							else if (prevDir == SOUTH)
