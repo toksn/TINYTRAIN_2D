@@ -48,8 +48,9 @@ namespace tinytrain
 		~TLevel_Builder();
 
 		std::unique_ptr<TLevel> generateLevel_random();
+		std::unique_ptr<TLevel> loadLevel(const TLevel::level_info & info);
+		void applyLevelInfo(TLevel * level, const TLevel::level_info & info);
 		std::unique_ptr<TLevel> generateLevel_fromImage(sf::Image & map);
-		std::unique_ptr<TLevel> loadLevel(std::string& filename);
 
 	protected:
 		void placeTrainTrack(TLevel * level);

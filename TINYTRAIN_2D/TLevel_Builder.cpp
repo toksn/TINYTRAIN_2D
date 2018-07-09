@@ -9,7 +9,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 1.0f
+#define background_size_factor 4.0f
 
 namespace tinytrain
 {
@@ -113,7 +113,7 @@ namespace tinytrain
 		// random yellow events (collectables, like passengers, construction_workers, bonus_points)
 		// random target zones
 
-		placeTrainTrack(level.get());
+		//placeTrainTrack(level.get());
 
 		return level;
 	}
@@ -161,15 +161,133 @@ namespace tinytrain
 		/************************************************************************/
 		// TODO: passengers to pick up
 
-		placeTrainTrack(level.get());
+		//placeTrainTrack(level.get());
 		return level;
 	}
 
-	std::unique_ptr<TLevel> TLevel_Builder::loadLevel(std::string & filename)
+	std::unique_ptr<TLevel> TLevel_Builder::loadLevel(const TLevel::level_info & info)
 	{
-		return std::unique_ptr<TLevel>();
+		std::unique_ptr<TLevel> level = std::make_unique<TLevel>(gs_);
+
+		std::string file = info.map_file;
+		if (file.empty())
+		{
+			level = generateLevel_random();
+		}
+		else
+		{
+			// try to load the file as an image
+			sf::Image map;
+			if (map.loadFromFile(file))
+			{
+				level = generateLevel_fromImage(map);
+			}
+		}
+
+		if (level)
+		{
+			applyLevelInfo(level.get(), info);
+		}
+
+		return level;
 	}
 
+	void TLevel_Builder::applyLevelInfo(TLevel* level, const TLevel::level_info& info)
+	{
+		if (level && info.start_pts.size())
+		{
+			const int tilesize = road_texture_width_ * background_size_factor;
+			level->info_ = info;
+
+			level->railtrack_ = std::make_unique<TRailTrack>(gs_);
+			level->train_ = std::make_unique<TTrain>(gs_);
+			level->train_->play();
+
+			// use any startpoint
+			auto it = level->info_.start_pts.begin();
+			if (level->info_.start_pts.size() > 1)
+				std::advance(it, rand() % level->info_.start_pts.size());
+
+			direction dir = (direction) ( rand() % direction::DIR_COUNT );
+			if (dir == NORTH)
+			{
+				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width*0.5f)*tilesize), (float)((it->first.top + it->first.height)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width*0.5f)*tilesize), (float)(it->first.top*tilesize)));
+			}
+			else if (dir == SOUTH)
+			{
+				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width*0.5f)*tilesize), (float)(it->first.top*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width*0.5f)*tilesize), (float)((it->first.top + it->first.height)*tilesize)));
+			}
+			else if (dir == WEST)
+			{
+				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width)*tilesize), (float)((it->first.top + it->first.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)(it->first.left*tilesize), (float)((it->first.top + it->first.height*0.5f)*tilesize)));
+			}
+			else if (dir == EAST)
+			{
+				level->railtrack_->append(sf::Vector2f((float)(it->first.left*tilesize), (float)((it->first.top + it->first.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width)*tilesize), (float)((it->first.top + it->first.height*0.5f)*tilesize)));
+			}
+			
+			//level->railtrack_->append(sf::Vector2f(-200.0f, -50.f));
+			//level->railtrack_->append(sf::Vector2f(-100.0f, -140.f));
+			//level->railtrack_->append(sf::Vector2f(180.0f, -100.f));
+			//level->railtrack_->addLastControlPointToHistory();
+			level->railtrack_->addTrain(level->train_.get());
+			level->train_->initWagons(3);
+
+
+			// create obstacles for the games to be lost
+			for (int i = 0; i < level->info_.car_count; i++)
+			{
+				auto car = std::make_unique<TCar>(gs_, false);
+				auto carsize = sf::Vector2f(tilesize * 0.3f, tilesize * 0.15f);
+				car->drawable_->setSize(carsize);
+				car->drawable_->setOrigin(carsize.x, carsize.y * 0.5f);
+				car->updateCollisionShape();
+
+				auto c = car->addNewComponent<components::TRoadNavComponent>(&level->road_network_, gs_->getCollisionManager());
+				c->speed_ = 100.0f * background_size_factor;
+				car->navi_ = c;
+				car->vmax_ = 100.0f * background_size_factor;
+
+
+				level->obstacles_.emplace_back(std::move(car));
+			}
+
+			for (int i = 0; i < level->info_.passenger_count; i++)
+			{
+				// todo: passengers
+			}
+
+
+			// use end point to create target zone
+			//c++17 for (auto& [placement_rect, texture_rect] : level->info_.end_pts)
+			for (auto& e : level->info_.end_pts)
+			{
+				auto placement_rect = e.first;
+				auto texture_rect = e.second;
+
+				auto zone = std::make_unique<TObstacle>(gs_, true);
+				zone->drawable_->setPosition(placement_rect.left * tilesize, placement_rect.top*tilesize);
+				zone->drawable_->setSize(sf::Vector2f(placement_rect.width*tilesize, placement_rect.height*tilesize));
+				zone->updateCollisionShape();
+
+				if (texture_rect.width != 0 && texture_rect.height != 0)
+				{
+					// todo: obstacle set texture to replace colored area
+					//zone->setTexture(texture_atlas_, texture_rect);
+				}
+				
+				level->obstacles_.push_back(std::move(zone));
+			}
+			
+			// todo: level->info_.introduction_text
+		}
+	}
+
+	// DEPRICATED: use applyLevelInfo instead
 	// this function has to place a (train), railtrack, (target zone)
 	void TLevel_Builder::placeTrainTrack(TLevel* level)
 	{
@@ -1300,7 +1418,7 @@ namespace tinytrain
 	{
 		std::vector<sf::Vector2u> tree_positions;
 
-		const int max_tries = 600;
+		const int max_tries = 50;
 		for (int i = 0; i < tree_count; i++)
 		{
 			int tries = 0;
@@ -1315,6 +1433,7 @@ namespace tinytrain
 				x = rand() % tilerect.width;
 				y = rand() % tilerect.height;
 
+				// TODO: replace absolute values with relative-to-tree-sprite-size values
 				float mindist = 4.0f * background_size_factor;
 				tree_planted = true;
 
@@ -1329,10 +1448,11 @@ namespace tinytrain
 					
 				if (tree_planted)
 				{
+					mindist = 10.0f * background_size_factor;
 					for (auto& c : other_colliders)
 					{
 						//if ((x <= c.max.x*background_size_factor && x > c.min.x*background_size_factor) && (y <= c.max.y*background_size_factor && y >= c.min.y*background_size_factor))
-						if ((x <= c.max.x && x > c.min.x) && (y <= c.max.y && y >= c.min.y))
+						if ((x-mindist <= c.max.x && x+mindist > c.min.x) && (y - mindist <= c.max.y && y + mindist >= c.min.y))
 						{
 							tree_planted = false;
 							break;
@@ -1346,7 +1466,7 @@ namespace tinytrain
 				tree_positions.emplace_back(x, y);
 		}
 
-		printf("placed %zd of %d possible trees\n", tree_positions.size(), tree_count);
+		//printf("placed %zd of %d possible trees\n", tree_positions.size(), tree_count);
 
 		return tree_positions;
 	}

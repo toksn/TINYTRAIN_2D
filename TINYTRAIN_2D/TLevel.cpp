@@ -11,7 +11,7 @@
 
 namespace tinytrain
 {
-	TLevel::TLevel(GameState_Running* gs)
+	TLevel::TLevel(GameState_Running * gs)
 	{
 		gs_ = gs;
 
@@ -19,7 +19,7 @@ namespace tinytrain
 		foreground_static_.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_static2_.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_dynamic_.setPrimitiveType(sf::PrimitiveType::Quads);
-		
+
 		if (gs_ && gs_->game_)
 			texture_atlas_ = gs_->game_->getTextureAtlas();
 
@@ -30,6 +30,11 @@ namespace tinytrain
 			//...
 		}
 	}
+
+	//TLevel::TLevel(GameState_Running* gs, const level_info & info) : TLevel(gs)
+	//{
+	//	info_ = info;
+	//}
 
 
 	TLevel::~TLevel()

@@ -26,7 +26,31 @@ namespace tinytrain
 		friend class TLevel_Builder;
 
 	public:
+		struct level_info
+		{
+			// static info
+			std::string introduction_text;
+			//sf::Texture introduction_img;
+			int car_count;
+			int passenger_count;
+			// pair<pixel coords (can be float), texcoords>
+			std::vector<std::pair<sf::FloatRect, sf::IntRect>> start_pts;
+			std::vector<std::pair<sf::FloatRect, sf::IntRect>> end_pts;
+			std::string map_file;
+
+			//win/lose conditions
+			float timelimit;
+			unsigned int points_to_reach;
+
+			// dynamic info
+			unsigned int DYNAMIC_points;
+			float DYNAMIC_time;
+			//bool reached_destination;
+		};
+
+
 		TLevel(GameState_Running* gs);
+		//TLevel(GameState_Running* gs, const level_info & info);
 		~TLevel();
 
 		void restart_();
@@ -36,6 +60,8 @@ namespace tinytrain
 		std::vector<std::unique_ptr<TObstacle>> obstacles_;
 		std::vector<std::unique_ptr<TCollisionZone>> static_collision_;
 		road_network road_network_;
+
+		level_info info_;
 
 	protected:
 		// Inherited via Entity

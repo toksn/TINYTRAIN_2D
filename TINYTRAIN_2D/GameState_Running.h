@@ -2,6 +2,7 @@
 #include <memory>
 #include "GameStateBase.h"
 #include "TTrainCollisionManager.h"
+#include "TLevel.h"
 
 #define DEBUG_KEY sf::Keyboard::F11
 
@@ -12,7 +13,6 @@ namespace tgf
 
 namespace tinytrain
 {
-	class TLevel;
 	class TPlayer;
 	class TTrain;
 
@@ -36,7 +36,7 @@ namespace tinytrain
 		void pause();
 		void restart();
 
-		void loadLevel(std::string file = "");
+		void loadLevel(const TLevel::level_info& info);
 
 		TTrainCollisionManager* getCollisionManager();
 

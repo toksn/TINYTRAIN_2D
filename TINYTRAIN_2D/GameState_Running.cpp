@@ -30,7 +30,19 @@ namespace tinytrain
 		camCurrentTime_ = 0.0;
 
 		// todo: level selection
-		loadLevel("data/images/level/map.png");
+		TLevel::level_info info_level1;
+		//info_level1.header = "Level 1"
+		info_level1.introduction_text = "Find your way through the traffic to bring your passengers to their destination station!";
+		info_level1.map_file = "data/images/level/map.png";
+		info_level1.car_count = 10;
+		info_level1.passenger_count = 0;
+		info_level1.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level1.end_pts.emplace_back(sf::FloatRect(7.0f,17.0f,1.0f,1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		
+		info_level1.points_to_reach = 0;
+		info_level1.timelimit = 0.0f;
+
+		loadLevel(info_level1);
 	}
 
 	GameState_Running::~GameState_Running()
@@ -232,30 +244,17 @@ namespace tinytrain
 	{
 		//if(level_)
 		//	level_->restart();
-		loadLevel();
+		
+		//loadLevel();
 
 		//initCurrentLevel();
 	}
 
-	void GameState_Running::loadLevel(std::string file)
+	void GameState_Running::loadLevel(const TLevel::level_info & info)
 	{
-		//level_->load("data/images/level/map.png");
 		TLevel_Builder level_gen(this);
 
-		if (file.empty())
-		{
-			level_ = level_gen.generateLevel_random();
-		}
-		else
-		{
-			// try to load the file as an image
-			sf::Image map;
-			if (map.loadFromFile(file))
-			{
-				level_ = level_gen.generateLevel_fromImage(map);
-			}
-		}
-
+		level_ = level_gen.loadLevel(info);
 		if(level_)
 			initCurrentLevel();
 	}
