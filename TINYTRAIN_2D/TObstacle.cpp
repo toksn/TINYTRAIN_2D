@@ -11,7 +11,10 @@ namespace tinytrain
 		//drawCollisionShape_ = true;
 		sf::RectangleShape rect(sf::Vector2f(20.0f, 20.0f));
 		rect.setFillColor(wintrigger? sf::Color::Green : sf::Color::Red);
-		rect.setOrigin(rect.getSize() * 0.5f);
+		
+		// this caused 10px off errors continously - removed
+		//rect.setOrigin(rect.getSize() * 0.5f);
+
 		drawable_ = std::make_unique<sf::RectangleShape>(rect);
 
 		collisionShape_ = std::make_unique<c2Poly>();
