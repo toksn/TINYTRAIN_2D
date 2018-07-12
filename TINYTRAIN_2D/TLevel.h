@@ -33,9 +33,10 @@ namespace tinytrain
 			//sf::Texture introduction_img;
 			int car_count;
 			int passenger_count;
+			int inital_wagon_count;
 			// pair<pixel coords (can be float), texcoords>
-			std::vector<std::pair<sf::FloatRect, sf::IntRect>> start_pts;
-			std::vector<std::pair<sf::FloatRect, sf::IntRect>> end_pts;
+			std::vector<std::tuple<sf::FloatRect, direction, sf::IntRect>> start_pts;
+			std::vector<std::pair<sf::FloatRect, sf::IntRect>> stations;
 			std::string map_file;
 
 			//win/lose conditions

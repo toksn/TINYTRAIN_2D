@@ -208,26 +208,33 @@ namespace tinytrain
 			if (level->info_.start_pts.size() > 1)
 				std::advance(it, rand() % level->info_.start_pts.size());
 
-			direction dir = (direction) ( rand() % direction::DIR_COUNT );
+			//direction dir = (direction) ( rand() % direction::DIR_COUNT );
+			direction dir = std::get<direction>(*it);
+			auto placement_rect = std::get<0>(*it);
+			// add at least three rails at the beginning(because of the track recalculation bug)
 			if (dir == NORTH)
 			{
-				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width*0.5f)*tilesize), (float)((it->first.top + it->first.height)*tilesize)));
-				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width*0.5f)*tilesize), (float)(it->first.top*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width*0.5f)*tilesize), (float)((placement_rect.top + placement_rect.height)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width*0.5f)*tilesize), (float)((placement_rect.top + placement_rect.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width*0.5f)*tilesize), (float)(placement_rect.top*tilesize)));
 			}
 			else if (dir == SOUTH)
 			{
-				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width*0.5f)*tilesize), (float)(it->first.top*tilesize)));
-				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width*0.5f)*tilesize), (float)((it->first.top + it->first.height)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width*0.5f)*tilesize), (float)(placement_rect.top*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width*0.5f)*tilesize), (float)((placement_rect.top + placement_rect.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width*0.5f)*tilesize), (float)((placement_rect.top + placement_rect.height)*tilesize)));
 			}
 			else if (dir == WEST)
 			{
-				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width)*tilesize), (float)((it->first.top + it->first.height*0.5f)*tilesize)));
-				level->railtrack_->append(sf::Vector2f((float)(it->first.left*tilesize), (float)((it->first.top + it->first.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width)*tilesize), (float)((placement_rect.top + placement_rect.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width*0.5f)*tilesize), (float)((placement_rect.top + placement_rect.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)(placement_rect.left*tilesize), (float)((placement_rect.top + placement_rect.height*0.5f)*tilesize)));
 			}
 			else if (dir == EAST)
 			{
-				level->railtrack_->append(sf::Vector2f((float)(it->first.left*tilesize), (float)((it->first.top + it->first.height*0.5f)*tilesize)));
-				level->railtrack_->append(sf::Vector2f((float)((it->first.left + it->first.width)*tilesize), (float)((it->first.top + it->first.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)(placement_rect.left*tilesize), (float)((placement_rect.top + placement_rect.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width*0.5f)*tilesize), (float)((placement_rect.top + placement_rect.height*0.5f)*tilesize)));
+				level->railtrack_->append(sf::Vector2f((float)((placement_rect.left + placement_rect.width)*tilesize), (float)((placement_rect.top + placement_rect.height*0.5f)*tilesize)));
 			}
 			
 			//level->railtrack_->append(sf::Vector2f(-200.0f, -50.f));
@@ -235,7 +242,7 @@ namespace tinytrain
 			//level->railtrack_->append(sf::Vector2f(180.0f, -100.f));
 			//level->railtrack_->addLastControlPointToHistory();
 			level->railtrack_->addTrain(level->train_.get());
-			level->train_->initWagons(3);
+			level->train_->initWagons(level->info_.inital_wagon_count + 1);
 
 
 			// create obstacles for the games to be lost
@@ -263,8 +270,8 @@ namespace tinytrain
 
 
 			// use end point to create target zone
-			//c++17 for (auto& [placement_rect, texture_rect] : level->info_.end_pts)
-			for (auto& e : level->info_.end_pts)
+			//c++17 for (auto& [placement_rect, texture_rect] : level->info_.stations)
+			for (auto& e : level->info_.stations)
 			{
 				auto placement_rect = e.first;
 				auto texture_rect = e.second;
@@ -272,6 +279,10 @@ namespace tinytrain
 				auto zone = std::make_unique<TObstacle>(gs_, true);
 				zone->drawable_->setPosition(placement_rect.left * tilesize, placement_rect.top*tilesize);
 				zone->drawable_->setSize(sf::Vector2f(placement_rect.width*tilesize, placement_rect.height*tilesize));
+				zone->drawable_->setOrigin(0.0f, 0.0f);
+				zone->drawable_->setFillColor(sf::Color(100, 180, 0, 100));
+				zone->drawable_->setOutlineColor(sf::Color(100, 210, 0, 200));
+				zone->drawable_->setOutlineThickness(3.0f * background_size_factor);
 				zone->updateCollisionShape();
 
 				if (texture_rect.width != 0 && texture_rect.height != 0)

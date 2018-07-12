@@ -36,8 +36,9 @@ namespace tinytrain
 		info_level1.map_file = "data/images/level/map.png";
 		info_level1.car_count = 10;
 		info_level1.passenger_count = 0;
-		info_level1.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
-		info_level1.end_pts.emplace_back(sf::FloatRect(7.0f,17.0f,1.0f,1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level1.inital_wagon_count = 3;
+		info_level1.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), direction::SOUTH, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level1.stations.emplace_back(sf::FloatRect(7.0f,17.0f,1.0f,1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
 		
 		info_level1.points_to_reach = 0;
 		info_level1.timelimit = 0.0f;
@@ -112,6 +113,8 @@ namespace tinytrain
 			target->setView(*game_->guiView_);
 
 		// draw gui
+		//if (gui_)
+		//	gui_->draw(target);
 		
 		// draw player (drawing rect)
 		if(player_)

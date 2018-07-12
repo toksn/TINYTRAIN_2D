@@ -2,20 +2,26 @@
 **  TODO  **
 ************
 
-- proc gen of city
-	- road gen 
-	- road triangulation
-	- obstacle gen (houses, walls, trees, lakes, streetlamps)
-	- other background gen (grass)
-	- redo collision images to contain only convex polys (multicolor)
-	- TCollisionZone for houses
-	- TCollisionZone for lake
-	- trees
-
-	- create 2 renderTextures from all static city elements. ground + above_train
-
-- add on-screen instructions (controls, goals, hints)
+- GUI: add on-screen instructions (controls, goals, hints)
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
+	- esc menu; left mouse - draw track; right mouse - collect passengers; current mission goals; time; arrows to next objective
+	- add gamestate to show pre-game information (text, images)
+
+- try out new input method:
+	- left click (holding down or toggle?) starts casting rails (maybe rightclick to stop casting when toggle mode)
+	- while holding the speed of placing rails increases (2 per sec --> 4 per sec)
+	- while holding the maximum turn angle decreases (20° to 10°)
+	- how to measure the angle: current mouse pos vs starting mouse pos x value? always same y value -> angle
+	- add info about current max angle (narrowing triangle) and current speed (circle from (0) to 2 to 4)
+	- can be clicked anywhere on the screen (maybe this has to be )
+
+- level editor or procedural level creation?
+	- level1: reach target zone
+	- level2: reach target zone in time
+	- level3: do 3 passengers (in time)
+	- level4: collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
+
+- TLevel_Builder: create 2 renderTextures from all static city elements. ground + above_train
 
 - train vs train collision
 - check all wagons of a train for collision [only against non-static categories]
@@ -24,14 +30,7 @@
 	- apply penalty player (cooldown, penalty time to not build a new seg, money, uses (fillable by picking up construction site workers?))
 - add optional targets to score more points or have an objective at all (passengers)
 	- taxi mission gta?
-
-- add traffic
-
-- level editor or procedural level creation?
-	- level1: reach target zone
-	- level2: reach target zone in time
-	- level3: do 3 passengers (in time)
-	- level4: collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
+	- stations that automatically trigger passengers to leave and picking up passengers on right click
 
 - saving/loading of levels from files
 	- define level saving format
@@ -53,6 +52,16 @@
 ************
 **	DONE  **
 ************
+- proc gen of city
+	- road gen 
+	- road triangulation
+	- obstacle gen (houses, walls, trees, lakes, streetlamps)
+	- other background gen (grass)
+	- redo collision images to contain only convex polys (multicolor)
+	- TCollisionZone for houses
+	- TCollisionZone for lake
+	- trees
+- add traffic
 - add un-do of spline
 	- use controlpoints (tags) for undo/redo. when undo happend, just cut the spline at the calculated pointcount.
 	- when undo happened, redo is possible until a new controlpoint was appended
