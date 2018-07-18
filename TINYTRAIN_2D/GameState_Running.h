@@ -3,6 +3,7 @@
 #include "GameStateBase.h"
 #include "TTrainCollisionManager.h"
 #include "TLevel.h"
+#include "TLevelInfo_HUD.h"
 
 #define DEBUG_KEY sf::Keyboard::F11
 
@@ -45,6 +46,7 @@ namespace tinytrain
 
 		std::unique_ptr<TLevel> level_;
 		std::unique_ptr<TPlayer> player_;
+		std::unique_ptr<gui::TLevelInfo_HUD> gui_;
 		std::unique_ptr<TTrainCollisionManager> collisionMananger_;
 
 		// camera related

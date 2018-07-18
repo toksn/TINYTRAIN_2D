@@ -41,9 +41,16 @@ namespace tinytrain
 		info_level1.stations.emplace_back(sf::FloatRect(7.0f,17.0f,1.0f,1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
 		
 		info_level1.points_to_reach = 0;
-		info_level1.timelimit = 0.0f;
+		info_level1.timelimit = 40.0f;
 
 		loadLevel(info_level1);
+		
+		gui_ = std::make_unique<gui::TLevelInfo_HUD>(level_.get(), *(game->font_));
+		if (game && game->window_)
+		{
+			auto size = game->window_->getSize();
+			gui_->recalcHUDPositions(size.x, size.y);
+		}		
 	}
 
 	GameState_Running::~GameState_Running()
@@ -93,6 +100,9 @@ namespace tinytrain
 			// update player (mouse input to spline, hud info)
 			if (player_)
 				player_->update(deltaTime);
+
+			if (gui_)
+				gui_->update(deltaTime);
 		}
 	}
 
@@ -113,8 +123,8 @@ namespace tinytrain
 			target->setView(*game_->guiView_);
 
 		// draw gui
-		//if (gui_)
-		//	gui_->draw(target);
+		if (gui_)
+			gui_->draw(target);
 		
 		// draw player (drawing rect)
 		if(player_)
@@ -130,6 +140,8 @@ namespace tinytrain
 			camera_->setSize(w, h);
 
 		player_->recalcDrawRect(w, h);
+
+		gui_->recalcHUDPositions(w, h);
 	}
 
 	void GameState_Running::initCurrentLevel()

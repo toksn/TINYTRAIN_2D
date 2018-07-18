@@ -15,6 +15,9 @@ namespace tinytrain
 	{
 		gs_ = gs;
 
+		elapsed_time_ = 0.0f;
+		points_ = 0;
+
 		background_static_.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_static_.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_static2_.setPrimitiveType(sf::PrimitiveType::Quads);
@@ -81,6 +84,8 @@ namespace tinytrain
 
 	void TLevel::onUpdate(float deltaTime)
 	{
+		elapsed_time_ += deltaTime;
+
 		if (train_)
 			train_->update(deltaTime);
 		if (railtrack_)
@@ -99,6 +104,13 @@ namespace tinytrain
 
 		for (auto& c : static_collision_)
 			c->update(deltaTime);
+
+
+		if (elapsed_time_ >= info_.timelimit)
+		{
+			elapsed_time_ = info_.timelimit;
+			gs_->lost(train_.get());
+		}
 	}
 
 	void TLevel::onKeyPressed(sf::Event& e)

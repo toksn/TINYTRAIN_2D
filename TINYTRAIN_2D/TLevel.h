@@ -42,11 +42,6 @@ namespace tinytrain
 			//win/lose conditions
 			float timelimit;
 			unsigned int points_to_reach;
-
-			// dynamic info
-			unsigned int DYNAMIC_points;
-			float DYNAMIC_time;
-			//bool reached_destination;
 		};
 
 
@@ -62,8 +57,11 @@ namespace tinytrain
 		std::vector<std::unique_ptr<TCollisionZone>> static_collision_;
 		road_network road_network_;
 
+		// static info
 		level_info info_;
-
+		// dynamic info
+		unsigned int points_;
+		float elapsed_time_;
 	protected:
 		// Inherited via Entity
 		virtual void onDraw(sf::RenderTarget * target) override;
