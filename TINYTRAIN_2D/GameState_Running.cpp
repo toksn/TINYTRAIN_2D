@@ -30,6 +30,8 @@ namespace tinytrain
 		camCurrentTime_ = 0.0;
 
 		// todo: level selection
+
+		// LEVEL 1
 		TLevel::level_info info_level1;
 		//info_level1.header = "Level 1"
 		info_level1.introduction_text = "Find your way through the traffic to bring your passengers to their destination station!";
@@ -39,9 +41,47 @@ namespace tinytrain
 		info_level1.inital_wagon_count = 3;
 		info_level1.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), direction::SOUTH, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
 		info_level1.stations.emplace_back(sf::FloatRect(7.0f,17.0f,1.0f,1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
-		
 		info_level1.points_to_reach = 0;
-		info_level1.timelimit = 40.0f;
+		info_level1.timelimit = 0.0f;
+
+		// LEVEL 2
+		TLevel::level_info info_level2;
+		//info_level2.header = "Level 2"
+		info_level2.introduction_text = "Find your way through the traffic to your destination station!";
+		info_level2.map_file = "data/images/level/map.png";
+		info_level2.car_count = 10;
+		info_level2.passenger_count = 0;
+		info_level2.inital_wagon_count = 3;
+		info_level2.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), direction::SOUTH, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level2.stations.emplace_back(sf::FloatRect(7.0f, 17.0f, 1.0f, 1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level2.points_to_reach = 0;
+		info_level2.timelimit = 40.0f;
+
+		// LEVEL 3
+		TLevel::level_info info_level3;
+		//info_level3.header = "Level 3"
+		info_level3.introduction_text = "Find your way through the traffic to bring at least 3 passengers to their destinations before going home!";
+		info_level3.map_file = "data/images/level/map.png";
+		info_level3.car_count = 10;
+		info_level3.passenger_count = 5;
+		info_level3.inital_wagon_count = 3;
+		info_level3.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), direction::SOUTH, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level3.stations.emplace_back(sf::FloatRect(7.0f, 17.0f, 1.0f, 1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level3.points_to_reach = 3;
+		info_level3.timelimit = 150.0f;
+
+		// LEVEL 4
+		TLevel::level_info info_level4;
+		//info_level4.header = "Level 4"
+		info_level4.introduction_text = "Find your way through the traffic to bring your passengers to their destination station!";
+		info_level4.map_file = "data/images/level/map.png";
+		info_level4.car_count = 10;
+		info_level4.passenger_count = 10;
+		info_level4.inital_wagon_count = 3;
+		info_level4.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), direction::SOUTH, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level4.stations.emplace_back(sf::FloatRect(7.0f, 17.0f, 1.0f, 1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level4.points_to_reach = 50;
+		info_level4.timelimit = 0.0f;
 
 		loadLevel(info_level1);
 		

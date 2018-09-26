@@ -106,7 +106,7 @@ namespace tinytrain
 			c->update(deltaTime);
 
 
-		if (elapsed_time_ >= info_.timelimit)
+		if (info_.timelimit > 0 && elapsed_time_ >= info_.timelimit)
 		{
 			elapsed_time_ = info_.timelimit;
 			gs_->lost(train_.get());

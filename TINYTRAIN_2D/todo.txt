@@ -6,6 +6,7 @@
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
 	- esc menu; left mouse - draw track; right mouse - collect passengers; current mission goals; time; arrows to next objective
 	- add gamestate to show pre-game information (text, images)
+	- add arrows to objectives
 
 - try out new input method:
 	- left click (holding down or toggle?) starts casting rails (maybe rightclick to stop casting when toggle mode)
