@@ -31,7 +31,7 @@ namespace tinytrain
 
 		// todo: level selection
 
-		// LEVEL 1
+		// LEVEL 1 - works correct
 		TLevel::level_info info_level1;
 		//info_level1.header = "Level 1"
 		info_level1.introduction_text = "Find your way through the traffic to bring your passengers to their destination station!";
@@ -44,7 +44,7 @@ namespace tinytrain
 		info_level1.points_to_reach = 0;
 		info_level1.timelimit = 0.0f;
 
-		// LEVEL 2
+		// LEVEL 2 - works correct
 		TLevel::level_info info_level2;
 		//info_level2.header = "Level 2"
 		info_level2.introduction_text = "Find your way through the traffic to your destination station!";
@@ -57,7 +57,7 @@ namespace tinytrain
 		info_level2.points_to_reach = 0;
 		info_level2.timelimit = 40.0f;
 
-		// LEVEL 3
+		// LEVEL 3 - DOESNT WORK passengers missing
 		TLevel::level_info info_level3;
 		//info_level3.header = "Level 3"
 		info_level3.introduction_text = "Find your way through the traffic to bring at least 3 passengers to their destinations before going home!";
@@ -70,7 +70,7 @@ namespace tinytrain
 		info_level3.points_to_reach = 3;
 		info_level3.timelimit = 150.0f;
 
-		// LEVEL 4
+		// LEVEL 4 - DOESNT WORK passengers, wagon "pickups" and other objectives missing
 		TLevel::level_info info_level4;
 		//info_level4.header = "Level 4"
 		info_level4.introduction_text = "Find your way through the traffic to bring your passengers to their destination station!";
@@ -83,7 +83,7 @@ namespace tinytrain
 		info_level4.points_to_reach = 50;
 		info_level4.timelimit = 0.0f;
 
-		loadLevel(info_level1);
+		loadLevel(info_level3);
 		
 		gui_ = std::make_unique<gui::TLevelInfo_HUD>(level_.get(), *(game->font_));
 		if (game && game->window_)

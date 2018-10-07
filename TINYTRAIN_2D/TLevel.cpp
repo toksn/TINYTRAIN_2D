@@ -7,7 +7,7 @@
 #include "SplineTexture.h"
 #include "GameState_Running.h"
 #include "TCollisionZone.h"
-#include "TCar.h"
+#include "TPassenger.h"
 
 namespace tinytrain
 {
@@ -123,7 +123,7 @@ namespace tinytrain
 
 			for (auto& o : obstacles_)
 			{
-				auto car = dynamic_cast<TCar*>(o.get());
+				auto car = dynamic_cast<TPassenger*>(o.get());
 				if (car != nullptr)
 				{
 					car->drawDebug_ = drawDebug_;
@@ -142,5 +142,35 @@ namespace tinytrain
 	void TLevel::restart_()
 	{
 		// TODO: implement fast restart without reloading the level
+	}
+
+	std::unique_ptr<TPassenger> TLevel::removePassenger(unsigned int id)
+	{
+		// find passenger element with given (passenger)id
+		auto it = std::find_if(obstacles_.begin(), obstacles_.end(), [&id](auto& current)
+		{
+			auto passenger = dynamic_cast<TPassenger*>(current.get());
+			if (passenger != nullptr && passenger->id_ == id)
+				return true;
+			return false;
+		});
+
+		if (it != obstacles_.end())
+		{
+			std::unique_ptr<TPassenger> result{ static_cast<TPassenger*>((*it).release()) };
+			obstacles_.erase(it);
+			return std::move(result);
+		}
+		return nullptr;
+	}
+
+	void TLevel::addPassenger(std::unique_ptr<TPassenger> newpass)
+	{
+		if (newpass != nullptr)
+		{
+			newpass->id_ = passenger_id_++;
+			newpass->level_ = this;
+			obstacles_.push_back(std::move(newpass));
+		}
 	}
 }

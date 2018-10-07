@@ -9,7 +9,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 4.0f
+#define background_size_factor 1.0f
 
 namespace tinytrain
 {
@@ -266,6 +266,33 @@ namespace tinytrain
 			for (int i = 0; i < level->info_.passenger_count; i++)
 			{
 				// todo: passengers
+				
+				// step 1:
+				// just use some random road or green tiles with an area to pickup a passenger
+				//level->road_network_.road_graph.nodes_.at(0);
+					// on hit fill the wagons with the new passenger, remove the pickup area, add the destination
+
+				// passenger test:
+				sf::FloatRect placement_rect	{ 10.25f+i*3.0f, 5.25f, 0.5f, 0.5f };
+				sf::FloatRect destination_rect	{ 10.0f+i*3.0f, 8.0f, 1.0f, 1.0f };
+
+				auto passenger = std::make_unique<TPassenger>(gs_);
+				passenger->drawable_->setPosition(placement_rect.left * tilesize, placement_rect.top*tilesize);
+				passenger->drawable_->setSize(sf::Vector2f(placement_rect.width*tilesize, placement_rect.height*tilesize));
+				passenger->drawable_->setOrigin(0.0f, 0.0f);
+				passenger->drawable_->setFillColor(sf::Color(180, 180, 0, 100));
+				passenger->drawable_->setOutlineColor(sf::Color(210, 210, 0, 200));
+				passenger->drawable_->setOutlineThickness(2.0f * background_size_factor);
+				passenger->updateCollisionShape();
+
+				passenger->destination_drawable_->setPosition(destination_rect.left * tilesize, destination_rect.top*tilesize);
+				passenger->destination_drawable_->setSize(sf::Vector2f(destination_rect.width*tilesize, destination_rect.height*tilesize));
+				passenger->destination_drawable_->setOrigin(0.0f, 0.0f);
+				passenger->destination_drawable_->setFillColor(sf::Color(255, 180, 0, 100));
+				passenger->destination_drawable_->setOutlineColor(sf::Color(255, 210, 0, 200));
+				passenger->destination_drawable_->setOutlineThickness(2.0f * background_size_factor);
+
+				level->addPassenger(std::move(passenger));
 			}
 
 

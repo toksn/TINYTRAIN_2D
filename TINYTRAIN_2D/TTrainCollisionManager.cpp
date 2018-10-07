@@ -192,6 +192,8 @@ namespace tinytrain
 				if (obj.callback_enter)
 					obj.callback_enter((tgf::Entity*)train);
 			}				
+
+			train->collision((tgf::Entity*)obj.obj);
 		}
 		else if (col != obj.currentCollisions.end())
 		{
@@ -199,6 +201,8 @@ namespace tinytrain
 
 			if (obj.callback_leave)
 				obj.callback_leave((tgf::Entity*)train);
+
+			train->collisionEnd((tgf::Entity*)obj.obj);
 		}
 	}
 }

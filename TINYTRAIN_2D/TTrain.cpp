@@ -7,10 +7,12 @@ namespace tinytrain
 	{
 		color_firstwagon_ = sf::Color::Yellow;
 		color_wagons_ = sf::Color::White;
+		color_filledwagons_ = sf::Color::Blue;
 
 		wagonsize_ = sf::Vector2f(20.0f, 10.0f);
 		wagongap_ = 5.0f;
 		speed_ = wagonsize_.x * 12.0f;
+		passenger_count_ = 0;
 
 		aabb_.resize(5);
 		aabb_.setPrimitiveType(sf::PrimitiveType::LineStrip);
@@ -52,6 +54,16 @@ namespace tinytrain
 			wagons_[0].setFillColor(color_firstwagon_);
 	}
 
+	bool TTrain::hasCapacity(unsigned int space_needed)
+	{
+		return wagons_.size() - 1 - passengers_.size() >= space_needed;
+	}
+
+	void TTrain::pickUp(std::unique_ptr<TPassenger> passenger)
+	{
+		passengers_.push_back(std::move(passenger));
+	}
+
 	void TTrain::onUpdate(const float dt)
 	{
 		// move the wagons by speed * dt on the railtrack
@@ -59,6 +71,20 @@ namespace tinytrain
 			distance_ += dt * speed_;
 
 		calcAABB();
+
+		// set color for the leading wagon
+		if (passenger_count_ != passengers_.size())
+		{
+			passenger_count_ = passengers_.size();
+
+			for (int i = 1; i < wagons_.size(); i++)
+				wagons_[i].setFillColor(color_wagons_);
+
+			for(int i = 1; i-1 < passengers_.size() && i < wagons_.size(); i++)
+				wagons_[i].setFillColor(color_filledwagons_);
+		}
+
+		passengers_done_.clear();
 	}
 
 	sf::Vector2f TTrain::getPosition()
@@ -98,11 +124,55 @@ namespace tinytrain
 		return sf::FloatRect(aabb_[0].position.x, aabb_[0].position.y, aabb_[2].position.x - aabb_[0].position.x, aabb_[2].position.y - aabb_[0].position.y);
 	}
 
+	void TTrain::collision(Entity * other)
+	{
+		// TODO: handle car hits
+
+		// TODO: handle self hits
+
+		// handle passenger hits
+		TPassenger* passenger = dynamic_cast<TPassenger*>(other);
+		if (passenger)
+		{
+			TPassenger::PassengerState state = passenger->getState();
+			if (state == TPassenger::PassengerState::WAIT_FOR_PICKUP)
+			{
+				pickUp(passenger->level_->removePassenger(passenger->id_));
+
+				passenger->setState(TPassenger::PassengerState::COLLECTED);
+			}
+			else if (state == TPassenger::PassengerState::COLLECTED)
+			{
+				for (auto it = passengers_.begin(); it != passengers_.end(); ++it)
+				{
+					if (it->get() == passenger)
+					{
+						passenger->level_->points_ += passenger->points_;
+						
+						passengers_done_.push_back( std::move(*it) );
+						passengers_.erase(it);
+
+						return;
+					}
+				}
+			}
+			
+		}
+	}
+
+	void TTrain::collisionEnd(Entity * other)
+	{
+	}
+
 	void TTrain::onDraw(sf::RenderTarget * target)
 	{
 		// draw them wagons
 		for (int i = 0; i < wagons_.size(); i++)
 			target->draw(wagons_[i]);
+
+		// draw the passengers (destination zones)
+		for (int i = 0; i < passengers_.size(); i++)
+			passengers_[i]->draw(target);
 
 		if (debugDraw_)
 			target->draw(aabb_);

@@ -159,6 +159,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="TLevelInfo_HUD.cpp" />
     <ClCompile Include="TLevel_Builder.cpp" />
     <ClCompile Include="TLineInputInterface.cpp" />
+    <ClCompile Include="TPassenger.cpp" />
     <ClCompile Include="TPolyLineInputComponent.cpp" />
     <ClCompile Include="TextMenu.cpp" />
     <ClCompile Include="TLevel.cpp" />
@@ -199,6 +200,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="TLevelInfo_HUD.h" />
     <ClInclude Include="TLevel_Builder.h" />
     <ClInclude Include="TLineInputInterface.h" />
+    <ClInclude Include="TPassenger.h" />
     <ClInclude Include="TPolyLineInputComponent.h" />
     <ClInclude Include="TextMenu.h" />
     <ClInclude Include="TLevel.h" />

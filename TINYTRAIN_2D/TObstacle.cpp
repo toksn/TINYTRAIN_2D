@@ -92,6 +92,8 @@ namespace tinytrain
 				gs_->lost(train);
 		}
 	}
+
+
 	tgf::collision::c2Shape TObstacle::getCollisionShape()
 	{
 		tgf::collision::c2Shape s;

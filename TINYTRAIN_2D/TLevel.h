@@ -2,6 +2,7 @@
 #include <memory>
 #include "Entity.h"
 #include "TRailTrack.h"
+#include "TPassenger.h"
 #include "CityGenerator.h"
 #include "TRoadNetwork.h"
 #include "graph_tgf.h"
@@ -55,6 +56,13 @@ namespace tinytrain
 		std::unique_ptr<TRailTrack> railtrack_;
 		std::vector<std::unique_ptr<TObstacle>> obstacles_;
 		std::vector<std::unique_ptr<TCollisionZone>> static_collision_;
+		
+		// extra passenger handling needed? todo: passengers drawing ect in train
+		//std::vector<std::unique_ptr<TPassenger>> passengers_;
+		std::unique_ptr<TPassenger> removePassenger(unsigned int id);
+		void addPassenger(std::unique_ptr<TPassenger> newpass);
+		unsigned int passenger_id_;
+
 		road_network road_network_;
 
 		// static info
