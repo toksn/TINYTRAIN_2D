@@ -135,7 +135,7 @@ namespace tinytrain
 		if (passenger)
 		{
 			TPassenger::PassengerState state = passenger->getState();
-			if (state == TPassenger::PassengerState::WAIT_FOR_PICKUP)
+			if (state == TPassenger::PassengerState::WAIT_FOR_PICKUP && hasCapacity())
 			{
 				pickUp(passenger->level_->removePassenger(passenger->id_));
 

@@ -294,33 +294,15 @@ namespace tinytrain
 
 				level->addPassenger(std::move(passenger));
 			}
-
-
-			// use end point to create target zone
-			//c++17 for (auto& [placement_rect, texture_rect] : level->info_.stations)
+			
 			for (auto& e : level->info_.stations)
 			{
-				auto placement_rect = e.first;
-				auto texture_rect = e.second;
-
-				auto zone = std::make_unique<TObstacle>(gs_, true);
-				zone->drawable_->setPosition(placement_rect.left * tilesize, placement_rect.top*tilesize);
-				zone->drawable_->setSize(sf::Vector2f(placement_rect.width*tilesize, placement_rect.height*tilesize));
-				zone->drawable_->setOrigin(0.0f, 0.0f);
-				zone->drawable_->setFillColor(sf::Color(100, 180, 0, 100));
-				zone->drawable_->setOutlineColor(sf::Color(100, 210, 0, 200));
-				zone->drawable_->setOutlineThickness(3.0f * background_size_factor);
-				zone->updateCollisionShape();
-
-				if (texture_rect.width != 0 && texture_rect.height != 0)
-				{
-					// todo: obstacle set texture to replace colored area
-					//zone->setTexture(texture_atlas_, texture_rect);
-				}
-				
-				level->obstacles_.push_back(std::move(zone));
+				auto& placement_rect = e.first;
+				placement_rect.top		*= tilesize;
+				placement_rect.left		*= tilesize;
+				placement_rect.height	*= tilesize;
+				placement_rect.width	*= tilesize;
 			}
-			
 			// todo: level->info_.introduction_text
 		}
 	}

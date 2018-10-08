@@ -55,6 +55,7 @@ namespace tinytrain
 		std::unique_ptr<TTrain> train_;
 		std::unique_ptr<TRailTrack> railtrack_;
 		std::vector<std::unique_ptr<TObstacle>> obstacles_;
+		std::vector<std::unique_ptr<TObstacle>> targetzones_;
 		std::vector<std::unique_ptr<TCollisionZone>> static_collision_;
 		
 		// extra passenger handling needed? todo: passengers drawing ect in train

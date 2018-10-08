@@ -78,6 +78,9 @@ namespace tinytrain
 				obstacles_.erase(obstacles_.begin() + i);
 		}
 
+		for (auto& tz : targetzones_)
+			tz->draw(target);
+
 		for (auto& c : static_collision_)
 			c->draw(target);
 	}
@@ -101,6 +104,34 @@ namespace tinytrain
 			else
 				obstacles_.erase(obstacles_.begin()+i);
 		}	
+
+		if (targetzones_.empty() && points_ >= info_.points_to_reach)
+		{
+			// use end point to create target zone
+			//c++17 for (auto& [placement_rect, texture_rect] : level->info_.stations)
+			for (auto& e : info_.stations)
+			{
+				auto placement_rect = e.first;
+				auto texture_rect = e.second;
+
+				auto zone = std::make_unique<TObstacle>(gs_, true);
+				zone->drawable_->setPosition(placement_rect.left, placement_rect.top);
+				zone->drawable_->setSize(sf::Vector2f(placement_rect.width, placement_rect.height));
+				zone->drawable_->setOrigin(0.0f, 0.0f);
+				zone->drawable_->setFillColor(sf::Color(100, 180, 0, 100));
+				zone->drawable_->setOutlineColor(sf::Color(100, 210, 0, 200));
+				zone->drawable_->setOutlineThickness(3.0f /** background_size_factor*/);
+				zone->updateCollisionShape();
+
+				if (texture_rect.width != 0 && texture_rect.height != 0)
+				{
+					// todo: obstacle set texture to replace colored area
+					//zone->setTexture(texture_atlas_, texture_rect);
+				}
+
+				targetzones_.push_back(std::move(zone));
+			}
+		}
 
 		for (auto& c : static_collision_)
 			c->update(deltaTime);
