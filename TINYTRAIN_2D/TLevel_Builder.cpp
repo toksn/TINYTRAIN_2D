@@ -276,15 +276,18 @@ namespace tinytrain
 				auto cur_type = tile_colors::water;				
 				sf::Vector2u placement_pos;
 				sf::Vector2u destination_pos;
+				unsigned int loop_count = 0;
 				do 
 				{
 					placement_pos.x = rand() % size.x;
 					placement_pos.y = rand() % size.y;
 					cur_type = map.getPixel(placement_pos.x, placement_pos.y).toInteger();
+					loop_count++;
+				} while (loop_count < 10000 && cur_type != tile_colors::road && cur_type != tile_colors::park);
+				printf("loopcount passenger start %i, ", loop_count);
 
-				} while (cur_type != tile_colors::road && cur_type != tile_colors::park);
-				
 				unsigned int distance = 0;
+				loop_count = 0;
 				do
 				{
 					destination_pos.x = rand() % size.x;
@@ -294,8 +297,9 @@ namespace tinytrain
 					distance += destination_pos.y > placement_pos.y ? destination_pos.y - placement_pos.y : placement_pos.y - destination_pos.y;
 
 					cur_type = map.getPixel(destination_pos.x, destination_pos.y).toInteger();
-				} while (cur_type != tile_colors::road && cur_type != tile_colors::park || distance < 3);
-				
+					loop_count++;
+				} while (loop_count < 10000 && cur_type != tile_colors::road && cur_type != tile_colors::park || distance < 3);
+				printf("passenger destination %i, x: %i, y: %i\n", loop_count, placement_pos.x, placement_pos.y);
 
 				// passenger test:
 				placement_rect.left += placement_pos.x;
@@ -315,8 +319,8 @@ namespace tinytrain
 				passenger->destination_drawable_->setPosition(destination_rect.left * tilesize, destination_rect.top*tilesize);
 				passenger->destination_drawable_->setSize(sf::Vector2f(destination_rect.width*tilesize, destination_rect.height*tilesize));
 				passenger->destination_drawable_->setOrigin(0.0f, 0.0f);
-				passenger->destination_drawable_->setFillColor(sf::Color(255, 180, 0, 100));
-				passenger->destination_drawable_->setOutlineColor(sf::Color(255, 210, 0, 200));
+				passenger->destination_drawable_->setFillColor(sf::Color(255, 100, 0, 100));
+				passenger->destination_drawable_->setOutlineColor(sf::Color(255, 150, 0, 200));
 				passenger->destination_drawable_->setOutlineThickness(2.0f * background_size_factor);
 
 				level->addPassenger(std::move(passenger));
