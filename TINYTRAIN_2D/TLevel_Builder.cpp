@@ -170,29 +170,30 @@ namespace tinytrain
 		std::unique_ptr<TLevel> level = std::make_unique<TLevel>(gs_);
 
 		std::string file = info.map_file;
+
 		if (file.empty())
 		{
 			level = generateLevel_random();
 		}
 		else
 		{
-			// try to load the file as an image
 			sf::Image map;
+			// try to load the file as an image
 			if (map.loadFromFile(file))
 			{
 				level = generateLevel_fromImage(map);
-			}
-		}
 
-		if (level)
-		{
-			applyLevelInfo(level.get(), info);
+				if (level)
+				{
+					applyLevelInfo(level.get(), info, map);
+				}
+			}
 		}
 
 		return level;
 	}
 
-	void TLevel_Builder::applyLevelInfo(TLevel* level, const TLevel::level_info& info)
+	void TLevel_Builder::applyLevelInfo(TLevel* level, const TLevel::level_info& info, const sf::Image& map)
 	{
 		if (level && info.start_pts.size())
 		{
@@ -263,18 +264,44 @@ namespace tinytrain
 				level->obstacles_.emplace_back(std::move(car));
 			}
 
+			const sf::Vector2u size = map.getSize();
 			for (int i = 0; i < level->info_.passenger_count; i++)
 			{
 				// todo: passengers
 				
 				// step 1:
 				// just use some random road or green tiles with an area to pickup a passenger
-				//level->road_network_.road_graph.nodes_.at(0);
-					// on hit fill the wagons with the new passenger, remove the pickup area, add the destination
+				sf::FloatRect placement_rect{ 0.25f, 0.25f, 0.5f, 0.5f };
+				sf::FloatRect destination_rect{ 0.0f, 0.0f, 1.0f, 1.0f };
+				auto cur_type = tile_colors::water;				
+				sf::Vector2u placement_pos;
+				sf::Vector2u destination_pos;
+				do 
+				{
+					placement_pos.x = rand() % size.x;
+					placement_pos.y = rand() % size.y;
+					cur_type = map.getPixel(placement_pos.x, placement_pos.y).toInteger();
+
+				} while (cur_type != tile_colors::road && cur_type != tile_colors::park);
+				
+				unsigned int distance = 0;
+				do
+				{
+					destination_pos.x = rand() % size.x;
+					destination_pos.y = rand() % size.y;
+
+					distance  = destination_pos.x > placement_pos.x ? destination_pos.x - placement_pos.x : placement_pos.x - destination_pos.x;
+					distance += destination_pos.y > placement_pos.y ? destination_pos.y - placement_pos.y : placement_pos.y - destination_pos.y;
+
+					cur_type = map.getPixel(destination_pos.x, destination_pos.y).toInteger();
+				} while (cur_type != tile_colors::road && cur_type != tile_colors::park || distance < 3);
+				
 
 				// passenger test:
-				sf::FloatRect placement_rect	{ 10.25f+i*3.0f, 5.25f, 0.5f, 0.5f };
-				sf::FloatRect destination_rect	{ 10.0f+i*3.0f, 8.0f, 1.0f, 1.0f };
+				placement_rect.left += placement_pos.x;
+				placement_rect.top += placement_pos.y;
+				destination_rect.left += destination_pos.x;
+				destination_rect.top += destination_pos.y;
 
 				auto passenger = std::make_unique<TPassenger>(gs_);
 				passenger->drawable_->setPosition(placement_rect.left * tilesize, placement_rect.top*tilesize);

@@ -49,7 +49,7 @@ namespace tinytrain
 
 		std::unique_ptr<TLevel> generateLevel_random();
 		std::unique_ptr<TLevel> loadLevel(const TLevel::level_info & info);
-		void applyLevelInfo(TLevel * level, const TLevel::level_info & info);
+		void applyLevelInfo(TLevel * level, const TLevel::level_info & info, const sf::Image& map);
 		std::unique_ptr<TLevel> generateLevel_fromImage(sf::Image & map);
 
 	protected:
