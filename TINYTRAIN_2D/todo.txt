@@ -10,11 +10,11 @@
 
 - try out new input method:
 	- left click (holding down or toggle?) starts casting rails (maybe rightclick to stop casting when toggle mode)
-	- while holding the speed of placing rails increases (2 per sec --> 4 per sec)
-	- while holding the maximum turn angle decreases (20° to 10°)
+	- while holding the speed of placing rails increases (2 per sec --> 4 per sec) using cooldown (500-250ms to prevent mouse1 spamming)
+	( - while holding the maximum turn angle decreases (20° to 10°) )
 	- how to measure the angle: current mouse pos vs starting mouse pos x value? always same y value -> angle
 	- add info about current max angle (narrowing triangle) and current speed (circle from (0) to 2 to 4)
-	- can be clicked anywhere on the screen (maybe this has to be )
+	- can be clicked anywhere on the screen
 
 - level editor or procedural level creation?
 	- level1: reach target zone

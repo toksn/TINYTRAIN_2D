@@ -45,7 +45,7 @@ namespace tinytrain
 							c2v start{ inputLine_[0].position.x, inputLine_[0].position.y };
 							c2v end{ curScreenPos.x, curScreenPos.y };
 
-							if (c2Len(c2Sub(end, start)) > validDist_)
+							//if (c2Len(c2Sub(end, start)) > validDist_)
 							{
 								inputLine_.resize(2);
 								inputLine_[1] = sf::Vertex( sf::Vector2f{ end.x, end.y }, color_ );

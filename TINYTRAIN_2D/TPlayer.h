@@ -45,12 +45,17 @@ namespace tinytrain
 		void startDrawing(int x, int y);
 		void stopDrawing();
 
-		void addInputLineToRailTrack();
+		bool addInputLineToRailTrack();
 		std::vector<sf::Vector2f> convertLineToRailTrack(std::vector<sf::Vector2f>& line);
+		std::vector<sf::Vector2f> castRailTrack(std::vector<sf::Vector2f>& line);
 
 		TRailTrack* railtrack_;
 		controllers::TLineInputInterface* input_component_;
 		sf::Color color_;
 		sf::RectangleShape drawingAreaShape_;
+
+		float railcast_timeout_;
+		float railcast_timer_;
+		bool first_rail_;
 	};
 }

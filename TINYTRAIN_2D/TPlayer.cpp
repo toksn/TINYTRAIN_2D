@@ -34,6 +34,10 @@ namespace tinytrain
 
 		color_ = sf::Color::Red;
 		setColor(color_);
+
+		railcast_timeout_ = 0.5f;
+		railcast_timer_ = 0.25f;// railcast_timeout_ * 0.9f;
+		first_rail_ = true;
 	}
 
 
@@ -53,6 +57,26 @@ namespace tinytrain
 	{
 		if (inputstate_ != INPUTSTATE::IDLE && gs_ && gs_->game_)
 		{
+			railcast_timer_ += deltaTime;
+			if (railcast_timer_ >= railcast_timeout_)
+			{
+				// make timeout shorter until min
+				const float railcast_timeout_min = 0.25f;
+				if (railcast_timeout_ > railcast_timeout_min)
+				{
+					railcast_timeout_ *= 0.8f;
+					if (railcast_timeout_ < railcast_timeout_min)
+						railcast_timeout_ = railcast_timeout_min;
+				}
+
+				// add current inputline
+				if (addInputLineToRailTrack())
+				{
+					first_rail_ = false;
+					railcast_timer_ = 0.0f;
+				}
+			}
+
 			// get current mouse location
 			auto curScreenPos = sf::Mouse::getPosition(*gs_->game_->window_);
 			if (drawingArea_.contains(curScreenPos.x, curScreenPos.y))
@@ -102,10 +126,13 @@ namespace tinytrain
 	{
 		if (inputstate_ == INPUTSTATE::DRAWING)
 		{
-			//printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
-			addInputLineToRailTrack();
+			if(first_rail_)
+				//printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
+				addInputLineToRailTrack();
 		}
-
+		railcast_timer_ = 0.25f;
+		railcast_timeout_ = 0.5f;
+		first_rail_ = true;
 		inputstate_ = INPUTSTATE::IDLE;			
 	}
 
@@ -163,13 +190,16 @@ namespace tinytrain
 			input_component_->setColor(col);
 	}
 
-	void TPlayer::addInputLineToRailTrack()
+	bool TPlayer::addInputLineToRailTrack()
 	{
+		bool rc = false;
 		if (railtrack_)
 		{
 			//std::vector<sf::Vector2f> splinePointsToAdd = input_component_->convertDrawnLineToRailTrack(railtrack_, drawingArea_);
-			std::vector<sf::Vector2f> splinePointsToAdd = convertLineToRailTrack(input_component_->getInputLine(true));
-
+			//std::vector<sf::Vector2f> splinePointsToAdd = convertLineToRailTrack(input_component_->getInputLine(true));
+			std::vector<sf::Vector2f> splinePointsToAdd = castRailTrack(input_component_->getInputLine(false));
+			if (splinePointsToAdd.size())
+				rc = true;
 			railtrack_->addDrawnLinePoints(splinePointsToAdd);
 
 			bool rotateCameraWithSpline = false;
@@ -184,6 +214,43 @@ namespace tinytrain
 				gs_->moveCameraToPoint(splinePointsToAdd.back(), angle, 0.5f);
 			}
 		}
+
+		return rc;
+	}
+
+	std::vector<sf::Vector2f> TPlayer::castRailTrack(std::vector<sf::Vector2f>& line)
+	{
+		const float radius = 10.0f;
+		const float sensitivity = 2.5f;
+		if (line.size() >= 2)
+		{
+			line.resize(2);
+			auto pt_a = line[0];
+			auto pt_b = line[1];
+
+			float diff = pt_a.x - pt_b.x;
+			diff *= 2.0f;
+			diff *= sensitivity;
+			diff /= drawingArea_.width;
+
+			const float max_angle = 45.0f;
+			float cur_angle = max_angle * diff;
+			cur_angle *= DEG_TO_RAD;
+			
+			line[1].x = pt_b.x - sin(cur_angle) * radius;
+			line[1].y = pt_b.y - cos(cur_angle) * radius;
+		}
+		else if (line.size() == 1)
+		{
+			line.push_back(sf::Vector2f(line[0].x, line[0].y - radius));
+		}
+		else
+		{
+			line.push_back(sf::Vector2f(0.0f, 0.0f));
+			line.push_back(sf::Vector2f(0.0f, -radius));
+		}
+
+		return convertLineToRailTrack(line);
 	}
 
 	std::vector<sf::Vector2f> TPlayer::convertLineToRailTrack(std::vector<sf::Vector2f>& line)
