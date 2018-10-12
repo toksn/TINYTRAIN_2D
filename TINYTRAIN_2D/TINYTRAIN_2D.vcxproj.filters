@@ -152,6 +152,9 @@
     <ClCompile Include="TPassenger.cpp">
       <Filter>TinyTrain\objects</Filter>
     </ClCompile>
+    <ClCompile Include="TConeInputComponent.cpp">
+      <Filter>TinyTrain\controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -270,6 +273,9 @@
     </ClInclude>
     <ClInclude Include="TPassenger.h">
       <Filter>TinyTrain\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="TConeInputComponent.h">
+      <Filter>TinyTrain\controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

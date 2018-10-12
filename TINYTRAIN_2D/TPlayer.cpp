@@ -2,6 +2,7 @@
 #include "TRailTrack.h"
 #include "TSingleLineInputComponent.h"
 #include "TPolyLineInputComponent.h"
+#include "TConeInputComponent.h"
 
 #include "tinyc2.h"
 
@@ -28,7 +29,8 @@ namespace tinytrain
 		//bNormalizeDrawnLineRotation_ = true;
 		
 		
-		input_component_ = addNewComponent<controllers::TSingleLineInputComponent>();
+		//input_component_ = addNewComponent<controllers::TSingleLineInputComponent>();
+		input_component_ = addNewComponent<controllers::TConeInputComponent>();
 		bNormalizeDrawnLineSize_ = true;
 		bNormalizeDrawnLineRotation_ = false;
 
@@ -111,6 +113,8 @@ namespace tinytrain
 		drawingAreaShape_.setFillColor(sf::Color::Transparent);
 		drawingAreaShape_.setOutlineColor(color_);
 		drawingAreaShape_.setOutlineThickness(1);
+
+		input_component_->init();
 	}
 
 	void TPlayer::startDrawing(int x, int y)
@@ -196,10 +200,24 @@ namespace tinytrain
 		if (railtrack_)
 		{
 			//std::vector<sf::Vector2f> splinePointsToAdd = input_component_->convertDrawnLineToRailTrack(railtrack_, drawingArea_);
-			//std::vector<sf::Vector2f> splinePointsToAdd = convertLineToRailTrack(input_component_->getInputLine(true));
-			std::vector<sf::Vector2f> splinePointsToAdd = castRailTrack(input_component_->getInputLine(false));
+			auto line = input_component_->getInputLine(false);
+			float radius = 10.0f;
+			if (line.size() == 1)
+			{
+				line.push_back(sf::Vector2f(line[0].x, line[0].y - radius));
+			}
+			else if(line.size() == 0)
+			{
+				line.push_back(sf::Vector2f(0.0f, 0.0f));
+				line.push_back(sf::Vector2f(0.0f, -radius));
+			}
+
+			std::vector<sf::Vector2f> splinePointsToAdd = convertLineToRailTrack(line);
+			//std::vector<sf::Vector2f> splinePointsToAdd = castRailTrack(input_component_->getInputLine(false));
+
 			if (splinePointsToAdd.size())
 				rc = true;
+
 			railtrack_->addDrawnLinePoints(splinePointsToAdd);
 
 			bool rotateCameraWithSpline = false;
@@ -237,8 +255,8 @@ namespace tinytrain
 			float cur_angle = max_angle * diff;
 			cur_angle *= DEG_TO_RAD;
 			
-			line[1].x = pt_b.x - sin(cur_angle) * radius;
-			line[1].y = pt_b.y - cos(cur_angle) * radius;
+			line[1].x = pt_a.x - sin(cur_angle) * radius;
+			line[1].y = pt_a.y - cos(cur_angle) * radius;
 		}
 		else if (line.size() == 1)
 		{

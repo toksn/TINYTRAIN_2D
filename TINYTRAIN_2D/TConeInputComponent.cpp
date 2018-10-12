@@ -1,0 +1,88 @@
+#include "TConeInputComponent.h"
+#include "TPlayer.h"
+#include "TRailTrack.h"
+#include "tinyc2.h"
+
+namespace tinytrain
+{
+	namespace controllers
+	{
+		TConeInputComponent::TConeInputComponent()
+		{
+			input_width_ = 200.0f;
+			sensitivity_ = 1.0f;//2.5f;
+			radius_ = 10.0f;
+			max_angle_ = 45.0f;
+			inputLine_.setPrimitiveType(sf::PrimitiveType::LineStrip);
+			player_ = nullptr;
+		}
+
+		TConeInputComponent::~TConeInputComponent()
+		{
+		}
+
+		void TConeInputComponent::draw(sf::RenderTarget * target)
+		{
+			
+
+			target->draw(inputLine_);
+		}
+
+		void TConeInputComponent::update(float deltaTime)
+		{
+			//if(player_ == nullptr && owner_ != nullptr)
+			if (player_ != owner_)
+			{
+				player_ = dynamic_cast<TPlayer*>(owner_);
+				init();					
+			}
+
+			if (player_ && player_->inputstate_ == INPUTSTATE::DRAWING)
+			{
+				if (player_->gs_ && player_->gs_->game_)
+				{
+					// get current mouse location
+					auto curScreenPos = sf::Mouse::getPosition(*player_->gs_->game_->window_);
+					auto size = inputLine_.getVertexCount();
+					if (size < 2)
+						inputLine_.append(sf::Vertex(sf::Vector2f(curScreenPos.x, curScreenPos.y), color_));
+					else
+					{
+						inputLine_.resize(2);
+						auto pt_a = inputLine_[0].position;
+						//sf::Vector2f pt_b{ (float)curScreenPos.x, (float)curScreenPos.y };
+
+						float diff = pt_a.x - curScreenPos.x;
+						diff *= 2.0f;
+						diff *= sensitivity_;
+						diff /= input_width_;
+
+						
+						float cur_angle = max_angle_ * diff;
+						printf("curangle = %f, diff = %f\n", cur_angle, diff);
+						cur_angle *= DEG_TO_RAD;
+
+						inputLine_[1].position.x = pt_a.x - sin(cur_angle) * radius_;
+						inputLine_[1].position.y = pt_a.y - cos(cur_angle) * radius_;
+
+						// set mouse back
+						//sf::Mouse::setPosition(sf::Vector2i(pt_a.x, pt_a.y), *player_->gs_->game_->window_);
+					}
+				}
+			}
+		}
+
+		void TConeInputComponent::init()
+		{
+			if (player_)
+			{
+				input_width_ = player_->drawingArea_.width;
+
+				// trigonometry
+				float a = input_width_ * 0.5f;
+				float alpha = max_angle_ * DEG_TO_RAD;
+				radius_ = a / sin(alpha);
+			}
+		}
+	}
+}

@@ -15,6 +15,7 @@ namespace tinytrain
 			virtual std::vector<sf::Vector2f> getInputLine(bool reset_line = false);
 			virtual void resetInputLine(int x, int y);
 			virtual void setColor(sf::Color color);
+			virtual void init();
 
 		protected:
 			sf::VertexArray inputLine_;

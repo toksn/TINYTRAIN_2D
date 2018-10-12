@@ -7,9 +7,17 @@ namespace tinytrain
 		std::vector<sf::Vector2f> TLineInputInterface::getInputLine(bool reset_line)
 		{
 			std::vector<sf::Vector2f> inputLine;
-
-			for (int i = 0; i < inputLine_.getVertexCount(); i++)
-				inputLine.push_back(inputLine_[i].position);
+			if (inputLine_.getVertexCount())
+			{
+				sf::Vector2f last = inputLine_[0].position;
+				inputLine.push_back(inputLine_[0].position);
+				for (int i = 1; i < inputLine_.getVertexCount(); i++)
+				{
+					if(inputLine_[i].position != last)
+						inputLine.push_back(inputLine_[i].position);
+				}
+			}
+			
 
 			if (reset_line)
 				inputLine_.resize(0);
@@ -29,6 +37,10 @@ namespace tinytrain
 			color_ = color;
 			for (int i = 0; i < inputLine_.getVertexCount(); i++)
 				inputLine_[i].color = color;
+		}
+
+		void TLineInputInterface::init()
+		{
 		}
 	}
 }
