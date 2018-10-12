@@ -62,7 +62,19 @@ namespace tinytrain
 						cur_diff /= input_width_;
 
 						if (cur_diff == 0.0f)
-							diff_ *= 0.9f;
+						{
+							// turn back slower the less it was moved
+							//diff_ *= 1.0f - 1.0f * deltaTime;
+
+							// turn back linear 0.7 of full diff per sec
+							float turn_back = 0.7f * deltaTime;
+							float new_diff = diff_ < 0.0f ? -diff_ : diff_;
+							
+							new_diff -= turn_back;
+							new_diff = new_diff < 0.0f ? 0.0f : new_diff;
+
+							diff_ = diff_ < 0.0f ? -new_diff : new_diff;
+						}
 						else
 							diff_ += cur_diff;
 
@@ -71,7 +83,6 @@ namespace tinytrain
 						diff_ = diff_ < -1.0f ? -1.0f : diff_;
 						
 						float cur_angle = max_angle_ * diff_;
-						//printf("curangle = %f, diff = %f\n", cur_angle, diff_);
 						cur_angle *= DEG_TO_RAD;
 
 						inputLine_[1].position.x = pt_a.x - sin(cur_angle) * radius_;
