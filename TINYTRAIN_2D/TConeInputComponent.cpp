@@ -13,6 +13,7 @@ namespace tinytrain
 			sensitivity_ = 1.0f;//2.5f;
 			radius_ = 10.0f;
 			max_angle_ = 45.0f;
+			diff_ = 0.0f;
 			inputLine_.setPrimitiveType(sf::PrimitiveType::LineStrip);
 			player_ = nullptr;
 		}
@@ -45,28 +46,39 @@ namespace tinytrain
 					auto curScreenPos = sf::Mouse::getPosition(*player_->gs_->game_->window_);
 					auto size = inputLine_.getVertexCount();
 					if (size < 2)
+					{
 						inputLine_.append(sf::Vertex(sf::Vector2f(curScreenPos.x, curScreenPos.y), color_));
+						diff_ = 0.0f;
+					}
 					else
 					{
 						inputLine_.resize(2);
 						auto pt_a = inputLine_[0].position;
 						//sf::Vector2f pt_b{ (float)curScreenPos.x, (float)curScreenPos.y };
 
-						float diff = pt_a.x - curScreenPos.x;
-						diff *= 2.0f;
-						diff *= sensitivity_;
-						diff /= input_width_;
+						float cur_diff = pt_a.x - curScreenPos.x;
+						cur_diff *= 2.0f;
+						cur_diff *= sensitivity_;
+						cur_diff /= input_width_;
 
+						if (cur_diff == 0.0f)
+							diff_ *= 0.9f;
+						else
+							diff_ += cur_diff;
+
+						// keep in -1 to +1 range
+						diff_ = diff_ > 1.0f ? 1.0f : diff_;
+						diff_ = diff_ < -1.0f ? -1.0f : diff_;
 						
-						float cur_angle = max_angle_ * diff;
-						printf("curangle = %f, diff = %f\n", cur_angle, diff);
+						float cur_angle = max_angle_ * diff_;
+						//printf("curangle = %f, diff = %f\n", cur_angle, diff_);
 						cur_angle *= DEG_TO_RAD;
 
 						inputLine_[1].position.x = pt_a.x - sin(cur_angle) * radius_;
 						inputLine_[1].position.y = pt_a.y - cos(cur_angle) * radius_;
 
 						// set mouse back
-						//sf::Mouse::setPosition(sf::Vector2i(pt_a.x, pt_a.y), *player_->gs_->game_->window_);
+						sf::Mouse::setPosition(sf::Vector2i(pt_a.x, pt_a.y), *player_->gs_->game_->window_);
 					}
 				}
 			}

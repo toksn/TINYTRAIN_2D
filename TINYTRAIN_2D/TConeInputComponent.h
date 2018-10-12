@@ -21,6 +21,7 @@ namespace tinytrain
 			float sensitivity_;
 			float radius_;
 			float max_angle_;
+			float diff_;
 		};
 	}
 }
