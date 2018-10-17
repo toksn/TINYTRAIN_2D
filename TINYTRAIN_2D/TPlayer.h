@@ -54,6 +54,8 @@ namespace tinytrain
 		sf::Color color_;
 		sf::RectangleShape drawingAreaShape_;
 
+		// auto cast feature
+		bool autocast_;
 		float railcast_timeout_;
 		float railcast_timer_;
 		bool first_rail_;

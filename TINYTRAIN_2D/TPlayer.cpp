@@ -40,6 +40,7 @@ namespace tinytrain
 		railcast_timeout_ = 0.5f;
 		railcast_timer_ = 0.25f;// railcast_timeout_ * 0.9f;
 		first_rail_ = true;
+		autocast_ = false;
 	}
 
 
@@ -59,23 +60,26 @@ namespace tinytrain
 	{
 		if (inputstate_ != INPUTSTATE::IDLE && gs_ && gs_->game_)
 		{
-			railcast_timer_ += deltaTime;
-			if (railcast_timer_ >= railcast_timeout_)
+			if(autocast_)
 			{
-				// make timeout shorter until min
-				const float railcast_timeout_min = 0.25f;
-				if (railcast_timeout_ > railcast_timeout_min)
+				railcast_timer_ += deltaTime;
+				if (railcast_timer_ >= railcast_timeout_)
 				{
-					railcast_timeout_ *= 0.8f;
-					if (railcast_timeout_ < railcast_timeout_min)
-						railcast_timeout_ = railcast_timeout_min;
-				}
+					// make timeout shorter until min
+					const float railcast_timeout_min = 0.25f;
+					if (railcast_timeout_ > railcast_timeout_min)
+					{
+						railcast_timeout_ *= 0.8f;
+						if (railcast_timeout_ < railcast_timeout_min)
+							railcast_timeout_ = railcast_timeout_min;
+					}
 
-				// add current inputline
-				if (addInputLineToRailTrack())
-				{
-					first_rail_ = false;
-					railcast_timer_ = 0.0f;
+					// add current inputline
+					if (addInputLineToRailTrack())
+					{
+						first_rail_ = false;
+						railcast_timer_ = 0.0f;
+					}
 				}
 			}
 

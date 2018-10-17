@@ -12,8 +12,9 @@ namespace tinytrain
 			input_width_ = 200.0f;
 			sensitivity_ = 1.0f;//2.5f;
 			radius_ = 10.0f;
-			max_angle_ = 45.0f;
+			max_angle_ = 90.0f;
 			diff_ = 0.0f;
+			center_rate_ = 0.0f;		// centering in center_rate_ * full max_angles per second (recommended about 0.5 to 0.7)
 			inputLine_.setPrimitiveType(sf::PrimitiveType::LineStrip);
 			player_ = nullptr;
 		}
@@ -61,13 +62,10 @@ namespace tinytrain
 						cur_diff *= sensitivity_;
 						cur_diff /= input_width_;
 
-						if (cur_diff == 0.0f)
+						if (cur_diff == 0.0f && center_rate_ >= 0.0f)
 						{
-							// turn back slower the less it was moved
-							//diff_ *= 1.0f - 1.0f * deltaTime;
-
-							// turn back linear 0.7 of full diff per sec
-							float turn_back = 0.7f * deltaTime;
+							// turn back linear rate of full diff per sec
+							float turn_back = center_rate_ * deltaTime;
 							float new_diff = diff_ < 0.0f ? -diff_ : diff_;
 							
 							new_diff -= turn_back;

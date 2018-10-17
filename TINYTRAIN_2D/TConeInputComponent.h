@@ -22,6 +22,8 @@ namespace tinytrain
 			float radius_;
 			float max_angle_;
 			float diff_;
+
+			float center_rate_;
 		};
 	}
 }
