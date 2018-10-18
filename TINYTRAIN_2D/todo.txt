@@ -2,19 +2,20 @@
 **  TODO  **
 ************
 
+- Game Logic:
+	- hitting cars cannot be avoided all the time
+		- decrease penalty of hitting cars to loosing a passenger and 5 seconds (screenshake, onscreen info (-5sec, -1 passenger))
+
 - GUI: add on-screen instructions (controls, goals, hints)
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
 	- esc menu; left mouse - draw track; right mouse - collect passengers; current mission goals; time; arrows to next objective
 	- add gamestate to show pre-game information (text, images)
 	- add arrows to objectives
 
-- try out new input method:
-	- left click (holding down or toggle?) starts casting rails (maybe rightclick to stop casting when toggle mode)
-	- while holding the speed of placing rails increases (2 per sec --> 4 per sec) using cooldown (500-250ms to prevent mouse1 spamming)
-	( - while holding the maximum turn angle decreases (20° to 10°) )
-	- how to measure the angle: current mouse pos vs starting mouse pos x value? always same y value -> angle
-	- add info about current max angle (narrowing triangle) and current speed (circle from (0) to 2 to 4)
+- autocasting rails:
 	- can be clicked anywhere on the screen
+	- add info about current angle [done] and current speed (circle from (0) to 2 to 4)
+	- only show current angle for first rail
 
 - level editor or procedural level creation?
 	- level1: reach target zone
@@ -53,6 +54,13 @@
 ************
 **	DONE  **
 ************
+
+- autocasting rails:
+	- left click (holding down or toggle?) starts casting rails (maybe rightclick to stop casting when toggle mode)
+	- while holding the speed of placing rails increases (2 per sec --> 4 per sec) using cooldown (500-250ms to prevent mouse1 spamming)
+	( - while holding the maximum turn angle decreases (20° to 10°) )
+	- how to measure the angle: current mouse pos vs starting mouse pos x value? always same y value -> angle
+
 - proc gen of city
 	- road gen 
 	- road triangulation

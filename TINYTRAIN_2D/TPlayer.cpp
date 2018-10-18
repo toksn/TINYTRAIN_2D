@@ -41,7 +41,7 @@ namespace tinytrain
 		setColor(color_);
 
 		railcast_cooldown_ = railcast_maxcooldown_ = 0.8f;
-		railcast_mincooldown_ = 0.4f;
+		railcast_mincooldown_ = 0.42f;
 		//railcast_timer_ = 0.25f;// railcast_timeout_ * 0.9f;
 		railcast_timer_ = 0.0f;
 		first_rail_ = true;
