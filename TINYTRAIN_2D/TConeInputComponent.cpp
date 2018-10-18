@@ -80,8 +80,10 @@ namespace tinytrain
 						diff_ = diff_ > 1.0f ? 1.0f : diff_;
 						diff_ = diff_ < -1.0f ? -1.0f : diff_;
 						
-						float cur_angle = max_angle_ * diff_;
-						cur_angle *= DEG_TO_RAD;
+						float cur_angle = getCurrentAngle();
+						
+						// apply angle to player_ 
+						player_->input_angle_ = cur_angle;
 
 						inputLine_[1].position.x = pt_a.x - sin(cur_angle) * radius_;
 						inputLine_[1].position.y = pt_a.y - cos(cur_angle) * radius_;
@@ -91,6 +93,14 @@ namespace tinytrain
 					}
 				}
 			}
+		}
+
+		float TConeInputComponent::getCurrentAngle()
+		{
+			float cur_angle = max_angle_ * diff_;
+
+			cur_angle *= DEG_TO_RAD;
+			return cur_angle;
 		}
 
 		void TConeInputComponent::init()

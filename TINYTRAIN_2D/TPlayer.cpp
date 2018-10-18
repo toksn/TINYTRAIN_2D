@@ -22,6 +22,9 @@ namespace tinytrain
 			gs->bindEventCallback(sf::Event::KeyPressed, this, &TPlayer::onKeyPressed);
 			//...
 		}
+
+		input_dir_.setPrimitiveType(sf::PrimitiveType::Lines);
+		input_dir_.resize(2);
 		
 		// input options
 		//input_component_ = addNewComponent<controllers::TPolyLineInputComponent>();
@@ -37,10 +40,13 @@ namespace tinytrain
 		color_ = sf::Color::Red;
 		setColor(color_);
 
-		railcast_timeout_ = 0.5f;
-		railcast_timer_ = 0.25f;// railcast_timeout_ * 0.9f;
+		railcast_cooldown_ = railcast_maxcooldown_ = 0.8f;
+		railcast_mincooldown_ = 0.4f;
+		//railcast_timer_ = 0.25f;// railcast_timeout_ * 0.9f;
+		railcast_timer_ = 0.0f;
 		first_rail_ = true;
-		autocast_ = false;
+
+		autocast_ = true;
 	}
 
 
@@ -54,24 +60,71 @@ namespace tinytrain
 	void TPlayer::onDraw(sf::RenderTarget * target)
 	{
 		target->draw(drawingAreaShape_);
+
+		if (inputstate_ == INPUTSTATE::DRAWING && gs_ && gs_->camera_)
+		{
+			auto currentView = target->getView();
+			target->setView(*gs_->camera_);
+
+			target->draw(input_dir_);
+
+			target->setView(currentView);
+		}
+		
+		
+
+		
 	}
 
 	void TPlayer::onUpdate(float deltaTime)
 	{
 		if (inputstate_ != INPUTSTATE::IDLE && gs_ && gs_->game_)
 		{
+			// draw input direction
+			if(inputstate_ == INPUTSTATE::DRAWING)
+			{
+				sf::Vector2f start, end;
+				float angle_rad = 0.0f;
+				if (railtrack_->getLastControlPointSegmentFromTrack(start, end))
+				{
+					c2v seg = c2Sub({ end.x,end.y }, { start.x,start.y });
+
+					// correct SFML to mathematical coordinate system by rotating 90degrees
+					//seg = c2Skew(seg);
+
+					angle_rad = atan2(seg.y, seg.x);
+				}
+				float len = railtrack_->getSegmentLength();
+
+				c2v nextPt;
+				nextPt.x = 1.0f;
+				nextPt.y = 0.0f;
+
+				// apply segment length scale
+				nextPt = c2Mulvs(nextPt, len);
+
+				// rotate to match spline direction
+				nextPt = c2Mulrv(c2Rot(angle_rad - input_angle_), nextPt);
+
+				// position it in relation to the last square point
+				nextPt = c2Add(nextPt, c2v{ end.x, end.y });
+
+				input_dir_[0].position = end;
+				input_dir_[1].position.x = nextPt.x;
+				input_dir_[1].position.y = nextPt.y;
+			}
+			
 			if(autocast_)
 			{
 				railcast_timer_ += deltaTime;
-				if (railcast_timer_ >= railcast_timeout_)
+				if (railcast_timer_ >= railcast_cooldown_)
 				{
 					// make timeout shorter until min
-					const float railcast_timeout_min = 0.25f;
-					if (railcast_timeout_ > railcast_timeout_min)
+					if (railcast_cooldown_ > railcast_mincooldown_)
 					{
-						railcast_timeout_ *= 0.8f;
-						if (railcast_timeout_ < railcast_timeout_min)
-							railcast_timeout_ = railcast_timeout_min;
+						railcast_cooldown_ *= 0.8f;
+						if (railcast_cooldown_ < railcast_mincooldown_)
+							railcast_cooldown_ = railcast_mincooldown_;
 					}
 
 					// add current inputline
@@ -138,8 +191,8 @@ namespace tinytrain
 				//printf("IDLE\t: stopped drawing, trying to add the points to the railtrack\n");
 				addInputLineToRailTrack();
 		}
-		railcast_timer_ = 0.25f;
-		railcast_timeout_ = 0.5f;
+		railcast_timer_ = 0.0f;
+		railcast_cooldown_ = railcast_maxcooldown_;
 		first_rail_ = true;
 		inputstate_ = INPUTSTATE::IDLE;			
 	}
@@ -194,6 +247,8 @@ namespace tinytrain
 	{
 		color_ = col;
 		drawingAreaShape_.setOutlineColor(color_);
+		input_dir_[0].color = col;
+		input_dir_[1].color = col;
 		if(input_component_)
 			input_component_->setColor(col);
 	}
@@ -204,7 +259,7 @@ namespace tinytrain
 		if (railtrack_)
 		{
 			//std::vector<sf::Vector2f> splinePointsToAdd = input_component_->convertDrawnLineToRailTrack(railtrack_, drawingArea_);
-			auto line = input_component_->getInputLine(false);
+			auto line = input_component_->getInputLine(true);
 			float radius = 10.0f;
 			if (line.size() == 1)
 			{

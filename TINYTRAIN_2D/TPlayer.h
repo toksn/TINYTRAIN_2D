@@ -31,6 +31,7 @@ namespace tinytrain
 		void setColor(sf::Color col);
 		
 		INPUTSTATE inputstate_;
+		float input_angle_;
 		sf::FloatRect drawingArea_;
 		GameState_Running* gs_;
 
@@ -54,9 +55,15 @@ namespace tinytrain
 		sf::Color color_;
 		sf::RectangleShape drawingAreaShape_;
 
+		// todo: move all the input dir stuff into railtrack to be worldcoordinates 
+		//	OR	 calc the screenpos from end rail pos
+		sf::VertexArray input_dir_;
+
 		// auto cast feature
 		bool autocast_;
-		float railcast_timeout_;
+		float railcast_maxcooldown_;
+		float railcast_mincooldown_;
+		float railcast_cooldown_;
 		float railcast_timer_;
 		bool first_rail_;
 	};

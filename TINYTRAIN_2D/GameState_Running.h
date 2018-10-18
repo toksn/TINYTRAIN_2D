@@ -40,7 +40,7 @@ namespace tinytrain
 		void loadLevel(const TLevel::level_info& info);
 
 		TTrainCollisionManager* getCollisionManager();
-
+		std::unique_ptr<sf::View> camera_;
 	protected:
 		void initCurrentLevel();
 
@@ -50,7 +50,6 @@ namespace tinytrain
 		std::unique_ptr<TTrainCollisionManager> collisionMananger_;
 
 		// camera related
-		std::unique_ptr<sf::View> camera_;
 		bool bRotateCameraWithTrack_;
 		float camFlowTime_;
 		float camCurrentTime_;

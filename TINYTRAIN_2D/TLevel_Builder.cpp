@@ -9,7 +9,7 @@
 //#include "tgfdefines.h"
 
 // todo: maybe move into gamestate_running?
-#define background_size_factor 1.0f
+#define background_size_factor 4.0f
 
 namespace tinytrain
 {

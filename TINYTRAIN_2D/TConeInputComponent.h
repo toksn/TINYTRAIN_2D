@@ -14,6 +14,7 @@ namespace tinytrain
 			// Inherited via Component
 			virtual void draw(sf::RenderTarget * target) override;
 			virtual void update(float deltaTime) override;
+			float getCurrentAngle();
 			virtual void init() override;
 
 		protected:
