@@ -29,6 +29,8 @@ namespace tinytrain
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(float deltaTime) override;
 
+		virtual void onTriggerEnter(Entity* other) override;
+
 		sf::VertexArray collision_quad_;
 
 		DrivingState state_;

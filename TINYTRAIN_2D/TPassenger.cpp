@@ -18,26 +18,33 @@ namespace tinytrain
 		destination_drawable_ = std::make_unique<sf::RectangleShape>(rect);
 
 		points_ = 1;
+		state_ = PassengerState::WAIT_FOR_PICKUP;
 	}
 	
 	TPassenger::~TPassenger()
 	{
 	}
 
+	void TPassenger::reset()
+	{
+		setState(PassengerState::WAIT_FOR_PICKUP);
+	}
+
 	void TPassenger::setState(TPassenger::PassengerState newstate)
 	{
-		if (newstate == PassengerState::COLLECTED)
+		if (state_ != newstate)
 		{
-			drawable_ = std::move(destination_drawable_);
+			drawable_.swap(destination_drawable_);
 
-			//drawable_->setFillColor(destination_drawable_->getFillColor());
-			//drawable_->setOutlineColor(destination_drawable_->getOutlineColor());
-			//drawable_->setSize(destination_drawable_->getSize());
-			//drawable_->setPosition(destination_drawable_->getPosition());
 			updateCollisionShape();
+
+			state_ = newstate;
 		}
 
-		state_ = newstate;
+		//if (newstate == PassengerState::COLLECTED)
+		//{
+		//	
+		//}
 	}
 
 	TPassenger::PassengerState TPassenger::getState()

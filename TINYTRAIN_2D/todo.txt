@@ -2,15 +2,12 @@
 **  TODO  **
 ************
 
-- Game Logic:
-	- hitting cars cannot be avoided all the time
-		- decrease penalty of hitting cars to loosing a passenger and 5 seconds (screenshake, onscreen info (-5sec, -1 passenger))
-
 - GUI: add on-screen instructions (controls, goals, hints)
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
 	- esc menu; left mouse - draw track; right mouse - collect passengers; current mission goals; time; arrows to next objective
 	- add gamestate to show pre-game information (text, images)
 	- add arrows to objectives
+	- add info about picking up / loosing passengers, gaining points and loosing time
 
 - autocasting rails:
 	- can be clicked anywhere on the screen
@@ -54,6 +51,10 @@
 ************
 **	DONE  **
 ************
+
+- Game Logic:
+	- hitting cars cannot be avoided all the time
+		- decrease penalty of hitting cars to loosing a passenger and 5 seconds (screenshake, onscreen info (-5sec, -1 passenger))
 
 - autocasting rails:
 	- left click (holding down or toggle?) starts casting rails (maybe rightclick to stop casting when toggle mode)

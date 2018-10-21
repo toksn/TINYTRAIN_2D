@@ -305,6 +305,16 @@ namespace tinytrain
 		//initCurrentLevel();
 	}
 
+	void GameState_Running::decreaseTime(float seconds)
+	{
+		if (level_ && level_->elapsed_time_)
+		{
+			level_->elapsed_time_ += seconds;
+			if (level_->elapsed_time_ < 0.0f)
+				level_->elapsed_time_ = 0.0f;
+		}
+	}
+
 	void GameState_Running::loadLevel(const TLevel::level_info & info)
 	{
 		TLevel_Builder level_gen(this);

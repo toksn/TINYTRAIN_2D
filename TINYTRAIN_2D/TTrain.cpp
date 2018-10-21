@@ -1,4 +1,5 @@
 #include "TTrain.h"
+#include "TCar.h"
 #include "GameState_Running.h"
 
 namespace tinytrain
@@ -126,7 +127,28 @@ namespace tinytrain
 
 	void TTrain::collision(Entity * other)
 	{
-		// TODO: handle car hits
+		// handle car hits
+		TCar* car = dynamic_cast<TCar*>(other);
+		if (car)
+		{
+			// decrease time by 5 sec
+			if (gs_)
+				gs_->decreaseTime(5.0f);
+
+			// loose 1 passenger
+			if (passengers_.size())
+			{				
+				// try to respawn the passenger
+				auto it = passengers_.rbegin();
+				(*it)->reset();
+
+				TLevel* level = (*it)->level_;				
+				level->addPassenger(std::move(*it));
+
+				passengers_.pop_back();
+			}			
+			printf("hit a car.\n");
+		}
 
 		// TODO: handle self hits
 

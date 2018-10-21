@@ -10,6 +10,8 @@ namespace tinytrain
 		TPassenger(GameState_Running* gs);
 		~TPassenger();
 
+		void reset();
+
 		unsigned int id_;
 		TLevel*		 level_;
 		enum class PassengerState

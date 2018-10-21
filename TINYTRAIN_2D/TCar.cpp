@@ -111,4 +111,8 @@ namespace tinytrain
 		else
 			drawable_->setFillColor(sf::Color::Cyan);
 	}
+	
+	void TCar::onTriggerEnter(Entity * other)
+	{
+	}
 }

@@ -36,6 +36,7 @@ namespace tinytrain
 		void lost(TTrain* train);
 		void pause();
 		void restart();
+		void decreaseTime(float seconds);
 
 		void loadLevel(const TLevel::level_info& info);
 
