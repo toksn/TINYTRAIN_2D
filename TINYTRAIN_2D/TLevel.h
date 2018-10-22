@@ -58,11 +58,13 @@ namespace tinytrain
 		std::vector<std::unique_ptr<TObstacle>> targetzones_;
 		std::vector<std::unique_ptr<TCollisionZone>> static_collision_;
 		
-		// extra passenger handling needed? todo: passengers drawing ect in train
-		//std::vector<std::unique_ptr<TPassenger>> passengers_;
+		// extra passenger handling needed?
+		std::vector<std::unique_ptr<TPassenger>> passengers_;
 		std::unique_ptr<TPassenger> removePassenger(unsigned int id);
 		void addPassenger(std::unique_ptr<TPassenger> newpass);
 		unsigned int passenger_id_;
+
+		sf::VertexArray arr;
 
 		road_network road_network_;
 

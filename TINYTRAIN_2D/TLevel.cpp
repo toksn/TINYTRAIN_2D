@@ -78,11 +78,18 @@ namespace tinytrain
 				obstacles_.erase(obstacles_.begin() + i);
 		}
 
+		for (auto& p : passengers_)
+			p->draw(target);
+
 		for (auto& tz : targetzones_)
 			tz->draw(target);
 
 		for (auto& c : static_collision_)
 			c->draw(target);
+
+		target->draw(arr);
+		//for (auto& a : arrows_)
+		//	target->draw(a);
 	}
 
 	void TLevel::onUpdate(float deltaTime)
@@ -104,6 +111,9 @@ namespace tinytrain
 			else
 				obstacles_.erase(obstacles_.begin()+i);
 		}	
+
+		for (auto& p : passengers_)
+			p->update(deltaTime);
 
 		if (targetzones_.empty() && points_ >= info_.points_to_reach)
 		{
@@ -140,7 +150,49 @@ namespace tinytrain
 		if (info_.timelimit > 0 && elapsed_time_ >= info_.timelimit)
 		{
 			elapsed_time_ = info_.timelimit;
-			//gs_->lost(train_.get());
+			gs_->lost(train_.get());
+		}
+
+		// draw arrows from train to passengers / destinations
+		if (train_)
+		{
+			arr.resize((passengers_.size() + targetzones_.size() + train_->passengers_.size()) * 2);
+			arr.setPrimitiveType(sf::PrimitiveType::Lines);
+
+			sf::Vector2f pos = train_->getPosition();
+			int i = 0;
+			for (auto& p : passengers_)
+			{
+				arr[i].position = pos;
+				arr[i + 1].position = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
+
+				arr[i].color = sf::Color::Yellow;
+				arr[i+1].color = sf::Color::Yellow;
+
+				i+=2;
+			}
+
+			for (auto& t : targetzones_)
+			{
+				arr[i].position = pos;
+				arr[i + 1].position = t->drawable_->getPosition() + t->drawable_->getSize() / 2.0f;
+
+				arr[i].color = sf::Color::Green;
+				arr[i + 1].color = sf::Color::Green;
+
+				i += 2;
+			}
+
+			for (auto& p : train_->passengers_)
+			{
+				arr[i].position = pos;
+				arr[i + 1].position = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
+
+				arr[i].color = sf::Color::Magenta;
+				arr[i + 1].color = sf::Color::Magenta;
+
+				i += 2;
+			}
 		}
 	}
 
@@ -178,18 +230,15 @@ namespace tinytrain
 	std::unique_ptr<TPassenger> TLevel::removePassenger(unsigned int id)
 	{
 		// find passenger element with given (passenger)id
-		auto it = std::find_if(obstacles_.begin(), obstacles_.end(), [&id](auto& current)
+		auto it = std::find_if(passengers_.begin(), passengers_.end(), [&id](auto& current)
 		{
-			auto passenger = dynamic_cast<TPassenger*>(current.get());
-			if (passenger != nullptr && passenger->id_ == id)
-				return true;
-			return false;
+			return current->id_ == id;
 		});
 
-		if (it != obstacles_.end())
+		if (it != passengers_.end())
 		{
 			std::unique_ptr<TPassenger> result{ static_cast<TPassenger*>((*it).release()) };
-			obstacles_.erase(it);
+			passengers_.erase(it);
 			return std::move(result);
 		}
 		return nullptr;
@@ -201,7 +250,7 @@ namespace tinytrain
 		{
 			newpass->id_ = passenger_id_++;
 			newpass->level_ = this;
-			obstacles_.push_back(std::move(newpass));
+			passengers_.push_back(std::move(newpass));
 		}
 	}
 }
