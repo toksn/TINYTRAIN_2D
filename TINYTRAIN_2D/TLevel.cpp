@@ -32,6 +32,8 @@ namespace tinytrain
 			gs_->bindEventCallback(sf::Event::KeyPressed, this, &TLevel::onKeyPressed);
 			//...
 		}
+
+		arr.setPrimitiveType(sf::PrimitiveType::Lines);
 	}
 
 	//TLevel::TLevel(GameState_Running* gs, const level_info & info) : TLevel(gs)
@@ -156,43 +158,57 @@ namespace tinytrain
 		// draw arrows from train to passengers / destinations
 		if (train_)
 		{
-			arr.resize((passengers_.size() + targetzones_.size() + train_->passengers_.size()) * 2);
-			arr.setPrimitiveType(sf::PrimitiveType::Lines);
-
 			sf::Vector2f pos = train_->getPosition();
-			int i = 0;
-			for (auto& p : passengers_)
+			if (targetzones_.size())
 			{
-				arr[i].position = pos;
-				arr[i + 1].position = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
+				arr.resize(targetzones_.size() * 2);
+				int i = 0;
+				for (auto& t : targetzones_)
+				{
+					arr[i].position = pos;
+					arr[i + 1].position = t->drawable_->getPosition() + t->drawable_->getSize() / 2.0f;
 
-				arr[i].color = sf::Color::Yellow;
-				arr[i+1].color = sf::Color::Yellow;
+					arr[i].color = sf::Color::Green;
+					arr[i + 1].color = sf::Color::Green;
 
-				i+=2;
+					i += 2;
+				}
 			}
-
-			for (auto& t : targetzones_)
+			else
 			{
-				arr[i].position = pos;
-				arr[i + 1].position = t->drawable_->getPosition() + t->drawable_->getSize() / 2.0f;
+				int size = train_->passengers_.size();
+				int i = 0;
+				//arr.resize(size * 2);
 
-				arr[i].color = sf::Color::Green;
-				arr[i + 1].color = sf::Color::Green;
+				if (train_->hasCapacity())
+				{
+					size += passengers_.size();
+					arr.resize(size * 2);
 
-				i += 2;
-			}
+					for (auto& p : passengers_)
+					{
+						arr[i].position = pos;
+						arr[i + 1].position = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
 
-			for (auto& p : train_->passengers_)
-			{
-				arr[i].position = pos;
-				arr[i + 1].position = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
+						arr[i].color = sf::Color::Yellow;
+						arr[i + 1].color = sf::Color::Yellow;
 
-				arr[i].color = sf::Color::Magenta;
-				arr[i + 1].color = sf::Color::Magenta;
+						i += 2;
+					}
+				}
+				
+				arr.resize(size * 2);
+				for (auto& p : train_->passengers_)
+				{
+					arr[i].position = pos;
+					arr[i + 1].position = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
 
-				i += 2;
-			}
+					arr[i].color = sf::Color::Magenta;
+					arr[i + 1].color = sf::Color::Magenta;
+
+					i += 2;
+				}
+			}			
 		}
 	}
 
