@@ -7,6 +7,8 @@
 #include "TRoadNetwork.h"
 #include "graph_tgf.h"
 
+#define background_size_factor 4.0f
+
 namespace tgf
 {
 	namespace utilities
@@ -64,7 +66,10 @@ namespace tinytrain
 		void addPassenger(std::unique_ptr<TPassenger> newpass);
 		unsigned int passenger_id_;
 
-		sf::VertexArray arr;
+		sf::Texture arrow_tx_;
+		sf::Sprite arrow_;
+		float arrow_radius_;
+		std::vector<sf::Sprite> arrows_;
 
 		road_network road_network_;
 
@@ -79,6 +84,8 @@ namespace tinytrain
 		virtual void onUpdate(float deltaTime) override;
 
 		void onKeyPressed(sf::Event & e);
+
+		void placeArrow(sf::Sprite & a, sf::Vector2f sourcepos, sf::Vector2f targetpos, sf::Color col, float min_alpha_factor = 0.2f);
 
 		sf::VertexArray roads_;
 		sf::VertexArray roads_debug_;

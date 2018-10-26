@@ -8,9 +8,6 @@
 #include "TCar.h"
 //#include "tgfdefines.h"
 
-// todo: maybe move into gamestate_running?
-#define background_size_factor 4.0f
-
 namespace tinytrain
 {
 	TLevel_Builder::TLevel_Builder(GameState_Running * gs)

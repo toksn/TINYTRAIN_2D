@@ -33,7 +33,13 @@ namespace tinytrain
 			//...
 		}
 
-		arr.setPrimitiveType(sf::PrimitiveType::Lines);
+		arrow_tx_.loadFromFile("data/images/arrow.png");
+		// fill arrow to copy from for resizing the arrows_ array
+		arrow_.setTexture(arrow_tx_);
+		arrow_.setOrigin(arrow_tx_.getSize().x * 0.5f, arrow_tx_.getSize().y * 0.5f);
+		arrow_.setScale(0.5f, 0.5f);
+		// radius at which the arrows are displayed (from the train)
+		arrow_radius_ = 64.0f;
 	}
 
 	//TLevel::TLevel(GameState_Running* gs, const level_info & info) : TLevel(gs)
@@ -89,9 +95,8 @@ namespace tinytrain
 		for (auto& c : static_collision_)
 			c->draw(target);
 
-		target->draw(arr);
-		//for (auto& a : arrows_)
-		//	target->draw(a);
+		for (auto& a : arrows_)
+			target->draw(a);
 	}
 
 	void TLevel::onUpdate(float deltaTime)
@@ -161,17 +166,16 @@ namespace tinytrain
 			sf::Vector2f pos = train_->getPosition();
 			if (targetzones_.size())
 			{
-				arr.resize(targetzones_.size() * 2);
-				int i = 0;
-				for (auto& t : targetzones_)
+				arrows_.resize(targetzones_.size(), arrow_);
+
+				for (int i = 0; i < targetzones_.size(); i++)
 				{
-					arr[i].position = pos;
-					arr[i + 1].position = t->drawable_->getPosition() + t->drawable_->getSize() / 2.0f;
+					auto& a = arrows_[i];
+					auto& t = targetzones_[i];
+					
+					sf::Vector2f targetpos = t->drawable_->getPosition() + t->drawable_->getSize() / 2.0f;
 
-					arr[i].color = sf::Color::Green;
-					arr[i + 1].color = sf::Color::Green;
-
-					i += 2;
+					placeArrow(a, pos, targetpos, sf::Color(100, 180, 0, 200), 0.6f);
 				}
 			}
 			else
@@ -183,30 +187,30 @@ namespace tinytrain
 				if (train_->hasCapacity())
 				{
 					size += passengers_.size();
-					arr.resize(size * 2);
+					arrows_.resize(size, arrow_);
 
 					for (auto& p : passengers_)
 					{
-						arr[i].position = pos;
-						arr[i + 1].position = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
+						auto& a = arrows_[i];
 
-						arr[i].color = sf::Color::Yellow;
-						arr[i + 1].color = sf::Color::Yellow;
+						sf::Vector2f targetpos = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
 
-						i += 2;
+						placeArrow(a, pos, targetpos, sf::Color(180, 180, 0, 200));
+
+						i++;
 					}
 				}
 				
-				arr.resize(size * 2);
+				arrows_.resize(size, arrow_);
 				for (auto& p : train_->passengers_)
 				{
-					arr[i].position = pos;
-					arr[i + 1].position = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
+					auto& a = arrows_[i];
 
-					arr[i].color = sf::Color::Magenta;
-					arr[i + 1].color = sf::Color::Magenta;
+					sf::Vector2f targetpos = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
 
-					i += 2;
+					placeArrow(a, pos, targetpos, sf::Color(255, 100, 0, 200));
+
+					i++;
 				}
 			}			
 		}
@@ -236,6 +240,45 @@ namespace tinytrain
 
 			train_->debugDraw_ = drawDebug_;
 		}
+	}
+
+	void TLevel::placeArrow(sf::Sprite& a, sf::Vector2f sourcepos, sf::Vector2f targetpos, sf::Color col, float min_alpha_factor)
+	{
+		// direction
+		sf::Vector2f dir = targetpos - sourcepos;
+		//dir = tgf::math::MathHelper2D::normalizeVector(dir);
+		float dist = sqrt(dir.x * dir.x + dir.y*dir.y);
+		dir /= dist;
+
+		if (dist < arrow_radius_)
+			dir *= dist * 0.9f;
+		else
+			dir *= arrow_radius_;
+
+		// angle
+		float angle = atan2(dir.y, dir.x);
+		angle *= RAD_TO_DEG;
+		angle += 90.0f;
+
+		// color
+		constexpr float mindist = 64.0f * background_size_factor * 3.5f;
+		constexpr float maxdist = 64.0f * background_size_factor * 8.0f;
+		float colfactor = 1.0f;
+		if (dist > mindist)
+		{
+			colfactor = 1.0f - (dist - mindist) / maxdist;
+			colfactor = c2Max(colfactor, min_alpha_factor);
+			//if (dist >= maxdist+mindist)
+			//	colfactor = 0.0f;
+			//else
+				
+		}
+		col.a = 255.0f * colfactor;
+
+
+		a.setPosition(sourcepos + dir);
+		a.setRotation(angle);
+		a.setColor(col);
 	}
 	
 	void TLevel::restart_()
