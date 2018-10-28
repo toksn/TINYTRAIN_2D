@@ -41,6 +41,11 @@ namespace tinytrain
 		info_level1.inital_wagon_count = 3;
 		info_level1.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), direction::SOUTH, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
 		info_level1.stations.emplace_back(sf::FloatRect(7.0f,17.0f,1.0f,1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+				
+		info_level1.deco_images.emplace_back(sf::Vector2f(15.0f, 2.0f), "info_mouse1");
+		info_level1.deco_images.emplace_back(sf::Vector2f(13.0f, 0.0f), "info_steering");
+		info_level1.deco_images.emplace_back(sf::Vector2f(10.0f, 2.0f), "info_pause");
+
 		info_level1.points_to_reach = 0;
 		info_level1.timelimit = 0.0f;
 
@@ -83,7 +88,8 @@ namespace tinytrain
 		info_level4.points_to_reach = 50;
 		info_level4.timelimit = 0.0f;
 
-		loadLevel(info_level3);
+		//loadLevel(info_level3);
+		loadLevel(info_level1);
 		
 		gui_ = std::make_unique<gui::TLevelInfo_HUD>(level_.get(), *(game->font_));
 		if (game && game->window_)

@@ -40,6 +40,7 @@ namespace tinytrain
 			// pair<pixel coords (can be float), direction, texcoords>
 			std::vector<std::tuple<sf::FloatRect, direction, sf::IntRect>> start_pts;
 			std::vector<std::pair<sf::FloatRect, sf::IntRect>> stations;
+			std::vector<std::pair<sf::Vector2f, std::string>> deco_images;
 			std::string map_file;
 
 			//win/lose conditions
@@ -70,6 +71,7 @@ namespace tinytrain
 		sf::Sprite arrow_;
 		float arrow_radius_;
 		std::vector<sf::Sprite> arrows_;
+		sf::VertexArray inworld_imgs_;
 
 		road_network road_network_;
 

@@ -22,6 +22,7 @@ namespace tinytrain
 		foreground_static_.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_static2_.setPrimitiveType(sf::PrimitiveType::Quads);
 		foreground_dynamic_.setPrimitiveType(sf::PrimitiveType::Quads);
+		inworld_imgs_.setPrimitiveType(sf::PrimitiveType::Quads);
 
 		if (gs_ && gs_->game_)
 			texture_atlas_ = gs_->game_->getTextureAtlas();
@@ -33,13 +34,19 @@ namespace tinytrain
 			//...
 		}
 
-		arrow_tx_.loadFromFile("data/images/arrow.png");
+		//arrow_tx_.loadFromFile("data/images/arrow.png");
 		// fill arrow to copy from for resizing the arrows_ array
-		arrow_.setTexture(arrow_tx_);
-		arrow_.setOrigin(arrow_tx_.getSize().x * 0.5f, arrow_tx_.getSize().y * 0.5f);
-		arrow_.setScale(0.5f, 0.5f);
-		// radius at which the arrows are displayed (from the train)
-		arrow_radius_ = 64.0f;
+		if (texture_atlas_)
+		{
+			arrow_.setTexture(*texture_atlas_->getTexture());
+			auto area = texture_atlas_->getArea("arrow");
+			arrow_.setTextureRect(area);
+			arrow_.setOrigin(area.width * 0.5f, area.height * 0.5f);
+			
+			arrow_.setScale(0.5f, 0.5f);
+			// radius at which the arrows are displayed (from the train)
+			arrow_radius_ = 64.0f;
+		}
 	}
 
 	//TLevel::TLevel(GameState_Running* gs, const level_info & info) : TLevel(gs)
@@ -85,6 +92,8 @@ namespace tinytrain
 			else
 				obstacles_.erase(obstacles_.begin() + i);
 		}
+
+		target->draw(inworld_imgs_, renderstate);
 
 		for (auto& p : passengers_)
 			p->draw(target);

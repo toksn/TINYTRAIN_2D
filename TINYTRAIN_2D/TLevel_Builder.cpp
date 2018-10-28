@@ -331,6 +331,32 @@ namespace tinytrain
 				placement_rect.height	*= tilesize;
 				placement_rect.width	*= tilesize;
 			}
+
+			level->inworld_imgs_.resize(level->info_.deco_images.size()*4);
+			for (int i = 0; i < level->info_.deco_images.size(); i++)
+			{
+				sf::Vector2f coords = level->info_.deco_images[i].first;
+				std::string texture_name = level->info_.deco_images[i].second;
+
+				auto area = level->texture_atlas_->getArea(texture_name);
+				const int vertex_i = 4 * i;
+				level->inworld_imgs_[vertex_i + 0].texCoords = { (float)area.left, (float)area.top };
+				level->inworld_imgs_[vertex_i + 1].texCoords = { (float)area.left + area.width, (float)area.top };
+				level->inworld_imgs_[vertex_i + 2].texCoords = { (float)area.left + area.width, (float)area.top + area.height };
+				level->inworld_imgs_[vertex_i + 3].texCoords = { (float)area.left, (float)area.top + area.height };
+								
+				level->inworld_imgs_[vertex_i+0].position.x = coords.x * tilesize;
+				level->inworld_imgs_[vertex_i+0].position.y = coords.y * tilesize;
+				level->inworld_imgs_[vertex_i+1].position = level->inworld_imgs_[vertex_i+2].position = level->inworld_imgs_[vertex_i+3].position = level->inworld_imgs_[vertex_i+0].position;
+
+				//area.height *= background_size_factor;
+				//area.width *= background_size_factor;
+				level->inworld_imgs_[vertex_i + 1].position.x += area.width;
+				level->inworld_imgs_[vertex_i + 2].position.x += area.width;
+				level->inworld_imgs_[vertex_i + 2].position.y += area.height;
+				level->inworld_imgs_[vertex_i + 3].position.y += area.height;
+			}
+
 			// todo: level->info_.introduction_text
 		}
 	}
