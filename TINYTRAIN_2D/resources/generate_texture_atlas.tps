@@ -220,6 +220,7 @@
             <key type="filename">../../../GFX/2d/64x64/roads/road-4way.png</key>
             <key type="filename">../../../GFX/2d/64x64/roads/road.png</key>
             <key type="filename">../../../GFX/2d/64x64/water.png</key>
+            <key type="filename">images/info/arrow.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -229,6 +230,21 @@
                 <rect>16,16,32,32</rect>
                 <key>scale9Paddings</key>
                 <rect>16,16,32,32</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../GFX/2d/64x64/info/info_mouse1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/info/info_pause.png</key>
+            <key type="filename">../../../GFX/2d/64x64/info/info_steering.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>32,16,64,32</rect>
+                <key>scale9Paddings</key>
+                <rect>32,16,64,32</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -273,6 +289,8 @@
             <filename>../../../GFX/2d/64x64/trees</filename>
             <filename>../../../GFX/2d/64x64/water.png</filename>
             <filename>images/track/track_05.png</filename>
+            <filename>images/info/arrow.png</filename>
+            <filename>../../../GFX/2d/64x64/info</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
