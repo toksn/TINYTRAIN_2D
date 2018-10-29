@@ -183,38 +183,36 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../../../GFX/2d/64x64/houses/flowers_bg_01.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/grass_bg_01.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_01.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_02.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_03.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_04.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_05.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_06.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_07.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_08.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_09.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_10.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_01.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_02.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_03.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_04.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_05.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_06.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_07.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_08.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_09.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_10.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_01.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_02.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_03.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_04.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_05.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_06.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_07.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_08.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_09.png</key>
-            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_10.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_3.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_4.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_5.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_6.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_collision_1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_collision_2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_collision_3.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_collision_4.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_collision_5.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_collision_6.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_3.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_4.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_5.png</key>
+            <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_6.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_3.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_bg_4.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_3.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_collision_4.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_2.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_3.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/house_fg_4.png</key>
             <key type="filename">../../../GFX/2d/64x64/roads/road-2way.png</key>
             <key type="filename">../../../GFX/2d/64x64/roads/road-3way.png</key>
             <key type="filename">../../../GFX/2d/64x64/roads/road-4way.png</key>
@@ -291,6 +289,7 @@
             <filename>images/track/track_05.png</filename>
             <filename>images/info/arrow.png</filename>
             <filename>../../../GFX/2d/64x64/info</filename>
+            <filename>../../../GFX/2d/64x64/fulltile</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

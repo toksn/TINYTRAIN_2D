@@ -10,7 +10,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "flowers_bg_01",
+	"filename": "fulltile_bg_1",
 	"frame": {"x":64,"y":0,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -19,7 +19,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "grass_bg_01",
+	"filename": "fulltile_bg_2",
 	"frame": {"x":0,"y":64,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -28,7 +28,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_01",
+	"filename": "fulltile_bg_3",
 	"frame": {"x":64,"y":64,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -37,7 +37,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_02",
+	"filename": "fulltile_bg_4",
 	"frame": {"x":0,"y":128,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -46,7 +46,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_03",
+	"filename": "fulltile_bg_5",
 	"frame": {"x":64,"y":128,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -55,7 +55,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_04",
+	"filename": "fulltile_bg_6",
 	"frame": {"x":0,"y":192,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -64,7 +64,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_05",
+	"filename": "fulltile_collision_1",
 	"frame": {"x":64,"y":192,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -73,7 +73,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_06",
+	"filename": "fulltile_collision_2",
 	"frame": {"x":0,"y":256,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -82,7 +82,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_07",
+	"filename": "fulltile_collision_3",
 	"frame": {"x":64,"y":256,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -91,7 +91,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_08",
+	"filename": "fulltile_collision_4",
 	"frame": {"x":0,"y":320,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -100,7 +100,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_09",
+	"filename": "fulltile_collision_5",
 	"frame": {"x":64,"y":320,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -109,7 +109,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_bg_10",
+	"filename": "fulltile_collision_6",
 	"frame": {"x":0,"y":384,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -118,7 +118,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_01",
+	"filename": "fulltile_fg_1",
 	"frame": {"x":64,"y":384,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -127,7 +127,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_02",
+	"filename": "fulltile_fg_2",
 	"frame": {"x":0,"y":448,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -136,7 +136,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_03",
+	"filename": "fulltile_fg_3",
 	"frame": {"x":64,"y":448,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -145,7 +145,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_04",
+	"filename": "fulltile_fg_4",
 	"frame": {"x":0,"y":512,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -154,7 +154,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_05",
+	"filename": "fulltile_fg_5",
 	"frame": {"x":64,"y":512,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -163,7 +163,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_06",
+	"filename": "fulltile_fg_6",
 	"frame": {"x":0,"y":576,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -172,7 +172,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_07",
+	"filename": "grass_bg_01",
 	"frame": {"x":64,"y":576,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -181,7 +181,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_08",
+	"filename": "house_bg_1",
 	"frame": {"x":0,"y":640,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -190,7 +190,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_09",
+	"filename": "house_bg_2",
 	"frame": {"x":64,"y":640,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -199,7 +199,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_collision_10",
+	"filename": "house_bg_3",
 	"frame": {"x":0,"y":704,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -208,7 +208,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_01",
+	"filename": "house_bg_4",
 	"frame": {"x":64,"y":704,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -217,7 +217,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_02",
+	"filename": "house_collision_1",
 	"frame": {"x":0,"y":768,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -226,7 +226,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_03",
+	"filename": "house_collision_2",
 	"frame": {"x":64,"y":768,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -235,7 +235,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_04",
+	"filename": "house_collision_3",
 	"frame": {"x":0,"y":832,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -244,7 +244,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_05",
+	"filename": "house_collision_4",
 	"frame": {"x":64,"y":832,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -253,7 +253,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_06",
+	"filename": "house_fg_1",
 	"frame": {"x":0,"y":896,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -262,7 +262,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_07",
+	"filename": "house_fg_2",
 	"frame": {"x":64,"y":896,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -271,7 +271,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_08",
+	"filename": "house_fg_3",
 	"frame": {"x":0,"y":960,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -280,7 +280,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_09",
+	"filename": "house_fg_4",
 	"frame": {"x":64,"y":960,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
@@ -289,17 +289,8 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "house_fg_10",
-	"frame": {"x":0,"y":1024,"w":64,"h":64},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
-	"sourceSize": {"w":64,"h":64},
-	"pivot": {"x":0.5,"y":0.5}
-},
-{
 	"filename": "info_mouse1",
-	"frame": {"x":0,"y":1088,"w":128,"h":64},
+	"frame": {"x":0,"y":1024,"w":128,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":64},
@@ -308,7 +299,7 @@
 },
 {
 	"filename": "info_pause",
-	"frame": {"x":0,"y":1152,"w":128,"h":64},
+	"frame": {"x":0,"y":1088,"w":128,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":64},
@@ -317,7 +308,7 @@
 },
 {
 	"filename": "info_steering",
-	"frame": {"x":0,"y":1216,"w":128,"h":64},
+	"frame": {"x":0,"y":1152,"w":128,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":64},
@@ -326,7 +317,7 @@
 },
 {
 	"filename": "road-2way",
-	"frame": {"x":0,"y":1280,"w":64,"h":64},
+	"frame": {"x":0,"y":1216,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
@@ -335,7 +326,7 @@
 },
 {
 	"filename": "road-3way",
-	"frame": {"x":64,"y":1280,"w":64,"h":64},
+	"frame": {"x":64,"y":1216,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
@@ -344,7 +335,7 @@
 },
 {
 	"filename": "road-4way",
-	"frame": {"x":0,"y":1344,"w":64,"h":64},
+	"frame": {"x":0,"y":1280,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
@@ -353,7 +344,7 @@
 },
 {
 	"filename": "road",
-	"frame": {"x":64,"y":1344,"w":64,"h":64},
+	"frame": {"x":64,"y":1280,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
@@ -362,7 +353,7 @@
 },
 {
 	"filename": "track_05",
-	"frame": {"x":0,"y":1408,"w":64,"h":32},
+	"frame": {"x":0,"y":1344,"w":64,"h":32},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":32},
@@ -371,7 +362,7 @@
 },
 {
 	"filename": "tree_collision_1",
-	"frame": {"x":64,"y":1408,"w":21,"h":21},
+	"frame": {"x":64,"y":1344,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -380,7 +371,7 @@
 },
 {
 	"filename": "tree_collision_2",
-	"frame": {"x":85,"y":1408,"w":21,"h":21},
+	"frame": {"x":85,"y":1344,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -389,7 +380,7 @@
 },
 {
 	"filename": "tree_collision_3",
-	"frame": {"x":106,"y":1408,"w":21,"h":21},
+	"frame": {"x":106,"y":1344,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -398,7 +389,7 @@
 },
 {
 	"filename": "tree_collision_4",
-	"frame": {"x":0,"y":1440,"w":21,"h":21},
+	"frame": {"x":0,"y":1376,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -407,7 +398,7 @@
 },
 {
 	"filename": "tree_fg_1",
-	"frame": {"x":21,"y":1440,"w":21,"h":21},
+	"frame": {"x":21,"y":1376,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -416,7 +407,7 @@
 },
 {
 	"filename": "tree_fg_2",
-	"frame": {"x":42,"y":1440,"w":21,"h":21},
+	"frame": {"x":42,"y":1376,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -425,7 +416,7 @@
 },
 {
 	"filename": "tree_fg_3",
-	"frame": {"x":63,"y":1440,"w":21,"h":21},
+	"frame": {"x":63,"y":1376,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -434,7 +425,7 @@
 },
 {
 	"filename": "tree_fg_4",
-	"frame": {"x":84,"y":1440,"w":21,"h":21},
+	"frame": {"x":84,"y":1376,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
@@ -443,7 +434,7 @@
 },
 {
 	"filename": "water",
-	"frame": {"x":0,"y":1461,"w":64,"h":64},
+	"frame": {"x":0,"y":1397,"w":64,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
@@ -455,8 +446,8 @@
 	"version": "1.0",
 	"image": "texture_atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":128,"h":1525},
+	"size": {"w":128,"h":1461},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:9fab4f8792c0e765a4a57deecc7d0f77:9b073dd6d672b188db767fb568391e34:67087b54f7aa7c7f6411022b7ef8a190$"
+	"smartupdate": "$TexturePacker:SmartUpdate:321d330de986bd4ae41f94b53588e06e:18645251e955f512130d44435d961503:67087b54f7aa7c7f6411022b7ef8a190$"
 }
 }

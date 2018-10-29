@@ -516,7 +516,7 @@ namespace tinytrain
 		info[tile_colors::residental].fillFromAtlas(atlas, "house_");
 		
 		// industrial search for "industrial" strings in atlas
-		info[tile_colors::industrial].fillFromAtlas(atlas, "house_"); //"industrial_"
+		info[tile_colors::industrial].fillFromAtlas(atlas, "fulltile_"); //"industrial_"
 		// ...			
 
 
