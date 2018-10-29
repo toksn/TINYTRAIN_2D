@@ -233,6 +233,7 @@
                 <false/>
             </struct>
             <key type="filename">../../../GFX/2d/64x64/info/info_mouse1.png</key>
+            <key type="filename">../../../GFX/2d/64x64/info/info_mouse2.png</key>
             <key type="filename">../../../GFX/2d/64x64/info/info_pause.png</key>
             <key type="filename">../../../GFX/2d/64x64/info/info_steering.png</key>
             <struct type="IndividualSpriteSettings">
