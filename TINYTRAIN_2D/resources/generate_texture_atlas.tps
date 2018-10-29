@@ -201,6 +201,7 @@
             <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_4.png</key>
             <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_5.png</key>
             <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_fg_6.png</key>
+            <key type="filename">../../../GFX/2d/64x64/houses/grass_bg_01.png</key>
             <key type="filename">../../../GFX/2d/64x64/houses/house_bg_1.png</key>
             <key type="filename">../../../GFX/2d/64x64/houses/house_bg_2.png</key>
             <key type="filename">../../../GFX/2d/64x64/houses/house_bg_3.png</key>
