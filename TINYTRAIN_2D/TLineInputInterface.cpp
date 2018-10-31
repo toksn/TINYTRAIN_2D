@@ -35,12 +35,29 @@ namespace tinytrain
 		void TLineInputInterface::setColor(sf::Color color)
 		{
 			color_ = color;
+			drawingAreaShape_.setOutlineColor(color_);
 			for (int i = 0; i < inputLine_.getVertexCount(); i++)
 				inputLine_[i].color = color;
 		}
 
-		void TLineInputInterface::init()
+		void TLineInputInterface::recalcDrawRect(int width, int height)
 		{
+			// factor is the part of the window height the drawing area is using (in both directions).
+			//
+			// example: window(800x600), factor 0.3f --> 600*0.3=180px is the size of the drawing area.
+			// and it is positioned at the upper right corner at 0.1*height from both sides. 600*0.1=60px border
+			float factor = 0.3f;
+			sf::Vector2i pos((float)width - (float)height*(factor + 0.1f), (float)height*.1f);
+			sf::Vector2i drawsize(width, height);
+			drawsize.y *= factor;
+			drawsize.x = drawsize.y;
+
+			drawingArea_ = sf::FloatRect(pos.x, pos.y, drawsize.x, drawsize.y);
+			drawingAreaShape_.setSize(sf::Vector2f(drawsize.x, drawsize.y));
+			drawingAreaShape_.setPosition(pos.x, pos.y);
+			drawingAreaShape_.setFillColor(sf::Color::Transparent);
+			drawingAreaShape_.setOutlineColor(color_);
+			drawingAreaShape_.setOutlineThickness(1);
 		}
 	}
 }

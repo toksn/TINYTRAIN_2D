@@ -20,6 +20,7 @@ namespace tinytrain
 
 		void TSingleLineInputComponent::draw(sf::RenderTarget * target)
 		{
+			target->draw(drawingAreaShape_);
 			target->draw(inputLine_);
 		}
 
@@ -35,7 +36,7 @@ namespace tinytrain
 				{
 					// get current mouse location
 					auto curScreenPos = sf::Mouse::getPosition(*player_->gs_->game_->window_);
-					if (player_->drawingArea_.contains(curScreenPos.x, curScreenPos.y))
+					if (drawingArea_.contains(curScreenPos.x, curScreenPos.y))
 					{
 						auto size = inputLine_.getVertexCount();
 						if (size == 0)

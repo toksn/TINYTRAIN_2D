@@ -2,27 +2,17 @@
 **  TODO  **
 ************
 
-- tutorial level
-	- red type only includes houses blocking full tiles
-	- yellow type includes houses blocking "half" tiles
-	- include images in places in level_info	
-
 - GUI: add on-screen instructions (controls, goals, hints)
 	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
 	- esc menu; left mouse - draw track; right mouse - collect passengers; current mission goals; time; arrows to next objective
 	- add gamestate to show pre-game information (text, images)
 	- add info about picking up / loosing passengers, gaining points and loosing time
 
-- autocasting rails:
-	- can be clicked anywhere on the screen
-	- add info about current angle [done] and current speed (circle from (0) to 2 to 4)
-	- only show current angle for first rail
-
 - level editor or procedural level creation?
 	- level1: reach target zone
-	- level2: reach target zone in time
+	- level2: do an easy passenger and reach target zone in time
 	- level3: do 3 passengers (in time)
-	- level4: collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
+	- level4: [QUESTIONABLE] collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
 
 - TLevel_Builder: create 2 renderTextures from all static city elements. ground + above_train
 
@@ -41,7 +31,9 @@
 ********************
 **	QUESTIONABLE  **
 ********************
-
+- autocasting rails:
+	- add info about current angle [done] and current speed (circle from (0) to 2 to 4)
+	- only show current angle for first rail
 - spline undo: (optional) copy removed triangles vertices and apply them to another texture of a construction site
 - add spline redo
 - make collisionmanager running in an own thread calling callbacks on overlap ?
@@ -55,6 +47,11 @@
 ************
 **	DONE  **
 ************
+- for tutorial level
+	- red type only includes houses blocking full tiles
+	- yellow type includes houses blocking "half" tiles
+	- include images in places in level_info	
+
 - GUI:
 	- add arrows to objectives
 
@@ -67,6 +64,7 @@
 	- while holding the speed of placing rails increases (2 per sec --> 4 per sec) using cooldown (500-250ms to prevent mouse1 spamming)
 	( - while holding the maximum turn angle decreases (20° to 10°) )
 	- how to measure the angle: current mouse pos vs starting mouse pos x value? always same y value -> angle
+	- can be clicked anywhere on the screen
 
 - proc gen of city
 	- road gen 

@@ -15,10 +15,14 @@ namespace tinytrain
 			virtual std::vector<sf::Vector2f> getInputLine(bool reset_line = false);
 			virtual void resetInputLine(int x, int y);
 			virtual void setColor(sf::Color color);
-			virtual void init();
+
+			virtual void recalcDrawRect(int width, int height);
+
+			sf::FloatRect drawingArea_;
 
 		protected:
 			sf::VertexArray inputLine_;
+			sf::RectangleShape drawingAreaShape_;
 			sf::Color color_;
 			TPlayer* player_;
 		};

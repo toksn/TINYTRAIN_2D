@@ -19,7 +19,7 @@ namespace tinytrain
 		TPlayer(GameState_Running* gs);
 		~TPlayer();
 
-		void recalcDrawRect(int width, int height);
+		void onWindowSizeChanged(int width, int height);
 		
 		void setTrack(TRailTrack* track);
 
@@ -32,7 +32,6 @@ namespace tinytrain
 		
 		INPUTSTATE inputstate_;
 		float input_angle_;
-		sf::FloatRect drawingArea_;
 		GameState_Running* gs_;
 
 		bool bNormalizeDrawnLineSize_;
@@ -53,10 +52,8 @@ namespace tinytrain
 		TRailTrack* railtrack_;
 		controllers::TLineInputInterface* input_component_;
 		sf::Color color_;
-		sf::RectangleShape drawingAreaShape_;
 
-		// todo: move all the input dir stuff into railtrack to be worldcoordinates 
-		//	OR	 calc the screenpos from end rail pos
+		// draw current input direction at the train
 		sf::VertexArray input_dir_;
 
 		// auto cast feature

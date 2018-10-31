@@ -15,7 +15,7 @@ namespace tinytrain
 			virtual void draw(sf::RenderTarget * target) override;
 			virtual void update(float deltaTime) override;
 			float getCurrentAngle();
-			virtual void init() override;
+			virtual void recalcDrawRect(int width, int height) override;
 
 		protected:
 			float input_width_;

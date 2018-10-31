@@ -88,8 +88,8 @@ namespace tinytrain
 		info_level4.points_to_reach = 50;
 		info_level4.timelimit = 0.0f;
 
-		//loadLevel(info_level3);
-		loadLevel(info_level1);
+		loadLevel(info_level3);
+		//loadLevel(info_level1);
 		
 		gui_ = std::make_unique<gui::TLevelInfo_HUD>(level_.get(), *(game->font_));
 		if (game && game->window_)
@@ -185,7 +185,7 @@ namespace tinytrain
 		if (camera_)
 			camera_->setSize(w, h);
 
-		player_->recalcDrawRect(w, h);
+		player_->onWindowSizeChanged(w, h);
 
 		gui_->recalcHUDPositions(w, h);
 	}
@@ -200,7 +200,7 @@ namespace tinytrain
 			camera_->setCenter(size*0.5f);
 
 			// init drawrect and set railtrack for the player
-			player_->recalcDrawRect(size.x, size.y);
+			player_->onWindowSizeChanged(size.x, size.y);
 			if (level_)
 			{
 				auto rail = level_->railtrack_.get();

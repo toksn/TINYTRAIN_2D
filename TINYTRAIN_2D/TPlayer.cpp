@@ -59,8 +59,6 @@ namespace tinytrain
 
 	void TPlayer::onDraw(sf::RenderTarget * target)
 	{
-		target->draw(drawingAreaShape_);
-
 		if (inputstate_ == INPUTSTATE::DRAWING && gs_ && gs_->camera_)
 		{
 			auto currentView = target->getView();
@@ -70,10 +68,6 @@ namespace tinytrain
 
 			target->setView(currentView);
 		}
-		
-		
-
-		
 	}
 
 	void TPlayer::onUpdate(float deltaTime)
@@ -138,7 +132,7 @@ namespace tinytrain
 
 			// get current mouse location
 			auto curScreenPos = sf::Mouse::getPosition(*gs_->game_->window_);
-			if (drawingArea_.contains(curScreenPos.x, curScreenPos.y))
+			if (input_component_->drawingArea_.contains(curScreenPos.x, curScreenPos.y))
 			{
 				// waited for drawing to begin -> new state is DRAWING
 				if (inputstate_ == INPUTSTATE::DRAWING_WAIT)
@@ -152,26 +146,9 @@ namespace tinytrain
 		}
 	}
 
-	void TPlayer::recalcDrawRect(int width, int height)
+	void TPlayer::onWindowSizeChanged(int width, int height)
 	{
-		// factor is the part of the window height the drawing area is using (in both directions).
-		//
-		// example: window(800x600), factor 0.3f --> 600*0.3=180px is the size of the drawing area.
-		// and it is positioned at the upper right corner at 0.1*height from both sides. 600*0.1=60px border
-		float factor = 0.3f;
-		sf::Vector2i pos((float)width - (float)height*(factor + 0.1f), (float)height*.1f);
-		sf::Vector2i drawsize(width, height);
-		drawsize.y *= factor;
-		drawsize.x = drawsize.y;
-
-		drawingArea_ = sf::FloatRect(pos.x, pos.y, drawsize.x, drawsize.y);
-		drawingAreaShape_.setSize(sf::Vector2f(drawsize.x, drawsize.y));
-		drawingAreaShape_.setPosition(pos.x, pos.y);
-		drawingAreaShape_.setFillColor(sf::Color::Transparent);
-		drawingAreaShape_.setOutlineColor(color_);
-		drawingAreaShape_.setOutlineThickness(1);
-
-		input_component_->init();
+		input_component_->recalcDrawRect(width, height);
 	}
 
 	void TPlayer::startDrawing(int x, int y)
@@ -208,7 +185,7 @@ namespace tinytrain
 	{
 		if (e.mouseButton.button == sf::Mouse::Left)
 		{
-			if (drawingArea_.contains(e.mouseButton.x, e.mouseButton.y))
+			if (input_component_->drawingArea_.contains(e.mouseButton.x, e.mouseButton.y))
 			{
 				startDrawing(e.mouseButton.x, e.mouseButton.y);
 			}
@@ -246,7 +223,6 @@ namespace tinytrain
 	void TPlayer::setColor(sf::Color col)
 	{
 		color_ = col;
-		drawingAreaShape_.setOutlineColor(color_);
 		input_dir_[0].color = col;
 		input_dir_[1].color = col;
 		if(input_component_)
@@ -308,7 +284,7 @@ namespace tinytrain
 			float diff = pt_a.x - pt_b.x;
 			diff *= 2.0f;
 			diff *= sensitivity;
-			diff /= drawingArea_.width;
+			diff /= input_component_->drawingArea_.width;
 
 			const float max_angle = 45.0f;
 			float cur_angle = max_angle * diff;
@@ -373,8 +349,8 @@ namespace tinytrain
 			// *********** 1:
 			// normalize on-screen square in screenspace
 			// (2D bounding box -> longest side to be 1.0)
-			c2v min{ drawingArea_.left, drawingArea_.top };
-			c2v max{ drawingArea_.left + drawingArea_.width, drawingArea_.top + drawingArea_.height };
+			c2v min{ input_component_->drawingArea_.left, input_component_->drawingArea_.top };
+			c2v max{ input_component_->drawingArea_.left + input_component_->drawingArea_.width, input_component_->drawingArea_.top + input_component_->drawingArea_.height };
 			c2v lineBoundingBox_Dimension, newSquare;
 			float squareLengthPx = 1.0;
 

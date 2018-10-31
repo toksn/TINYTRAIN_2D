@@ -25,19 +25,13 @@ namespace tinytrain
 
 		void TConeInputComponent::draw(sf::RenderTarget * target)
 		{
-			
-
-			target->draw(inputLine_);
+			//target->draw(inputLine_);
 		}
 
 		void TConeInputComponent::update(float deltaTime)
 		{
-			//if(player_ == nullptr && owner_ != nullptr)
 			if (player_ != owner_)
-			{
 				player_ = dynamic_cast<TPlayer*>(owner_);
-				init();					
-			}
 
 			if (player_ && player_->inputstate_ == INPUTSTATE::DRAWING)
 			{
@@ -103,17 +97,20 @@ namespace tinytrain
 			return cur_angle;
 		}
 
-		void TConeInputComponent::init()
+		void TConeInputComponent::recalcDrawRect(int width, int height)
 		{
-			if (player_)
-			{
-				input_width_ = player_->drawingArea_.width;
+			// span drawing area on the full screen
+			drawingArea_.top = 0;
+			drawingArea_.left = 0;
+			drawingArea_.width = width;
+			drawingArea_.height = height;
 
-				// trigonometry
-				float a = input_width_ * 0.5f;
-				float alpha = max_angle_ * DEG_TO_RAD;
-				radius_ = a / sin(alpha);
-			}
+			input_width_ = width * 0.3f;
+
+			// trigonometry
+			float a = input_width_ * 0.5f;
+			float alpha = max_angle_ * DEG_TO_RAD;
+			radius_ = a / sin(alpha);
 		}
 	}
 }
