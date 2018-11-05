@@ -184,7 +184,7 @@ namespace tinytrain
 					
 					sf::Vector2f targetpos = t->drawable_->getPosition() + t->drawable_->getSize() / 2.0f;
 
-					placeArrow(a, pos, targetpos, sf::Color(100, 180, 0, 200), 0.6f);
+					placeArrow(a, pos, targetpos, sf::Color(200, 0, 0, 200), 1.0f);
 				}
 			}
 			else
@@ -204,7 +204,7 @@ namespace tinytrain
 
 						sf::Vector2f targetpos = p->drawable_->getPosition() + p->drawable_->getSize() / 2.0f;
 
-						placeArrow(a, pos, targetpos, sf::Color(180, 180, 0, 200));
+						placeArrow(a, pos, targetpos, sf::Color(210, 210, 0, 200));
 
 						i++;
 					}

@@ -7,7 +7,7 @@
 #include "TRoadNetwork.h"
 #include "graph_tgf.h"
 
-#define background_size_factor 4.0f
+#define background_size_factor 2.0f
 
 namespace tgf
 {

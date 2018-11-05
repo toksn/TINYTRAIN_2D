@@ -34,20 +34,20 @@ namespace tinytrain
 		// LEVEL 1 - works correct
 		TLevel::level_info info_level1;
 		//info_level1.header = "Level 1"
-		info_level1.introduction_text = "Find your way through the traffic to bring your passengers to their destination station!";
-		info_level1.map_file = "data/images/level/map.png";
-		info_level1.car_count = 10;
+		info_level1.introduction_text = "Find your way home.";
+		info_level1.map_file = "data/images/level/level1.png";
+		info_level1.car_count = 4;
 		info_level1.passenger_count = 0;
-		info_level1.inital_wagon_count = 3;
-		info_level1.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), direction::SOUTH, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
-		info_level1.stations.emplace_back(sf::FloatRect(7.0f,17.0f,1.0f,1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level1.inital_wagon_count = 7;
+		info_level1.start_pts.emplace_back(sf::FloatRect(1.0f, 4.0f, 1.0f, 1.0f), direction::EAST, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_level1.stations.emplace_back(sf::FloatRect(11.0f,0.0f,1.0f,1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
 				
-		info_level1.deco_images.emplace_back(sf::Vector2f(15.0f, 2.0f), "info_mouse1");
-		info_level1.deco_images.emplace_back(sf::Vector2f(13.0f, 0.0f), "info_steering");
-		info_level1.deco_images.emplace_back(sf::Vector2f(10.0f, 2.0f), "info_pause");
+		info_level1.deco_images.emplace_back(sf::Vector2f(1.0f, 3.4f), "info_mouse1");
+		info_level1.deco_images.emplace_back(sf::Vector2f(6.0f, 6.1f), "info_steering");
+		//info_level1.deco_images.emplace_back(sf::Vector2f(10.0f, 2.0f), "info_pause");
 
 		info_level1.points_to_reach = 0;
-		info_level1.timelimit = 0.0f;
+		info_level1.timelimit = 60.0f;
 
 		// LEVEL 2 - works correct
 		TLevel::level_info info_level2;
@@ -88,8 +88,8 @@ namespace tinytrain
 		info_level4.points_to_reach = 50;
 		info_level4.timelimit = 0.0f;
 
-		loadLevel(info_level3);
-		//loadLevel(info_level1);
+		//loadLevel(info_level3);
+		loadLevel(info_level1);
 		
 		gui_ = std::make_unique<gui::TLevelInfo_HUD>(level_.get(), *(game->font_));
 		if (game && game->window_)

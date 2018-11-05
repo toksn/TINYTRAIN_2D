@@ -3,10 +3,10 @@
 ************
 
 - GUI: add on-screen instructions (controls, goals, hints)
-	- esc menu; left mouse - draw track; right mouse - undo track (penalty); current mission goals
-	- esc menu; left mouse - draw track; right mouse - collect passengers; current mission goals; time; arrows to next objective
+	- add "get to your homestation" objective in the list when targetzones are active
+	- use checkbox when any objective is complete
+	- add info about picking up / loosing passengers, gaining points and loosing time when hitting cars
 	- add gamestate to show pre-game information (text, images)
-	- add info about picking up / loosing passengers, gaining points and loosing time
 
 - level editor or procedural level creation?
 	- level1: reach target zone
