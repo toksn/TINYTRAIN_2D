@@ -2,31 +2,54 @@
 **  TODO  **
 ************
 
+- level editor or procedural level creation?
+	- level1: reach target zone (tutorial deco images)
+	- level2: do an easy passenger and reach target zone in time
+	- level3: do 3 passengers (in time)
+	- level4: [QUESTIONABLE] collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
+
 - GUI: add on-screen instructions (controls, goals, hints)
 	- add "get to your homestation" objective in the list when targetzones are active
 	- use checkbox when any objective is complete
 	- add info about picking up / loosing passengers, gaining points and loosing time when hitting cars
 	- add gamestate to show pre-game information (text, images)
 
-- level editor or procedural level creation?
-	- level1: reach target zone
-	- level2: do an easy passenger and reach target zone in time
-	- level3: do 3 passengers (in time)
-	- level4: [QUESTIONABLE] collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
+ - add gfx effects 
+		- for steam from the engine wagon
+		- for environment particles
+		- particle effects when colliding
 
 - TLevel_Builder: create 2 renderTextures from all static city elements. ground + above_train
 
 - train vs train collision
 - check all wagons of a train for collision [only against non-static categories]
 
-- spline undo 
-	- apply penalty player (cooldown, penalty time to not build a new seg, money, uses (fillable by picking up construction site workers?))
-- add optional targets to score more points or have an objective at all (passengers)
-	- taxi mission gta?
-	- stations that automatically trigger passengers to leave and picking up passengers on right click
-
 - saving/loading of levels from files
 	- define level saving format
+
+**********************
+**	GAMEPLAY IDEAS	**
+**********************
+
+- spline undo only possible with "construction workers" in wagons
+	- restricted uses (fillable by picking up construction site workers?))
+	- restricting the number of passengers i can pick up
+
+- add optional targets to score more points or have an objective at all (passengers)
+	- add more to passengers
+		- lodgings (number of wagons they occupy)
+		- distance to target
+			- used as a multi for points.. points=(lodgings+1)*multi
+		- fixed points
+	- stations that have to be served at a specific time window 
+
+ - loosing wagons when colliding with cars (instead of passengers)
+	- wagons should be collectable
+	- dropping where the crash occured ?
+
+ - power ups
+	- longer rail segments
+	- more wagons for a time period (30 - 60sec?)
 
 ********************
 **	QUESTIONABLE  **
