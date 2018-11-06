@@ -101,8 +101,32 @@ namespace tinytrain
 							plantTree(level.get(), treepos, curTileRect, texture_rects_by_tiletype_[tile_colors::trees]);
 					}
 				}
+				else  // invalid map data - create full tile collision info
+				{
+					std::vector<c2AABB> collision_data;
+					c2AABB aabb{ c2V(0.0f, 0.0f), c2V(road_texture_width_, road_texture_width_) };
+					//aabb.min = c2V(0.0f, 0.0f);
+					//aabb.max = c2V(road_texture_width_, road_texture_width_);
+					collision_data.emplace_back(c2AABB{c2V(0.0f, 0.0f), c2V(road_texture_width_, road_texture_width_) });
+					addCollision(level.get(), curTileRect, collision_data);
+				}
 			}
 		}
+
+		// add collision around the image
+		TCollisionZone obstacle(gs_, false, tgf::collision::CollisionManager::STATIC_CATEGORY_1);
+		//NORTH
+		obstacle.setCollisionShape_AABB(c2V(0.0f, -tilesize), c2V(size.x * tilesize, 0.0f));
+		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));		
+		// EAST
+		obstacle.setCollisionShape_AABB(c2V(size.x * tilesize, -tilesize), c2V((size.x+1) * tilesize, (size.y+1) * tilesize));
+		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));
+		// SOUTH
+		obstacle.setCollisionShape_AABB(c2V(0.0f, size.y*tilesize), c2V(size.x * tilesize, (size.y+1)*tilesize));
+		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));
+		// WEST
+		obstacle.setCollisionShape_AABB(c2V(-tilesize, -tilesize), c2V(0.0f, (size.y + 1) * tilesize));
+		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));
 
 		// generate road tile and road network
 		generateRoadNetwork_fromImage(map, level.get());
@@ -546,7 +570,6 @@ namespace tinytrain
 		info[tile_colors::road].tree_count_range.y = 0;
 		return info;
 	}
-
 
 	void TLevel_Builder::generateRoadNetwork_fromImage(sf::Image & map, TLevel* level)
 	{

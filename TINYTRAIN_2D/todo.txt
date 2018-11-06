@@ -2,6 +2,13 @@
 **  TODO  **
 ************
 
+- out of bounds collision
+	- combine neighboured tiles into bigger collisions to have as few collision shapes as possible
+
+- broad phase for collisions
+	- grid based (low constant overhead, narrow phase can run into performance issues when things clump up )
+	- quadtree subdivision (more overhead when updating stuff, less narrow phase collisions have to calced)
+
 - level editor or procedural level creation?
 	- level1: reach target zone (tutorial deco images)
 	- level2: do an easy passenger and reach target zone in time
@@ -70,6 +77,8 @@
 ************
 **	DONE  **
 ************
+- first iteration on "out of bounds collision"
+
 - for tutorial level
 	- red type only includes houses blocking full tiles
 	- yellow type includes houses blocking "half" tiles
