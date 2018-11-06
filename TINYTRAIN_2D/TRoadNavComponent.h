@@ -20,6 +20,7 @@ namespace tinytrain
 				direction from; 
 				direction to;
 				bool started = false;
+				bool valid = false;
 			};
 
 			enum class NavType
@@ -41,6 +42,7 @@ namespace tinytrain
 			// Inherited via Component
 			virtual void draw(sf::RenderTarget * target) override;
 			virtual void update(float deltaTime) override;
+			virtual std::unique_ptr<tgf::Component> cloneComponent() override;
 			NavState getState();
 
 			float speed_;
@@ -64,10 +66,10 @@ namespace tinytrain
 			tgf::math::PolyLine waypoints_;
 
 			// current node travelling
-			std::unique_ptr<node_travel_info> cur_node_;
-
+			node_travel_info cur_node_;
 			// stopping points and collision manager
-			std::unique_ptr<road_connection_info::stopping_info> stopper_;
+			road_connection_info::stopping_info stopper_;
+			
 			tgf::collision::CollisionManager* collision_;
 			sf::VertexArray debugCrossingWaypoints_;
 

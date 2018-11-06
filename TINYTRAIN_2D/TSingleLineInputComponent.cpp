@@ -56,5 +56,12 @@ namespace tinytrain
 				}
 			}
 		}
+
+		std::unique_ptr<tgf::Component> TSingleLineInputComponent::cloneComponent()
+		{
+			auto c = std::make_unique<TSingleLineInputComponent>(*this);
+			c->player_ = nullptr;
+			return std::move(c);
+		}
 	}
 }

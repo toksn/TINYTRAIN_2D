@@ -12,6 +12,9 @@ namespace tgf
 	class Entity : public sf::Transformable
 	{
 	public:
+		Entity();
+		Entity(const Entity& other);
+
 		// drawing this entity to the target. the caller (usally a gamestate) has to make sure the target is valid. no checks will be done in the entities!
 		void draw(sf::RenderTarget * target);
 		void update(float deltaTime);

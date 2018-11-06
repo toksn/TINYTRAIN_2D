@@ -13,6 +13,7 @@ namespace tinytrain
 			// should probably be a [0,1] value in relation to the waypoints list
 			float stop_at_dist;
 			std::vector<sf::FloatRect> areas_to_check_before_continue;
+			bool valid = false;
 		};
 		stopping_info stopinfo;
 		stopping_info rotatedstopinfo;

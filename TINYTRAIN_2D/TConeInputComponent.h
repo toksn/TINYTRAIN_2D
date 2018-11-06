@@ -14,6 +14,8 @@ namespace tinytrain
 			// Inherited via Component
 			virtual void draw(sf::RenderTarget * target) override;
 			virtual void update(float deltaTime) override;
+			virtual std::unique_ptr<tgf::Component> cloneComponent() override;
+
 			float getCurrentAngle();
 			virtual void recalcDrawRect(int width, int height) override;
 

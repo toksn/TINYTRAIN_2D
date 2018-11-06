@@ -8,7 +8,7 @@ namespace tgf
 		// Note: The onKeyPressed, onMouseMove/Pressed input functions are not autmatically mapped to any event callbacks in this ctor.
 		// They can be called manually or bound to events of a gamestate.
 		// moveSelection() and executeSelectedEntry() can be used manually as well
-		TextMenu::TextMenu()
+		TextMenu::TextMenu() : Entity()
 		{
 			selection_ = 0;
 			allowmouse_ = true;

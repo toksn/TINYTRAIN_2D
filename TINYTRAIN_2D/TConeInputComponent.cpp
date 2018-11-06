@@ -89,6 +89,13 @@ namespace tinytrain
 			}
 		}
 
+		std::unique_ptr<tgf::Component> TConeInputComponent::cloneComponent()
+		{
+			auto c = std::make_unique<TConeInputComponent>(*this);
+			c->player_ = nullptr;
+			return std::move(c);
+		}
+
 		float TConeInputComponent::getCurrentAngle()
 		{
 			float cur_angle = max_angle_ * diff_;

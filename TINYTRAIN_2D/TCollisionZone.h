@@ -13,6 +13,7 @@ namespace tinytrain
 	{
 	public:
 		TCollisionZone(GameState_Running* gs, bool wintrigger = false, tgf::collision::CollisionManager::CollisionCategory cat = tgf::collision::CollisionManager::CollisionCategory::STATIC_CATEGORY_1);
+		//TCollisionZone(const tinytrain::TCollisionZone &other);
 		~TCollisionZone();
 
 		void setCollisionCategory(tgf::collision::CollisionManager::CollisionCategory cat);
@@ -36,7 +37,7 @@ namespace tinytrain
 		GameState_Running* gs_;
 
 		// TODO: c++17 std::variant
-		std::unique_ptr<c2AABB> aabb_shape_;
-		std::unique_ptr<c2Poly> poly_shape_;
+		c2AABB aabb_shape_;
+		c2Poly poly_shape_;
 	};
 }

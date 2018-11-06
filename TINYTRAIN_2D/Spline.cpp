@@ -5,7 +5,7 @@ namespace tgf
 {
 	namespace math
 	{
-		Spline::Spline()
+		Spline::Spline() : Entity()
 		{
 			// default railtrack draw type
 			controlPoints_.setPrimitiveType(sf::PrimitiveType::LinesStrip);

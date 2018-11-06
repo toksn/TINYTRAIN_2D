@@ -3,6 +3,20 @@
 
 namespace tgf
 {
+	Entity::Entity()
+	{
+	}
+	Entity::Entity(const Entity & other)
+	{
+		drawDebug_ = other.drawDebug_;
+		for (auto& c : other.components_)
+		{
+			//components_.emplace_back(c->cloneComponent());
+			// this ensures owner pointer of component to be set correctly
+			addComponent(c->cloneComponent());
+		}
+	}
+
 	// drawing this entity to the target. the caller (usally a gamestate) has to make sure the target is valid. no checks will be done in the entities!
 	void Entity::draw(sf::RenderTarget * target)
 	{

@@ -10,6 +10,7 @@ namespace tgf
 	public:
 		virtual void draw(sf::RenderTarget * target) = 0;
 		virtual void update(float deltaTime) = 0;
+		virtual std::unique_ptr<Component> cloneComponent() = 0;
 
 		//virtual void attachTo(Entity* entity);
 		virtual std::unique_ptr<Component> detachFrom(Entity* entity);

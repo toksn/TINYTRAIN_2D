@@ -52,14 +52,11 @@ namespace tinytrain
 
 	void TCollisionZone::setCollisionShape_AABB(c2v min, c2v max)
 	{
-		if (aabb_shape_ == nullptr)
-			aabb_shape_ = std::make_unique<c2AABB>();
-
-		aabb_shape_->min = min;
-		aabb_shape_->max = max;
+		aabb_shape_.min = min;
+		aabb_shape_.max = max;
 
 		collisionShape_.type_ = C2_AABB;
-		collisionShape_.shape_ = aabb_shape_.get();
+		collisionShape_.shape_ = &aabb_shape_;
 
 		if(debugShape_.getVertexCount() != 5)
 		{
@@ -73,38 +70,33 @@ namespace tinytrain
 			debugShape_.setPrimitiveType(sf::LineStrip);
 		}
 
-		debugShape_[0].position.x = debugShape_[3].position.x = aabb_shape_->min.x;
-		debugShape_[1].position.x = debugShape_[2].position.x = aabb_shape_->max.x;
-		debugShape_[0].position.y = debugShape_[1].position.y = aabb_shape_->min.y;
-		debugShape_[2].position.y = debugShape_[3].position.y = aabb_shape_->max.y;
+		debugShape_[0].position.x = debugShape_[3].position.x = aabb_shape_.min.x;
+		debugShape_[1].position.x = debugShape_[2].position.x = aabb_shape_.max.x;
+		debugShape_[0].position.y = debugShape_[1].position.y = aabb_shape_.min.y;
+		debugShape_[2].position.y = debugShape_[3].position.y = aabb_shape_.max.y;
 		debugShape_[4] = debugShape_[0];
 	}
 
 	void TCollisionZone::setCollisionShape_Poly(const c2Poly poly)
 	{
-		if (poly_shape_ == nullptr)
-			poly_shape_ = std::make_unique<c2Poly>();
-
-		aabb_shape_.reset(nullptr);
-
-		poly_shape_->count = poly.count;
+		poly_shape_.count = poly.count;
 		
 		collisionShape_.type_ = C2_POLY;
-		collisionShape_.shape_ = poly_shape_.get();
+		collisionShape_.shape_ = &poly_shape_;
 
-		if (debugShape_.getVertexCount() != poly_shape_->count)
+		if (debugShape_.getVertexCount() != poly_shape_.count)
 		{
 			debugShape_.resize(5);
 			debugShape_.setPrimitiveType(sf::LineStrip);
 		}
 
-		for (int i = 0; i < poly_shape_->count; i++)
+		for (int i = 0; i < poly_shape_.count; i++)
 		{
 			debugShape_[i].color = sf::Color::Red;
-			debugShape_[i].position = { poly_shape_->verts[i].x, poly_shape_->verts[i].y };
+			debugShape_[i].position = { poly_shape_.verts[i].x, poly_shape_.verts[i].y };
 
-			poly_shape_->norms[i] = poly.norms[i];
-			poly_shape_->verts[i] = poly.verts[i];
+			poly_shape_.norms[i] = poly.norms[i];
+			poly_shape_.verts[i] = poly.verts[i];
 		}
 	}
 
