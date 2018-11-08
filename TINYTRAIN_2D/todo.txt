@@ -3,6 +3,7 @@
 ************
 
 - out of bounds collision
+	- [bug] collisionzones around the map do not trigger
 	- combine neighboured tiles into bigger collisions to have as few collision shapes as possible
 
 - broad phase for collisions

@@ -27,7 +27,7 @@ namespace tinytrain
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(float deltaTime) override;
 
-		std::unique_ptr<c2Poly> collisionShape_;
+		std::unique_ptr<c2Poly> poly_;
 		GameState_Running* gs_;
 	};
 }

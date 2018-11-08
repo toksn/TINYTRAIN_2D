@@ -17,10 +17,10 @@ namespace tinytrain
 
 		drawable_ = std::make_unique<sf::RectangleShape>(rect);
 
-		collisionShape_ = std::make_unique<c2Poly>();
-		if (collisionShape_)
+		poly_ = std::make_unique<c2Poly>();
+		if (poly_)
 		{
-			collisionShape_->count = 4;
+			poly_->count = 4;
 			updateCollisionShape();
 		}
 
@@ -52,14 +52,14 @@ namespace tinytrain
 		if(drawable_)
 			target->draw(*drawable_, getTransform());
 
-		//if (drawCollisionShape_ && collisionShape_)
-		//	target->draw(*collisionShape_);
+		//if (drawCollisionShape_ && poly_)
+		//	target->draw(*poly_);
 	}
 
 	void TObstacle::onUpdate(float deltaTime)
 	{
 		// todo: lock update behind a flag which has to be set everytime someone changes the transformation/shape
-		updateCollisionShape();
+			updateCollisionShape();
 	}
 
 	void TObstacle::updateCollisionShape()
@@ -69,13 +69,15 @@ namespace tinytrain
 			auto tf = getTransform() * drawable_->getTransform();
 			//auto tf = getTransform();
 			auto temp = tf.transformPoint(drawable_->getPoint(0));
-			collisionShape_->verts[0] = { temp.x, temp.y };
+			poly_->verts[0] = { temp.x, temp.y };
 			temp = tf.transformPoint(drawable_->getPoint(1));
-			collisionShape_->verts[1] = { temp.x, temp.y };
+			poly_->verts[1] = { temp.x, temp.y };
 			temp = tf.transformPoint(drawable_->getPoint(2));
-			collisionShape_->verts[2] = { temp.x, temp.y };
+			poly_->verts[2] = { temp.x, temp.y };
 			temp = tf.transformPoint(drawable_->getPoint(3));
-			collisionShape_->verts[3] = { temp.x, temp.y };
+			poly_->verts[3] = { temp.x, temp.y };
+
+			collisionUpdated = true;
 		}
 	}
 
@@ -98,7 +100,7 @@ namespace tinytrain
 	{
 		tgf::collision::c2Shape s;
 		s.type_ = C2_POLY;
-		s.shape_ = collisionShape_.get();
+		s.shape_ = poly_.get();
 		return s;
 	}
 }

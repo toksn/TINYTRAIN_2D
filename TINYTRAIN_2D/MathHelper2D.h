@@ -23,6 +23,7 @@ namespace tgf
 			//static float point_to_segment_distance(c2v pt, c2v s_a, c2v s_b);
 
 			static c2v calc_point_on_circle(float r, float angle, c2v c = { 0.0f, 0.0f });
+			static c2AABB calc_aabb(void* shape, C2_TYPE type);
 
 			static std::pair<int, int> getArrayCoordsFromIndex(int index, int row_len)
 			{

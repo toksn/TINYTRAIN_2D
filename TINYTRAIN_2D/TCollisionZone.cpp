@@ -75,6 +75,8 @@ namespace tinytrain
 		debugShape_[0].position.y = debugShape_[1].position.y = aabb_shape_.min.y;
 		debugShape_[2].position.y = debugShape_[3].position.y = aabb_shape_.max.y;
 		debugShape_[4] = debugShape_[0];
+
+		collisionUpdated = true;
 	}
 
 	void TCollisionZone::setCollisionShape_Poly(const c2Poly poly)
@@ -98,12 +100,10 @@ namespace tinytrain
 			poly_shape_.norms[i] = poly.norms[i];
 			poly_shape_.verts[i] = poly.verts[i];
 		}
+
+		collisionUpdated = true;
 	}
 
-	tgf::collision::c2Shape TCollisionZone::getCollisionShape()
-	{
-		return collisionShape_;
-	}
 	void TCollisionZone::setCollisionCategory(tgf::collision::CollisionManager::CollisionCategory cat)
 	{
 		if (gs_ && gs_->getCollisionManager())

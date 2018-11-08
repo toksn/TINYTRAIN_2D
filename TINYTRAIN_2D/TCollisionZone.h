@@ -19,7 +19,6 @@ namespace tinytrain
 		void setCollisionCategory(tgf::collision::CollisionManager::CollisionCategory cat);
 		void setCollisionShape_AABB(c2v min, c2v max);
 		void setCollisionShape_Poly(const c2Poly poly);
-		virtual tgf::collision::c2Shape getCollisionShape() override;
 
 		virtual void onTriggerEnter(Entity* a_other);
 		virtual void onTriggerLeave(Entity* a_other);
@@ -32,7 +31,6 @@ namespace tinytrain
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(float deltaTime) override;
 
-		tgf::collision::c2Shape collisionShape_;
 		sf::VertexArray debugShape_;
 		GameState_Running* gs_;
 

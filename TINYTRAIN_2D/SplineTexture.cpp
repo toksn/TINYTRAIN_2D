@@ -5,7 +5,7 @@ namespace tgf
 {
 	namespace utilities
 	{
-		SplineTexture::SplineTexture()
+		SplineTexture::SplineTexture() : Entity() 
 		{
 			spline_ = std::make_unique<Spline_CatmullRom>();
 			

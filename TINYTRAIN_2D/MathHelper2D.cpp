@@ -203,6 +203,46 @@ namespace tgf
 		{
 			return { r*cosf(angle) + c.x, r*sinf(angle) + c.y };
 		}
+		c2AABB MathHelper2D::calc_aabb(void * shape, C2_TYPE type)
+		{
+			c2AABB aabb;
+			if (type == C2_TYPE::C2_AABB)
+			{
+				aabb = *(c2AABB*)shape;
+			}
+			else if (type == C2_TYPE::C2_CIRCLE)
+			{
+				c2Circle* circle = (c2Circle*)shape;
+				aabb.min.x = circle->p.x - circle->r;
+				aabb.min.y = circle->p.y - circle->r;
+				aabb.max.x = circle->p.x + circle->r;
+				aabb.max.y = circle->p.y + circle->r;
+			}
+			else if (type == C2_TYPE::C2_CAPSULE)
+			{
+				c2Capsule* capsule = (c2Capsule*)shape;
+				aabb.min.x = c2Min(capsule->a.x - capsule->r, capsule->b.x - capsule->r);
+				aabb.min.y = c2Min(capsule->a.y - capsule->r, capsule->b.y - capsule->r);
+				aabb.max.x = c2Max(capsule->a.x + capsule->r, capsule->b.x + capsule->r);
+				aabb.max.y = c2Max(capsule->a.y + capsule->r, capsule->b.y + capsule->r);
+			}
+			else if (type == C2_TYPE::C2_POLY)
+			{
+				c2Poly* poly = (c2Poly*)shape;
+				if (poly->count > 0)
+				{
+					aabb.min = aabb.max = poly->verts[0];
+				}
+				for (int i = 1; i < poly->count; i++)
+				{
+					aabb.min.x = c2Min(aabb.min.x, poly->verts[i].x);
+					aabb.min.y = c2Min(aabb.min.y, poly->verts[i].y);
+					aabb.max.x = c2Max(aabb.max.x, poly->verts[i].x);
+					aabb.max.y = c2Max(aabb.max.y, poly->verts[i].y);
+				}
+			}
+			return aabb;
+		}
 		void MathHelper2D::convertRectangularRotationToMirrorOps(int rectangular_rotation, bool & mirror_horizontally, bool & mirror_vertically, bool & mirror_diagonally)
 		{
 			int rot = rectangular_rotation % 4;

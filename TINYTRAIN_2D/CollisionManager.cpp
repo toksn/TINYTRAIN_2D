@@ -88,7 +88,7 @@ namespace tgf
 					auto collider = category->second[i];
 					if((collider.collision_mask & (short)category->first) != 0)
 					{
-						// only check against upcoming objects from the same category to prevent finding collisions twice
+						// only check against upcoming objects FROM THE SAME CATEGORY to prevent finding collisions twice
 						for (int j = i + 1; j < category->second.size(); j++)
 						{
 							// check if upcoming object has current category in its collision mask
@@ -98,7 +98,7 @@ namespace tgf
 						}
 					}
 
-					// only check against all objects of the upcoming categories to prevent finding collisions twice
+					// only check against all objects FROM UPCOMPING CATEGORIES to prevent finding collisions twice
 					auto upcoming_category = category;
 					++upcoming_category;
 					while (upcoming_category != colliders_.end())
@@ -118,7 +118,7 @@ namespace tgf
 				}
 			}
 		}
-
+		
 		void CollisionManager::tryCollideObjects(collidingObject& obj1, collidingObject& obj2)
 		{
 			bool hit = false;

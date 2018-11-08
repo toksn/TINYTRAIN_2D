@@ -10,8 +10,11 @@ namespace tgf
 		class CollisionEntity : public Entity
 		{
 		public:
-			virtual c2Shape getCollisionShape() = 0;
-			//virtual void updateCollisionShape() = 0;
+			virtual c2Shape getCollisionShape() { return collisionShape_; };
+			bool collisionUpdated = false;
+		protected:
+			tgf::collision::c2Shape collisionShape_;
+			
 		};
 	}
 }
