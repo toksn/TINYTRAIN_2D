@@ -18,10 +18,12 @@ namespace tgf
 			virtual std::vector<std::pair<collidingObject*, collidingObject*>> findPairs() override;
 			virtual std::vector<collidingObject*> findShapePairs(c2Shape * shape, uint16_t collision_mask) override;
 			virtual void add(tgf::collision::collidingObject & obj) override;
-			virtual void remove(CollisionEntity * obj) override;			
+			virtual void remove(CollisionEntity * obj) override;
 
 			void initGridSize(unsigned short x, unsigned short y, float cellsize, sf::Vector2f pos = sf::Vector2f(0.0f, 0.0f));
-			void updateGrid();
+			std::vector<collidingObject*> findPairs_forObject(collidingObject * collider, std::vector<collidingObject*> ignore_objects = std::vector<collidingObject*>());
+			std::vector<collidingObject*> cellMembers(unsigned short x, unsigned short y);
+			//void updateGrid();
 		protected:
 			std::vector<collidingObject> colliders_;
 

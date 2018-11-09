@@ -39,7 +39,7 @@ namespace tgf
 							// check if upcoming object has current category in its collision mask
 							auto other = category->second[j];
 							if ((other.collision_mask & (uint16_t)category->first) != 0)
-								pairs.push_back(std::make_pair<collidingObject*, collidingObject*>(&collider, &other));
+								pairs.push_back(std::make_pair(&collider, &other));
 						}
 					}
 
@@ -55,7 +55,7 @@ namespace tgf
 							{
 								// check if object from the upcoming category has current category in its collision mask
 								if ((other.collision_mask & (uint16_t)category->first) != 0)
-									pairs.push_back(std::make_pair<collidingObject*, collidingObject*>(&collider, &other));
+									pairs.push_back(std::make_pair(&collider, &other));
 							}
 						}
 						++upcoming_category;
