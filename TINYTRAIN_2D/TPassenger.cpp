@@ -5,8 +5,14 @@
 
 namespace tinytrain
 {
-	TPassenger::TPassenger(GameState_Running * gs) : TObstacle(gs, true)
+	TPassenger::TPassenger(GameState_Running * gs) : TCollisionZone(gs, true)
 	{
+		sf::RectangleShape rect(sf::Vector2f(20.0f, 20.0f));
+		destination_drawable_ = std::make_unique<sf::RectangleShape>(rect);
+
+		rect.setFillColor(winningTrigger_ ? sf::Color::Green : sf::Color::Red);
+		drawable_ = std::make_unique<sf::RectangleShape>(rect);
+
 		collision_quad_.setPrimitiveType(sf::PrimitiveType::LineStrip);
 		collision_quad_.append(sf::Vertex(sf::Vector2f(), sf::Color::Yellow));
 		collision_quad_.append(sf::Vertex(sf::Vector2f(), sf::Color::Yellow));
@@ -14,8 +20,7 @@ namespace tinytrain
 		collision_quad_.append(sf::Vertex(sf::Vector2f(), sf::Color::Yellow));
 		collision_quad_.append(sf::Vertex(sf::Vector2f(), sf::Color::Yellow));
 
-		sf::RectangleShape rect(sf::Vector2f(20.0f, 20.0f));
-		destination_drawable_ = std::make_unique<sf::RectangleShape>(rect);
+		
 
 		points_ = 1;
 		state_ = PassengerState::WAIT_FOR_PICKUP;
@@ -36,7 +41,7 @@ namespace tinytrain
 		{
 			drawable_.swap(destination_drawable_);
 
-			updateCollisionShape();
+			updateCollisionShape_matchDrawable();
 
 			state_ = newstate;
 		}
@@ -54,7 +59,10 @@ namespace tinytrain
 
 	void TPassenger::onDraw(sf::RenderTarget * target)
 	{
-		TObstacle::onDraw(target);
+		TCollisionZone::onDraw(target);
+
+		if(drawable_)
+			target->draw(*drawable_);
 
 		if(drawDebug_)
 			target->draw(collision_quad_);
@@ -62,7 +70,7 @@ namespace tinytrain
 
 	void TPassenger::onUpdate(float deltaTime)
 	{
-		TObstacle::onUpdate(deltaTime);		
+		TCollisionZone::onUpdate(deltaTime);
 	}
 
 

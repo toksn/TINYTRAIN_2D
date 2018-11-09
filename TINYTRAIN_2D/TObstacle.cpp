@@ -59,6 +59,7 @@ namespace tinytrain
 	void TObstacle::onUpdate(float deltaTime)
 	{
 		// todo: lock update behind a flag which has to be set everytime someone changes the transformation/shape
+		if(collisionUpdated)
 			updateCollisionShape();
 	}
 
@@ -77,7 +78,7 @@ namespace tinytrain
 			temp = tf.transformPoint(drawable_->getPoint(3));
 			poly_->verts[3] = { temp.x, temp.y };
 
-			collisionUpdated = true;
+			//collisionUpdated = true;
 		}
 	}
 

@@ -338,7 +338,7 @@ namespace tinytrain
 				passenger->drawable_->setFillColor(sf::Color(180, 180, 0, 100));
 				passenger->drawable_->setOutlineColor(sf::Color(210, 210, 0, 200));
 				passenger->drawable_->setOutlineThickness(2.0f * background_size_factor);
-				passenger->updateCollisionShape();
+				passenger->updateCollisionShape_matchDrawable();
 
 				passenger->destination_drawable_->setPosition(destination_rect.left * tilesize, destination_rect.top*tilesize);
 				passenger->destination_drawable_->setSize(sf::Vector2f(destination_rect.width*tilesize, destination_rect.height*tilesize));

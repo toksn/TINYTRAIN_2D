@@ -19,6 +19,7 @@ namespace tinytrain
 		void setCollisionCategory(tgf::collision::CollisionCategory cat);
 		void setCollisionShape_AABB(c2v min, c2v max);
 		void setCollisionShape_Poly(const c2Poly poly);
+		void updateCollisionShape_matchDrawable();
 
 		virtual void onTriggerEnter(tgf::collision::CollisionEntity* a_other);
 		virtual void onTriggerLeave(tgf::collision::CollisionEntity* a_other);
@@ -26,6 +27,8 @@ namespace tinytrain
 		const bool winningTrigger_;
 		
 		bool drawDebug_;
+		std::unique_ptr<sf::RectangleShape> drawable_;
+		bool drawableMoved_;
 	protected:
 		// Inherited via Entity
 		virtual void onDraw(sf::RenderTarget * target) override;

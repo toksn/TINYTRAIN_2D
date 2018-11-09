@@ -1,10 +1,11 @@
 #pragma once
-#include "TObstacle.h"
+//#include "TObstacle.h"
+#include "TCollisionZone.h"
 
 namespace tinytrain
 {
 	class TLevel;
-	class TPassenger : public TObstacle
+	class TPassenger : public TCollisionZone
 	{
 	public:
 		TPassenger(GameState_Running* gs);

@@ -29,7 +29,9 @@ namespace tinytrain
 
 	void TCollisionZone::onUpdate(float deltaTime)
 	{
-		
+		// todo: lock update behind a flag which has to be set everytime someone changes the transformation/shape
+		if (drawable_ && drawableMoved_)
+			updateCollisionShape_matchDrawable();
 	}
 
 	void TCollisionZone::onTriggerEnter(class CollisionEntity* other)
@@ -102,6 +104,27 @@ namespace tinytrain
 		}
 
 		collisionUpdated = true;
+	}
+
+	void TCollisionZone::updateCollisionShape_matchDrawable()
+	{
+		if (drawable_ && drawable_->getPointCount() == 4)
+		{
+			c2Poly poly;
+			poly.count = 4;
+			auto tf = getTransform() * drawable_->getTransform();
+			//auto tf = getTransform();
+			auto temp = tf.transformPoint(drawable_->getPoint(0));
+			poly.verts[0] = { temp.x, temp.y };
+			temp = tf.transformPoint(drawable_->getPoint(1));
+			poly.verts[1] = { temp.x, temp.y };
+			temp = tf.transformPoint(drawable_->getPoint(2));
+			poly.verts[2] = { temp.x, temp.y };
+			temp = tf.transformPoint(drawable_->getPoint(3));
+			poly.verts[3] = { temp.x, temp.y };
+
+			setCollisionShape_Poly(poly);
+		}
 	}
 
 	void TCollisionZone::setCollisionCategory(tgf::collision::CollisionCategory cat)

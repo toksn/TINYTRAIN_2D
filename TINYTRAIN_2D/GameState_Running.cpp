@@ -88,8 +88,8 @@ namespace tinytrain
 		info_level4.points_to_reach = 50;
 		info_level4.timelimit = 0.0f;
 
-		//loadLevel(info_level3);
-		loadLevel(info_level1);
+		loadLevel(info_level3);
+		//loadLevel(info_level1);
 		
 		gui_ = std::make_unique<gui::TLevelInfo_HUD>(level_.get(), *(game->font_));
 		if (game && game->window_)

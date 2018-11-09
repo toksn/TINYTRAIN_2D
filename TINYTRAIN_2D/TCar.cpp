@@ -32,7 +32,7 @@ namespace tinytrain
 	void TCar::onUpdate(float deltaTime)
 	{
 		TObstacle::onUpdate(deltaTime);
-
+		
 		//if (state_ == DrivingState::NORMAL || state_ == DrivingState::WAIT_IN_TRAFFIC)
 		if(navi_ && navi_->getState() != components::TRoadNavComponent::NavState::RUNNING_WAIT_FOR_CLEAR_ROAD)
 		{
@@ -110,6 +110,12 @@ namespace tinytrain
 		}
 		else
 			drawable_->setFillColor(sf::Color::Cyan);
+
+		//if(state_ == DrivingState::NORMAL)
+		if (navi_)
+			if (navi_->getState() == components::TRoadNavComponent::NavState::RUNNING_ || navi_->getState() == components::TRoadNavComponent::NavState::RUNNING_ON_CROSSING)
+				//drawable_moved_ = true;
+				collisionUpdated = true;
 	}
 	
 	void TCar::onTriggerEnter(tgf::collision::CollisionEntity * other)
