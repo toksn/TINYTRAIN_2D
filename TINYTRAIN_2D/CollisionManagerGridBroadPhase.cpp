@@ -57,6 +57,7 @@ namespace tgf
 
 		void CollisionManagerGridBroadPhase::updateGrid()
 		{
+			/*
 			for (auto& c : colliders_)
 			{
 				for (auto& o : c.second)
@@ -95,7 +96,7 @@ namespace tgf
 
 					// optional: save grid cells into objects (for faster update, remove)
 				}
-			}
+			}*/
 		}
 
 	}

@@ -114,7 +114,7 @@ namespace tinytrain
 		}
 
 		// add collision around the image
-		TCollisionZone obstacle(gs_, false, tgf::collision::CollisionManager::STATIC_CATEGORY_1);
+		TCollisionZone obstacle(gs_, false, tgf::collision::STATIC_CATEGORY_1);
 		//NORTH
 		obstacle.setCollisionShape_AABB(c2V(0.0f, -tilesize), c2V(size.x * tilesize, 0.0f));
 		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));		
@@ -1503,7 +1503,7 @@ namespace tinytrain
 			max.x += tile_rect.left;
 			min.y += tile_rect.top;
 			max.y += tile_rect.top;
-			std::unique_ptr<TCollisionZone> obstacle = std::make_unique<TCollisionZone>(gs_, false, tgf::collision::CollisionManager::STATIC_CATEGORY_1);
+			std::unique_ptr<TCollisionZone> obstacle = std::make_unique<TCollisionZone>(gs_, false, tgf::collision::STATIC_CATEGORY_1);
 						
 			obstacle->setCollisionShape_AABB(min, max);
 

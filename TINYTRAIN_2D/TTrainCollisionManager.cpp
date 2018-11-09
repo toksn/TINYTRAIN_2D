@@ -34,7 +34,7 @@ namespace tinytrain
 			CollisionManager::removeFromCollision(obj);
 	}
 
-	std::vector<tgf::collision::CollisionEntity*> TTrainCollisionManager::tryCollideShape(tgf::collision::c2Shape shape, short collisionmask)
+	std::vector<tgf::collision::CollisionEntity*> TTrainCollisionManager::tryCollideShape(tgf::collision::c2Shape* shape, short collisionmask)
 	{
 		auto rc = CollisionManager::tryCollideShape(shape, collisionmask);
 
@@ -44,7 +44,7 @@ namespace tinytrain
 			auto aabb = train->getAABB();
 			train_aabb.min = { aabb.left, aabb.top };
 			train_aabb.max = { aabb.left + aabb.width, aabb.top + aabb.height };
-			if (c2Collided(shape.shape_, NULL, shape.type_, &train_aabb, NULL, C2_AABB))
+			if (c2Collided(shape->shape_, NULL, shape->type_, &train_aabb, NULL, C2_AABB))
 			{
 				c2Poly wagon_rect;
 				for (auto& w : train->wagons_)
@@ -58,7 +58,7 @@ namespace tinytrain
 					temp = w.getTransform().transformPoint(w.getPoint(3));
 					wagon_rect.verts[3] = { temp.x, temp.y };
 					wagon_rect.count = 4;
-					if (c2Collided(shape.shape_, NULL, shape.type_, &wagon_rect, NULL, C2_POLY))
+					if (c2Collided(shape->shape_, NULL, shape->type_, &wagon_rect, NULL, C2_POLY))
 					{
 						rc.push_back(train);
 						break;
@@ -70,7 +70,7 @@ namespace tinytrain
 		return rc;
 	}
 
-	bool TTrainCollisionManager::checkShapeForCollisions(tgf::collision::c2Shape shape, short collisionmask)
+	bool TTrainCollisionManager::checkShapeForCollisions(tgf::collision::c2Shape* shape, short collisionmask)
 	{
 		for (auto& train : trains_)
 		{
@@ -78,7 +78,7 @@ namespace tinytrain
 			auto aabb = train->getAABB();
 			train_aabb.min = { aabb.left, aabb.top };
 			train_aabb.max = { aabb.left + aabb.width, aabb.top + aabb.height };
-			if (c2Collided(shape.shape_, NULL, shape.type_, &train_aabb, NULL, C2_AABB))
+			if (c2Collided(shape->shape_, NULL, shape->type_, &train_aabb, NULL, C2_AABB))
 			{
 				c2Poly wagon_rect;
 				for (auto& w : train->wagons_)
@@ -92,7 +92,7 @@ namespace tinytrain
 					temp = w.getTransform().transformPoint(w.getPoint(3));
 					wagon_rect.verts[3] = { temp.x, temp.y };
 					wagon_rect.count = 4;
-					if (c2Collided(shape.shape_, NULL, shape.type_, &wagon_rect, NULL, C2_POLY))
+					if (c2Collided(shape->shape_, NULL, shape->type_, &wagon_rect, NULL, C2_POLY))
 						return true;
 				}
 			}
@@ -103,15 +103,15 @@ namespace tinytrain
 
 	void TTrainCollisionManager::update()
 	{
+		// todo broadphase
+		
 		// check for collisions of trains against any obstacle based entity (this is special as trains always collide with everything and have no TObstacle base)
+		auto all_colliders = broadphase_->findShapePairs(nullptr, 0xFFFF);
 		for (auto& train : trains_)
 		{
-			for (auto o = colliders_.begin(); o != colliders_.end(); ++o)
+			for (auto collider : all_colliders)//.begin(); o != all_colliders.end(); ++o)
 			{
-				for (auto& collider : o->second)
-				{
-					tryCollideTrainObject(train, collider);
-				}
+				tryCollideTrainObject(train, collider);
 			}
 		}
 
@@ -119,13 +119,13 @@ namespace tinytrain
 		CollisionManager::update();
 	}
 
-	void TTrainCollisionManager::tryCollideTrainObject(TTrain* train, collidingObject& obj)
+	void TTrainCollisionManager::tryCollideTrainObject(TTrain* train, tgf::collision::collidingObject* obj)
 	{
 		if (train == nullptr)
 			return;
 
 		bool hit = false;
-		auto collider = obj.obj->getCollisionShape();
+		auto collider = obj->obj->getCollisionShape();
 
 		if (train->wagons_.size() && collider.shape_)
 		{
@@ -180,29 +180,29 @@ namespace tinytrain
 		}
 			
 		// find collisions that already took place
-		std::vector<tgf::collision::CollisionEntity*>::iterator col = std::find(obj.currentCollisions.begin(), obj.currentCollisions.end(), (tgf::collision::CollisionEntity*)train);
+		std::vector<tgf::collision::CollisionEntity*>::iterator col = std::find(obj->currentCollisions.begin(), obj->currentCollisions.end(), (tgf::collision::CollisionEntity*)train);
 		
 		// call callbacks
 		if (hit)
 		{
-			if (col == obj.currentCollisions.end())
+			if (col == obj->currentCollisions.end())
 			{
-				obj.currentCollisions.push_back(train);
+				obj->currentCollisions.push_back(train);
 
-				if (obj.callback_enter)
-					obj.callback_enter((tgf::collision::CollisionEntity*)train);
+				if (obj->callback_enter)
+					obj->callback_enter((tgf::collision::CollisionEntity*)train);
 
-				train->collision(obj.obj);
+				train->collision(obj->obj);
 			}				
 		}
-		else if (col != obj.currentCollisions.end())
+		else if (col != obj->currentCollisions.end())
 		{
-			obj.currentCollisions.erase(col);
+			obj->currentCollisions.erase(col);
 
-			if (obj.callback_leave)
-				obj.callback_leave((tgf::collision::CollisionEntity*)train);
+			if (obj->callback_leave)
+				obj->callback_leave((tgf::collision::CollisionEntity*)train);
 
-			train->collisionEnd(obj.obj);
+			train->collisionEnd(obj->obj);
 		}
 	}
 }

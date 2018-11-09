@@ -12,11 +12,11 @@ namespace tinytrain
 	class TCollisionZone : public tgf::collision::CollisionEntity
 	{
 	public:
-		TCollisionZone(GameState_Running* gs, bool wintrigger = false, tgf::collision::CollisionManager::CollisionCategory cat = tgf::collision::CollisionManager::CollisionCategory::STATIC_CATEGORY_1);
+		TCollisionZone(GameState_Running* gs, bool wintrigger = false, tgf::collision::CollisionCategory cat = tgf::collision::CollisionCategory::STATIC_CATEGORY_1);
 		//TCollisionZone(const tinytrain::TCollisionZone &other);
 		~TCollisionZone();
 
-		void setCollisionCategory(tgf::collision::CollisionManager::CollisionCategory cat);
+		void setCollisionCategory(tgf::collision::CollisionCategory cat);
 		void setCollisionShape_AABB(c2v min, c2v max);
 		void setCollisionShape_Poly(const c2Poly poly);
 

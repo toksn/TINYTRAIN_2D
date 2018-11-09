@@ -1,25 +1,29 @@
 #pragma once
 //#include "Entity.h"
-//#include "CollisionEntity.h"
 #include <vector>
 #include <map>
 #include <memory>
 #include <functional>
 #include "tinyc2.h"
+#include "BroadPhase_CategoryFilter.h"
 
 namespace tgf
 {
 	namespace collision
 	{
 		class CollisionEntity;
+		//class BroadPhase_CategoryFilter;
+		
+		template<class T>
+		using collisionCallbackFunc = void(T::*)(tgf::collision::CollisionEntity*);
+
+		// obstacles, collide against everything in their mask when the other obj has its mask set to collide against it as well
 		struct c2Shape
 		{
 			void* shape_;
 			C2_TYPE type_;
 		};
 
-		template<class T>
-		using collisionCallbackFunc = void(T::*)(tgf::collision::CollisionEntity*);
 
 		class CollisionManager
 		{
@@ -29,36 +33,7 @@ namespace tgf
 
 			virtual void update();
 
-			enum CollisionCategory
-			{
-				STATIC_CATEGORY_1	= (1u << 0),
-				STATIC_CATEGORY_2	= (1u << 1),
-				STATIC_CATEGORY_3	= (1u << 2),
-				STATIC_CATEGORY_4	= (1u << 3),
-				STATIC_CATEGORY_5	= (1u << 4),
-				DYNAMIC_CATEGORY_1	= (1u << 5),
-				DYNAMIC_CATEGORY_2	= (1u << 6),
-				DYNAMIC_CATEGORY_3	= (1u << 7),
-				DYNAMIC_CATEGORY_4	= (1u << 8),
-				DYNAMIC_CATEGORY_5	= (1u << 9), 
-				OTHER_CATEGORY_1	= (1u << 10),
-				OTHER_CATEGORY_2	= (1u << 11),
-				OTHER_CATEGORY_3	= (1u << 12),
-				OTHER_CATEGORY_4	= (1u << 13),
-				OTHER_CATEGORY_5	= (1u << 14),
-				OTHER_CATEGORY_6	= (1u << 15)
-			};
-
-			// obstacles, collide against everything in their mask when the other obj has its mask set to collide against it as well
-			struct collidingObject
-			{
-				CollisionEntity* obj;
-				std::function<void(CollisionEntity*)> callback_enter;
-				std::function<void(CollisionEntity*)> callback_leave;
-				short collision_mask;
-				std::vector<CollisionEntity*> currentCollisions;
-			};
-			
+						
 			template<class T> void addToCollision(T* const object, void(T::* const on_enter)(CollisionEntity*), void(T::* const on_leave)(CollisionEntity*), CollisionCategory category = CollisionCategory::STATIC_CATEGORY_1, short collisionmask = (short)CollisionCategory::STATIC_CATEGORY_1)
 			{
 				collidingObject col;
@@ -70,18 +45,19 @@ namespace tgf
 				col.obj = object;
 				col.obj->collisionUpdated = true;
 				col.collision_mask = collisionmask;
-				colliders_[category].push_back(col);
+				col.collision_category = category;
+
+				broadphase_->add(col);
 			}
 
 			virtual void removeFromCollision(void* obj);
 
-			virtual std::vector<CollisionEntity*> tryCollideShape(c2Shape shape, short collisionmask);
-			virtual bool checkShapeForCollisions(c2Shape shape, short collisionmask);
+			virtual std::vector<CollisionEntity*> tryCollideShape(c2Shape* shape, short collisionmask);
+			virtual bool checkShapeForCollisions(c2Shape* shape, short collisionmask);
 		protected:
 			virtual void tryCollideObjects(collidingObject & obj1, collidingObject & obj2);
 
-			// store function pointers to call when a collision did hit, mapped to categories
-			std::map<CollisionCategory, std::vector<collidingObject>> colliders_;
+			std::unique_ptr<BroadPhase_CategoryFilter> broadphase_;
 		};
 	}
 }

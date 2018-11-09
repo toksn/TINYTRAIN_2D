@@ -48,7 +48,7 @@ namespace tinytrain
 			float speed_;
 			road_network* roads_;
 			NavType type_ = NavType::RANDOM;
-			unsigned int roadCheckingMask = tgf::collision::CollisionManager::CollisionCategory::DYNAMIC_CATEGORY_1;
+			unsigned int roadCheckingMask = tgf::collision::CollisionCategory::DYNAMIC_CATEGORY_1;
 
 		protected:
 			bool respawn(bool onlyDeadends);

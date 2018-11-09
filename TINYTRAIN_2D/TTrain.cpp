@@ -125,7 +125,7 @@ namespace tinytrain
 		return sf::FloatRect(aabb_[0].position.x, aabb_[0].position.y, aabb_[2].position.x - aabb_[0].position.x, aabb_[2].position.y - aabb_[0].position.y);
 	}
 
-	void TTrain::collision(Entity * other)
+	void TTrain::collision(tgf::collision::CollisionEntity * other)
 	{
 		// handle car hits
 		TCar* car = dynamic_cast<TCar*>(other);
@@ -182,7 +182,7 @@ namespace tinytrain
 		}
 	}
 
-	void TTrain::collisionEnd(Entity * other)
+	void TTrain::collisionEnd(tgf::collision::CollisionEntity* other)
 	{
 	}
 

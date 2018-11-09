@@ -4,7 +4,7 @@
 
 namespace tinytrain
 {
-	TCollisionZone::TCollisionZone(GameState_Running* gs, bool wintrigger, TTrainCollisionManager::CollisionCategory cat) :
+	TCollisionZone::TCollisionZone(GameState_Running* gs, bool wintrigger, tgf::collision::CollisionCategory cat) :
 		winningTrigger_(wintrigger)
 	{
 		gs_ = gs;
@@ -104,7 +104,7 @@ namespace tinytrain
 		collisionUpdated = true;
 	}
 
-	void TCollisionZone::setCollisionCategory(tgf::collision::CollisionManager::CollisionCategory cat)
+	void TCollisionZone::setCollisionCategory(tgf::collision::CollisionCategory cat)
 	{
 		if (gs_ && gs_->getCollisionManager())
 		{

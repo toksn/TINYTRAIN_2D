@@ -43,8 +43,8 @@ namespace tinytrain
 		sf::FloatRect getAABB();
 		bool debugDraw_;
 
-		void collision(Entity* other);
-		void collisionEnd(Entity* other);
+		void collision(tgf::collision::CollisionEntity* other);
+		void collisionEnd(tgf::collision::CollisionEntity* other);
 
 	protected:
 		// Inherited via Entity

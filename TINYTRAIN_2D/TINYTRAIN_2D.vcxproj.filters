@@ -158,6 +158,9 @@
     <ClCompile Include="CollisionManagerGridBroadPhase.cpp">
       <Filter>GameFramework\collision</Filter>
     </ClCompile>
+    <ClCompile Include="BroadPhase_CategoryFilter.cpp">
+      <Filter>GameFramework\collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -281,6 +284,9 @@
       <Filter>TinyTrain\controllers</Filter>
     </ClInclude>
     <ClInclude Include="CollisionManagerGridBroadPhase.h">
+      <Filter>GameFramework\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="BroadPhase_CategoryFilter.h">
       <Filter>GameFramework\collision</Filter>
     </ClInclude>
   </ItemGroup>

@@ -136,6 +136,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BroadPhase_CategoryFilter.cpp" />
     <ClCompile Include="CityGenerator.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CollisionManagerGridBroadPhase.cpp" />
@@ -175,6 +176,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="TTrainCollisionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BroadPhase_CategoryFilter.h" />
     <ClInclude Include="CityGenerator.h" />
     <ClInclude Include="CollisionEntity.h" />
     <ClInclude Include="CollisionManager.h" />

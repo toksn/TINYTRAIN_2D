@@ -33,10 +33,10 @@ namespace tinytrain
 			tgf::collision::collisionCallbackFunc<TObstacle> no_callback = nullptr;
 			if (winningTrigger_)
 				// add to collision, only colliding with trains
-				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback, TTrainCollisionManager::CollisionCategory::STATIC_CATEGORY_2, 0);
+				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback, tgf::collision::CollisionCategory::STATIC_CATEGORY_2, 0);
 			else
 				// add to collision colliding with trains and dynamic_category_1
-				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback, TTrainCollisionManager::CollisionCategory::DYNAMIC_CATEGORY_1, 0);
+				colli->addToCollision(this, &TObstacle::onTriggerEnter, no_callback, tgf::collision::CollisionCategory::DYNAMIC_CATEGORY_1, 0);
 		}
 	}
 

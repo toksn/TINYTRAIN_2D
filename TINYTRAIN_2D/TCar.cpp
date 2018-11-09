@@ -96,8 +96,8 @@ namespace tinytrain
 #endif			
 			s.shape_ = &shape_tocheck;
 			unsigned int mask = 0;
-			mask |= TTrainCollisionManager::CollisionCategory::DYNAMIC_CATEGORY_1;
-			if (gs_->getCollisionManager()->checkShapeForCollisions(s, mask))
+			mask |= tgf::collision::CollisionCategory::DYNAMIC_CATEGORY_1;
+			if (gs_->getCollisionManager()->checkShapeForCollisions(&s, mask))
 			{
 				state_ = DrivingState::WAIT_IN_TRAFFIC;
 				navi_->speed_ = 0.0f;

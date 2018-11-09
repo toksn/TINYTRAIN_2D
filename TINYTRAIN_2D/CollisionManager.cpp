@@ -1,5 +1,6 @@
 #include "CollisionManager.h"
 #include "CollisionEntity.h"
+//#include "BroadPhase_CategoryFilter.h"
 
 
 namespace tgf
@@ -8,6 +9,7 @@ namespace tgf
 	{
 		CollisionManager::CollisionManager()
 		{
+			broadphase_ = std::make_unique<BroadPhase_CategoryFilter>();
 		}
 		
 		CollisionManager::~CollisionManager()
@@ -16,61 +18,39 @@ namespace tgf
 		
 		void CollisionManager::removeFromCollision(void * obj)
 		{
-			for (auto o = colliders_.begin(); o != colliders_.end(); ++o)
-			{
-				for (int i = o->second.size() - 1; i >= 0; i--)
-				{
-					if (o->second[i].obj == obj)
-						o->second.erase(o->second.begin() + i);
-				}
-			}
+			broadphase_->remove((CollisionEntity*)obj);
 		}
 
-		std::vector<CollisionEntity*> CollisionManager::tryCollideShape(c2Shape shape, short collision_mask)
+		
+		std::vector<CollisionEntity*> CollisionManager::tryCollideShape(c2Shape* shape, short collision_mask)
 		{
-			std::vector<CollisionEntity*> collidedEntities;
+			std::vector<CollisionEntity*> collidedObjects;
+			auto broadphasehits = broadphase_->findShapePairs(shape, collision_mask);
 
-			if (collision_mask != 0 && shape.shape_ != nullptr)
+			for (auto& c : broadphasehits)
 			{
-				for (auto& category : colliders_)
-				{
-					if ((collision_mask & (short)category.first) != 0)
-					{
-						for (auto& other : category.second)
-						{
-							auto collider2 = other.obj->getCollisionShape();
-							if (collider2.shape_)
-							{
-								if (c2Collided(shape.shape_, NULL, shape.type_, collider2.shape_, NULL, collider2.type_))
-									collidedEntities.push_back(other.obj);
-							}
-						}
-					}
-				}
+				auto collider2 = c->obj->getCollisionShape();
+				if (collider2.shape_)
+					if (c2Collided(shape->shape_, NULL, shape->type_, collider2.shape_, NULL, collider2.type_))
+						collidedObjects.push_back(c->obj);
 			}
-
-			return collidedEntities;
+				
+			return collidedObjects;
 		}
-
-		bool CollisionManager::checkShapeForCollisions(c2Shape shape, short collision_mask)
+		
+		bool CollisionManager::checkShapeForCollisions(c2Shape* shape, short collision_mask)
 		{
-			if (collision_mask == 0 || shape.shape_ == nullptr)
+			if (collision_mask == 0 || shape->shape_ == nullptr)
 				return false;
 
-			for (auto& category : colliders_)
-			{ 
-				if ((collision_mask & (short)category.first) != 0)
-				{
-					for (auto& other : category.second)
-					{
-						auto collider2 = other.obj->getCollisionShape();
-						if (collider2.shape_ && collider2.shape_ != shape.shape_)
-						{
-							if (c2Collided(shape.shape_, NULL, shape.type_, collider2.shape_, NULL, collider2.type_))
-								return true;
-						}
-					}
-				}
+			auto broadphasehits = broadphase_->findShapePairs(shape, collision_mask);
+
+			for (auto& c : broadphasehits)
+			{
+				auto collider2 = c->obj->getCollisionShape();
+				if (collider2.shape_)
+					if (c2Collided(shape->shape_, NULL, shape->type_, collider2.shape_, NULL, collider2.type_))
+						return true;
 			}
 
 			return false;
@@ -78,44 +58,11 @@ namespace tgf
 
 		void CollisionManager::update()
 		{
-			// check all collider object against each other, only test for collision when they have their masks set up properly
-			for (auto& category = colliders_.begin(); category != colliders_.end(); ++category)
-			{
-				//for (auto collider : category->second)
-				for (int i = 0; i < category->second.size(); i++)
-				{
-					auto collider = category->second[i];
-					if((collider.collision_mask & (short)category->first) != 0)
-					{
-						// only check against upcoming objects FROM THE SAME CATEGORY to prevent finding collisions twice
-						for (int j = i + 1; j < category->second.size(); j++)
-						{
-							// check if upcoming object has current category in its collision mask
-							auto other = category->second[j];
-							if((other.collision_mask & (short)category->first) != 0)
-								tryCollideObjects(collider, other);
-						}
-					}
+			broadphase_->update();
 
-					// only check against all objects FROM UPCOMPING CATEGORIES to prevent finding collisions twice
-					auto upcoming_category = category;
-					++upcoming_category;
-					while (upcoming_category != colliders_.end())
-					{
-						// check if this upcoming category is in the collision mask of the object
-						if((collider.collision_mask & (short)upcoming_category->first) != 0)
-						{
-							for (auto& other : upcoming_category->second)
-							{
-								// check if object from the upcoming category has current category in its collision mask
-								if((other.collision_mask & (short)category->first) != 0)
-									tryCollideObjects(collider, other);
-							}
-						}
-						++upcoming_category;
-					}
-				}
-			}
+			auto pairs = broadphase_->findPairs();
+			for(auto p : pairs)
+				tryCollideObjects(*p.first, *p.second);
 		}
 		
 		void CollisionManager::tryCollideObjects(collidingObject& obj1, collidingObject& obj2)
