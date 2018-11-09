@@ -161,7 +161,7 @@
     <ClCompile Include="Broadphase_CategoryFilter.cpp">
       <Filter>GameFramework\collision\broadphase</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionManagerGridBroadPhase.cpp">
+    <ClCompile Include="Broadphase_Grid.cpp">
       <Filter>GameFramework\collision\broadphase</Filter>
     </ClCompile>
   </ItemGroup>
@@ -292,7 +292,7 @@
     <ClInclude Include="Broadphase_CategoryFilter.h">
       <Filter>GameFramework\collision\broadphase</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionManagerGridBroadPhase.h">
+    <ClInclude Include="Broadphase_Grid.h">
       <Filter>GameFramework\collision\broadphase</Filter>
     </ClInclude>
   </ItemGroup>

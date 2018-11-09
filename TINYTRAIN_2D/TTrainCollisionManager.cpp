@@ -103,8 +103,6 @@ namespace tinytrain
 
 	void TTrainCollisionManager::update()
 	{
-		// todo broadphase
-		
 		// check for collisions of trains against any obstacle based entity (this is special as trains always collide with everything and have no TObstacle base)
 		auto all_colliders = broadphase_->findShapePairs(nullptr, 0xFFFF);
 		for (auto& train : trains_)

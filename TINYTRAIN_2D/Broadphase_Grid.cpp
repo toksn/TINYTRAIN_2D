@@ -1,4 +1,4 @@
-#include "CollisionManagerGridBroadPhase.h"
+#include "Broadphase_Grid.h"
 #include "CollisionEntity.h"
 #include "MathHelper2D.h"
 
@@ -6,14 +6,14 @@ namespace tgf
 {
 	namespace collision
 	{
-		CollisionManagerGridBroadPhase::CollisionManagerGridBroadPhase()
+		Broadphase_Grid::Broadphase_Grid()
 		{
 		}
-		CollisionManagerGridBroadPhase::~CollisionManagerGridBroadPhase()
+		Broadphase_Grid::~Broadphase_Grid()
 		{
 		}
 
-		void CollisionManagerGridBroadPhase::update()
+		void Broadphase_Grid::update()
 		{
 			updateGrid();
 			/*
@@ -50,12 +50,12 @@ namespace tgf
 			}*/
 		}
 
-		void CollisionManagerGridBroadPhase::initGridSize(sf::Vector2i gridsize, float cellsize, sf::Vector2f pos)
+		void Broadphase_Grid::initGridSize(unsigned short x, unsigned short y, float cellsize, sf::Vector2f pos)
 		{
 			// todo
 		}
 
-		void CollisionManagerGridBroadPhase::updateGrid()
+		void Broadphase_Grid::updateGrid()
 		{
 			/*
 			for (auto& c : colliders_)
@@ -97,6 +97,24 @@ namespace tgf
 					// optional: save grid cells into objects (for faster update, remove)
 				}
 			}*/
+		}
+
+		std::vector<std::pair<collidingObject*, collidingObject*>> Broadphase_Grid::findPairs()
+		{
+			return std::vector<std::pair<collidingObject*, collidingObject*>>();
+		}
+
+		std::vector<collidingObject*> Broadphase_Grid::findShapePairs(c2Shape * shape, uint16_t collision_mask)
+		{
+			return std::vector<collidingObject*>();
+		}
+
+		void Broadphase_Grid::add(tgf::collision::collidingObject & obj)
+		{
+		}
+
+		void Broadphase_Grid::remove(CollisionEntity * obj)
+		{
 		}
 
 	}
