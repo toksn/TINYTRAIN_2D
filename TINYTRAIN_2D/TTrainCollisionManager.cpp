@@ -34,7 +34,7 @@ namespace tinytrain
 			CollisionManager::removeFromCollision(obj);
 	}
 
-	std::vector<tgf::collision::CollisionEntity*> TTrainCollisionManager::tryCollideShape(tgf::collision::c2Shape* shape, short collisionmask)
+	std::vector<tgf::collision::CollisionEntity*> TTrainCollisionManager::tryCollideShape(tgf::collision::c2Shape* shape, uint16_t collisionmask)
 	{
 		auto rc = CollisionManager::tryCollideShape(shape, collisionmask);
 
@@ -70,7 +70,7 @@ namespace tinytrain
 		return rc;
 	}
 
-	bool TTrainCollisionManager::checkShapeForCollisions(tgf::collision::c2Shape* shape, short collisionmask)
+	bool TTrainCollisionManager::checkShapeForCollisions(tgf::collision::c2Shape* shape, uint16_t collisionmask)
 	{
 		for (auto& train : trains_)
 		{

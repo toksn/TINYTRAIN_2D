@@ -34,7 +34,7 @@ namespace tgf
 			virtual void update();
 
 						
-			template<class T> void addToCollision(T* const object, void(T::* const on_enter)(CollisionEntity*), void(T::* const on_leave)(CollisionEntity*), CollisionCategory category = CollisionCategory::STATIC_CATEGORY_1, short collisionmask = (short)CollisionCategory::STATIC_CATEGORY_1)
+			template<class T> void addToCollision(T* const object, void(T::* const on_enter)(CollisionEntity*), void(T::* const on_leave)(CollisionEntity*), CollisionCategory category = CollisionCategory::STATIC_CATEGORY_1, uint16_t collisionmask = (uint16_t)CollisionCategory::STATIC_CATEGORY_1)
 			{
 				collidingObject col;
 				col.callback_enter = col.callback_leave = nullptr;
@@ -52,8 +52,8 @@ namespace tgf
 
 			virtual void removeFromCollision(void* obj);
 
-			virtual std::vector<CollisionEntity*> tryCollideShape(c2Shape* shape, short collisionmask);
-			virtual bool checkShapeForCollisions(c2Shape* shape, short collisionmask);
+			virtual std::vector<CollisionEntity*> tryCollideShape(c2Shape* shape, uint16_t collisionmask);
+			virtual bool checkShapeForCollisions(c2Shape* shape, uint16_t collisionmask);
 		protected:
 			virtual void tryCollideObjects(collidingObject & obj1, collidingObject & obj2);
 

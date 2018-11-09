@@ -14,8 +14,8 @@ namespace tgf
 			CollisionEntity* obj;
 			std::function<void(CollisionEntity*)> callback_enter;
 			std::function<void(CollisionEntity*)> callback_leave;
-			short collision_mask;
-			short collision_category;
+			uint16_t collision_mask;
+			uint16_t collision_category;
 			std::vector<CollisionEntity*> currentCollisions;
 		};
 		enum CollisionCategory
@@ -46,7 +46,7 @@ namespace tgf
 
 			virtual void update() {};
 			virtual std::vector<std::pair<collidingObject*, collidingObject*>> findPairs();
-			virtual std::vector<collidingObject*> findShapePairs(c2Shape* shape, short collision_mask); //todo maybe use collidingObject* instead of shape/coll_mask
+			virtual std::vector<collidingObject*> findShapePairs(c2Shape* shape, uint16_t collision_mask); //todo maybe use collidingObject* instead of shape/coll_mask
 			//virtual std::unordered_map<collidingObject*, collidingObject*> findPairs();
 
 			virtual void add(tgf::collision::collidingObject& obj);

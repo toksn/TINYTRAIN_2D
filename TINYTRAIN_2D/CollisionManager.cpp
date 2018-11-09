@@ -22,7 +22,7 @@ namespace tgf
 		}
 
 		
-		std::vector<CollisionEntity*> CollisionManager::tryCollideShape(c2Shape* shape, short collision_mask)
+		std::vector<CollisionEntity*> CollisionManager::tryCollideShape(c2Shape* shape, uint16_t collision_mask)
 		{
 			std::vector<CollisionEntity*> collidedObjects;
 			auto broadphasehits = broadphase_->findShapePairs(shape, collision_mask);
@@ -38,7 +38,7 @@ namespace tgf
 			return collidedObjects;
 		}
 		
-		bool CollisionManager::checkShapeForCollisions(c2Shape* shape, short collision_mask)
+		bool CollisionManager::checkShapeForCollisions(c2Shape* shape, uint16_t collision_mask)
 		{
 			if (collision_mask == 0 || shape->shape_ == nullptr)
 				return false;
