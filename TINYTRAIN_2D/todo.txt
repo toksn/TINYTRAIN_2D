@@ -3,7 +3,6 @@
 ************
 
 - out of bounds collision
-	- [bug] collisionzones around the map do not trigger
 	- combine neighboured tiles into bigger collisions to have as few collision shapes as possible
 
 - broad phase for collisions
@@ -79,6 +78,7 @@
 **	DONE  **
 ************
 - first iteration on "out of bounds collision"
+	- fixed: collisionzones around the map do not trigger
 
 - for tutorial level
 	- red type only includes houses blocking full tiles

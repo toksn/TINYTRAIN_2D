@@ -114,19 +114,22 @@ namespace tinytrain
 		}
 
 		// add collision around the image
-		TCollisionZone obstacle(gs_, false, tgf::collision::STATIC_CATEGORY_1);
 		//NORTH
-		obstacle.setCollisionShape_AABB(c2V(0.0f, -tilesize), c2V(size.x * tilesize, 0.0f));
-		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));		
+		auto z = std::make_unique<TCollisionZone>(gs_, false, tgf::collision::STATIC_CATEGORY_1);
+		z->setCollisionShape_AABB(c2V(0.0f, -tilesize), c2V(size.x * tilesize, 0.0f));
+		level->static_collision_.emplace_back(std::move(z));
 		// EAST
-		obstacle.setCollisionShape_AABB(c2V(size.x * tilesize, -tilesize), c2V((size.x+1) * tilesize, (size.y+1) * tilesize));
-		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));
+		z = std::make_unique<TCollisionZone>(gs_, false, tgf::collision::STATIC_CATEGORY_1);
+		z->setCollisionShape_AABB(c2V(size.x * tilesize, -tilesize), c2V((size.x + 1) * tilesize, (size.y + 1) * tilesize));
+		level->static_collision_.emplace_back(std::move(z));
 		// SOUTH
-		obstacle.setCollisionShape_AABB(c2V(0.0f, size.y*tilesize), c2V(size.x * tilesize, (size.y+1)*tilesize));
-		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));
+		z = std::make_unique<TCollisionZone>(gs_, false, tgf::collision::STATIC_CATEGORY_1);
+		z->setCollisionShape_AABB(c2V(0.0f, size.y*tilesize), c2V(size.x * tilesize, (size.y+1)*tilesize));
+		level->static_collision_.emplace_back(std::move(z));
 		// WEST
-		obstacle.setCollisionShape_AABB(c2V(-tilesize, -tilesize), c2V(0.0f, (size.y + 1) * tilesize));
-		level->static_collision_.emplace_back(std::move(std::make_unique<TCollisionZone>(obstacle)));
+		z = std::make_unique<TCollisionZone>(gs_, false, tgf::collision::STATIC_CATEGORY_1);
+		z->setCollisionShape_AABB(c2V(-tilesize, -tilesize), c2V(0.0f, (size.y + 1) * tilesize));
+		level->static_collision_.emplace_back(std::move(z));
 
 		// generate road tile and road network
 		generateRoadNetwork_fromImage(map, level.get());
