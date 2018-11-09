@@ -5,7 +5,7 @@
 #include <memory>
 #include <functional>
 #include "tinyc2.h"
-#include "BroadPhase_CategoryFilter.h"
+#include "BroadPhase.h"
 
 namespace tgf
 {
@@ -57,7 +57,7 @@ namespace tgf
 		protected:
 			virtual void tryCollideObjects(collidingObject & obj1, collidingObject & obj2);
 
-			std::unique_ptr<BroadPhase_CategoryFilter> broadphase_;
+			std::unique_ptr<Broadphase> broadphase_;
 		};
 	}
 }

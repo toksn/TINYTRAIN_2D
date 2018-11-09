@@ -45,6 +45,9 @@
     <Filter Include="TinyTrain\gui">
       <UniqueIdentifier>{1f7c5f86-93c8-43b4-82ce-f42ea2beb854}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameFramework\collision\broadphase">
+      <UniqueIdentifier>{95eb937b-5b45-4021-b204-7713120f28a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -155,11 +158,11 @@
     <ClCompile Include="TConeInputComponent.cpp">
       <Filter>TinyTrain\controllers</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionManagerGridBroadPhase.cpp">
-      <Filter>GameFramework\collision</Filter>
+    <ClCompile Include="Broadphase_CategoryFilter.cpp">
+      <Filter>GameFramework\collision\broadphase</Filter>
     </ClCompile>
-    <ClCompile Include="BroadPhase_CategoryFilter.cpp">
-      <Filter>GameFramework\collision</Filter>
+    <ClCompile Include="CollisionManagerGridBroadPhase.cpp">
+      <Filter>GameFramework\collision\broadphase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,11 +286,14 @@
     <ClInclude Include="TConeInputComponent.h">
       <Filter>TinyTrain\controllers</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionManagerGridBroadPhase.h">
-      <Filter>GameFramework\collision</Filter>
+    <ClInclude Include="Broadphase.h">
+      <Filter>GameFramework\collision\broadphase</Filter>
     </ClInclude>
-    <ClInclude Include="BroadPhase_CategoryFilter.h">
-      <Filter>GameFramework\collision</Filter>
+    <ClInclude Include="Broadphase_CategoryFilter.h">
+      <Filter>GameFramework\collision\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManagerGridBroadPhase.h">
+      <Filter>GameFramework\collision\broadphase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

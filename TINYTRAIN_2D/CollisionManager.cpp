@@ -1,6 +1,6 @@
 #include "CollisionManager.h"
 #include "CollisionEntity.h"
-//#include "BroadPhase_CategoryFilter.h"
+#include "BroadPhase_CategoryFilter.h"
 
 
 namespace tgf

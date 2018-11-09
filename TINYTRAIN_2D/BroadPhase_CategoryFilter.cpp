@@ -15,6 +15,10 @@ namespace tgf
 		{
 		}
 
+		void BroadPhase_CategoryFilter::update()
+		{
+		}
+		
 		std::vector<std::pair<tgf::collision::collidingObject*, tgf::collision::collidingObject*>> BroadPhase_CategoryFilter::findPairs()
 		{
 			std::vector<std::pair<tgf::collision::collidingObject*, tgf::collision::collidingObject*>> pairs;
