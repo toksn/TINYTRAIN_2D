@@ -9,8 +9,7 @@ namespace tgf
 		CollisionManager::CollisionManager()
 		{
 		}
-
-
+		
 		CollisionManager::~CollisionManager()
 		{
 		}
@@ -27,9 +26,9 @@ namespace tgf
 			}
 		}
 
-		std::vector<Entity*> CollisionManager::tryCollideShape(c2Shape shape, short collision_mask)
+		std::vector<CollisionEntity*> CollisionManager::tryCollideShape(c2Shape shape, short collision_mask)
 		{
-			std::vector<Entity*> collidedEntities;
+			std::vector<CollisionEntity*> collidedEntities;
 
 			if (collision_mask != 0 && shape.shape_ != nullptr)
 			{
@@ -138,7 +137,7 @@ namespace tgf
 				if (o1o2 == obj1.currentCollisions.end())
 				{
 					if (obj1.callback_enter)
-						obj1.callback_enter((tgf::Entity*)obj2.obj);
+						obj1.callback_enter(obj2.obj);
 
 					obj1.currentCollisions.push_back(obj2.obj);
 				}
@@ -146,7 +145,7 @@ namespace tgf
 				if (o2o1 == obj2.currentCollisions.end())
 				{
 					if (obj2.callback_enter)
-						obj2.callback_enter((tgf::Entity*)obj1.obj);
+						obj2.callback_enter(obj1.obj);
 
 					obj2.currentCollisions.push_back(obj1.obj);
 				}
@@ -160,7 +159,7 @@ namespace tgf
 
 					// callback on collision end
 					if (obj1.callback_leave)
-						obj1.callback_leave((tgf::Entity*)obj2.obj);
+						obj1.callback_leave(obj2.obj);
 				}
 
 
@@ -170,7 +169,7 @@ namespace tgf
 
 					// callback on collision end
 					if (obj2.callback_leave)
-						obj2.callback_leave((tgf::Entity*)obj1.obj);
+						obj2.callback_leave(obj1.obj);
 				}
 			}
 		}

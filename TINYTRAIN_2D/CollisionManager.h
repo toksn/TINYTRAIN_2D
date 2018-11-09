@@ -1,6 +1,8 @@
 #pragma once
-#include "Entity.h"
+//#include "Entity.h"
 //#include "CollisionEntity.h"
+#include <vector>
+#include <map>
 #include <memory>
 #include <functional>
 #include "tinyc2.h"
@@ -17,7 +19,7 @@ namespace tgf
 		};
 
 		template<class T>
-		using collisionCallbackFunc = void(T::*)(tgf::Entity*);
+		using collisionCallbackFunc = void(T::*)(tgf::collision::CollisionEntity*);
 
 		class CollisionManager
 		{
@@ -51,13 +53,13 @@ namespace tgf
 			struct collidingObject
 			{
 				CollisionEntity* obj;
-				std::function<void(Entity*)> callback_enter;
-				std::function<void(Entity*)> callback_leave;
+				std::function<void(CollisionEntity*)> callback_enter;
+				std::function<void(CollisionEntity*)> callback_leave;
 				short collision_mask;
-				std::vector<Entity*> currentCollisions;
+				std::vector<CollisionEntity*> currentCollisions;
 			};
 			
-			template<class T> void addToCollision(T* const object, void(T::* const on_enter)(Entity*), void(T::* const on_leave)(Entity*), CollisionCategory category = CollisionCategory::STATIC_CATEGORY_1, short collisionmask = (short)CollisionCategory::STATIC_CATEGORY_1)
+			template<class T> void addToCollision(T* const object, void(T::* const on_enter)(CollisionEntity*), void(T::* const on_leave)(CollisionEntity*), CollisionCategory category = CollisionCategory::STATIC_CATEGORY_1, short collisionmask = (short)CollisionCategory::STATIC_CATEGORY_1)
 			{
 				collidingObject col;
 				col.callback_enter = col.callback_leave = nullptr;
@@ -66,13 +68,14 @@ namespace tgf
 				if (on_leave)
 					col.callback_leave = std::bind(on_leave, object, std::placeholders::_1);
 				col.obj = object;
+				col.obj->collisionUpdated = true;
 				col.collision_mask = collisionmask;
 				colliders_[category].push_back(col);
 			}
 
 			virtual void removeFromCollision(void* obj);
 
-			virtual std::vector<Entity*> tryCollideShape(c2Shape shape, short collisionmask);
+			virtual std::vector<CollisionEntity*> tryCollideShape(c2Shape shape, short collisionmask);
 			virtual bool checkShapeForCollisions(c2Shape shape, short collisionmask);
 		protected:
 			virtual void tryCollideObjects(collidingObject & obj1, collidingObject & obj2);

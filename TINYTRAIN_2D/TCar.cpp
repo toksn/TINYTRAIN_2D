@@ -112,7 +112,7 @@ namespace tinytrain
 			drawable_->setFillColor(sf::Color::Cyan);
 	}
 	
-	void TCar::onTriggerEnter(Entity * other)
+	void TCar::onTriggerEnter(tgf::collision::CollisionEntity * other)
 	{
 	}
 }

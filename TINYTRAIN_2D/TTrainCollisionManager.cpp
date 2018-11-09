@@ -34,7 +34,7 @@ namespace tinytrain
 			CollisionManager::removeFromCollision(obj);
 	}
 
-	std::vector<tgf::Entity*> TTrainCollisionManager::tryCollideShape(tgf::collision::c2Shape shape, short collisionmask)
+	std::vector<tgf::collision::CollisionEntity*> TTrainCollisionManager::tryCollideShape(tgf::collision::c2Shape shape, short collisionmask)
 	{
 		auto rc = CollisionManager::tryCollideShape(shape, collisionmask);
 
@@ -180,7 +180,7 @@ namespace tinytrain
 		}
 			
 		// find collisions that already took place
-		std::vector<tgf::Entity*>::iterator col = std::find(obj.currentCollisions.begin(), obj.currentCollisions.end(), (tgf::Entity*)train);
+		std::vector<tgf::collision::CollisionEntity*>::iterator col = std::find(obj.currentCollisions.begin(), obj.currentCollisions.end(), (tgf::collision::CollisionEntity*)train);
 		
 		// call callbacks
 		if (hit)
@@ -190,9 +190,9 @@ namespace tinytrain
 				obj.currentCollisions.push_back(train);
 
 				if (obj.callback_enter)
-					obj.callback_enter((tgf::Entity*)train);
+					obj.callback_enter((tgf::collision::CollisionEntity*)train);
 
-				train->collision((tgf::Entity*)obj.obj);
+				train->collision(obj.obj);
 			}				
 		}
 		else if (col != obj.currentCollisions.end())
@@ -200,9 +200,9 @@ namespace tinytrain
 			obj.currentCollisions.erase(col);
 
 			if (obj.callback_leave)
-				obj.callback_leave((tgf::Entity*)train);
+				obj.callback_leave((tgf::collision::CollisionEntity*)train);
 
-			train->collisionEnd((tgf::Entity*)obj.obj);
+			train->collisionEnd(obj.obj);
 		}
 	}
 }

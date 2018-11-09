@@ -1,13 +1,13 @@
 #pragma once
 #include <SFML\Graphics.hpp>
-#include "Entity.h"
+#include "CollisionEntity.h"
 #include "TPassenger.h"
 
 namespace tinytrain
 {
 	class GameState_Running;
 
-	class TTrain : public tgf::Entity
+	class TTrain : public tgf::collision::CollisionEntity
 	{
 	public:
 		TTrain(GameState_Running* gs);

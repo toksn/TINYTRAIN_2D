@@ -1,5 +1,6 @@
 #pragma once
 #include "CollisionManager.h"
+#include <SFML/Graphics.hpp>
 
 namespace tgf
 {

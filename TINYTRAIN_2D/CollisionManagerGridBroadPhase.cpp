@@ -91,7 +91,9 @@ namespace tgf
 					else
 						maxpt_index = maxcell.x + maxcell.y * broadGrid_size_.x;
 
-					
+					// insert into cells min to max
+
+					// optional: save grid cells into objects (for faster update, remove)
 				}
 			}
 		}

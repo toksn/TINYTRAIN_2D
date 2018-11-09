@@ -20,8 +20,8 @@ namespace tinytrain
 		void setCollisionShape_AABB(c2v min, c2v max);
 		void setCollisionShape_Poly(const c2Poly poly);
 
-		virtual void onTriggerEnter(Entity* a_other);
-		virtual void onTriggerLeave(Entity* a_other);
+		virtual void onTriggerEnter(tgf::collision::CollisionEntity* a_other);
+		virtual void onTriggerLeave(tgf::collision::CollisionEntity* a_other);
 				
 		const bool winningTrigger_;
 		

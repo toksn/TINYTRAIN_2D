@@ -17,7 +17,7 @@ namespace tinytrain
 		virtual tgf::collision::c2Shape getCollisionShape() override;
 		virtual void updateCollisionShape();
 
-		virtual void onTriggerEnter(Entity* a_other);
+		virtual void onTriggerEnter(CollisionEntity* a_other);
 		const bool winningTrigger_;
 		
 		std::unique_ptr<sf::RectangleShape> drawable_;

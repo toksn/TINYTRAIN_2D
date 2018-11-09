@@ -81,7 +81,7 @@ namespace tinytrain
 		}
 	}
 
-	void TObstacle::onTriggerEnter(class Entity* other)
+	void TObstacle::onTriggerEnter(class CollisionEntity* other)
 	{
 		TTrain* train = dynamic_cast<TTrain*>(other);
 	

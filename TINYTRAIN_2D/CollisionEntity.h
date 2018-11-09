@@ -13,8 +13,7 @@ namespace tgf
 			virtual c2Shape getCollisionShape() { return collisionShape_; };
 			bool collisionUpdated = false;
 		protected:
-			tgf::collision::c2Shape collisionShape_;
-			
+			tgf::collision::c2Shape collisionShape_;			
 		};
 	}
 }

@@ -66,7 +66,7 @@ namespace tinytrain
 	}
 
 
-	void TPassenger::onTriggerEnter(Entity * other)
+	void TPassenger::onTriggerEnter(tgf::collision::CollisionEntity * other)
 	{
 	}
 }

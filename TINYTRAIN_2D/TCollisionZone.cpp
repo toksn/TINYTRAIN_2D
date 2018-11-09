@@ -32,7 +32,7 @@ namespace tinytrain
 		
 	}
 
-	void TCollisionZone::onTriggerEnter(class Entity* other)
+	void TCollisionZone::onTriggerEnter(class CollisionEntity* other)
 	{
 		TTrain* train = dynamic_cast<TTrain*>(other);
 	
@@ -46,7 +46,7 @@ namespace tinytrain
 		}
 	}
 
-	void TCollisionZone::onTriggerLeave(Entity * a_other)
+	void TCollisionZone::onTriggerLeave(CollisionEntity * a_other)
 	{
 	}
 

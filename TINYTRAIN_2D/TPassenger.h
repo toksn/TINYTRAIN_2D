@@ -35,7 +35,7 @@ namespace tinytrain
 		virtual void onDraw(sf::RenderTarget * target) override;
 		virtual void onUpdate(float deltaTime) override;
 
-		virtual void onTriggerEnter(Entity* other) override;
+		virtual void onTriggerEnter(tgf::collision::CollisionEntity* other) override;
 
 		sf::VertexArray collision_quad_;
 	};
