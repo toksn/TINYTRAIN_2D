@@ -45,7 +45,9 @@ namespace tgf
 		public:
 			virtual void update() = 0;
 			virtual std::vector<std::pair<collidingObject*, collidingObject*>> findPairs() = 0;
-			virtual std::vector<collidingObject*> findShapePairs(c2Shape* shape, uint16_t collision_mask) = 0; //todo maybe use collidingObject* instead of shape/coll_mask
+			//todo maybe use collidingObject* instead of shape/coll_mask
+			//todo add collision category param as well (0xFFFF default)
+			virtual std::vector<collidingObject*> findShapePairs(c2Shape* shape, uint16_t collision_mask /*= 0xFFFF, uint16_t collision_category = 0xFFFF*/) = 0; 
 			virtual std::vector<collidingObject*> getAllColliders() = 0;	// todo - remove
 			//virtual std::unordered_map<collidingObject*, collidingObject*> findPairs();
 
