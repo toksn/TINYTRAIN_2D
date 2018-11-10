@@ -112,8 +112,8 @@ namespace tinytrain
 			drawable_->setFillColor(sf::Color::Cyan);
 
 		//if(state_ == DrivingState::NORMAL)
-		if (navi_)
-			if (navi_->getState() == components::TRoadNavComponent::NavState::RUNNING_ || navi_->getState() == components::TRoadNavComponent::NavState::RUNNING_ON_CROSSING)
+		//if (navi_)
+		//	if (navi_->getState() == components::TRoadNavComponent::NavState::RUNNING_ || navi_->getState() == components::TRoadNavComponent::NavState::RUNNING_ON_CROSSING)
 				//drawable_moved_ = true;
 				collisionUpdated = true;
 	}

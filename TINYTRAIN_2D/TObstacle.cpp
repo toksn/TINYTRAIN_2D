@@ -59,7 +59,7 @@ namespace tinytrain
 	void TObstacle::onUpdate(float deltaTime)
 	{
 		// todo: lock update behind a flag which has to be set everytime someone changes the transformation/shape
-		if(collisionUpdated)
+		//if(collisionUpdated)
 			updateCollisionShape();
 	}
 
