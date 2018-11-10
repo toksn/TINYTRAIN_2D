@@ -1,11 +1,13 @@
 #include "TTrainCollisionManager.h"
 #include "CollisionEntity.h"
+#include "Broadphase_Grid.h"
 
 namespace tinytrain
 {
 
 	TTrainCollisionManager::TTrainCollisionManager()
 	{
+		broadphase_ = std::make_unique<tgf::collision::Broadphase_Grid>();
 	}
 
 
@@ -104,9 +106,25 @@ namespace tinytrain
 	void TTrainCollisionManager::update()
 	{
 		// check for collisions of trains against any obstacle based entity (this is special as trains always collide with everything and have no TObstacle base)
-		auto all_colliders = broadphase_->findShapePairs(nullptr, 0xFFFF);
 		for (auto& train : trains_)
 		{
+			c2Poly train_rect;
+			auto temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(0));
+			train_rect.verts[0] = { temp.x, temp.y };
+			temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(1));
+			train_rect.verts[1] = { temp.x, temp.y };
+			temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(2));
+			train_rect.verts[2] = { temp.x, temp.y };
+			temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(3));
+			train_rect.verts[3] = { temp.x, temp.y };
+			train_rect.count = 4;
+
+			tgf::collision::c2Shape s;
+			s.shape_ = &train_rect;
+			s.type_ = C2_POLY;
+
+			auto all_colliders = broadphase_->findShapePairs(&s, 0xFFFF);
+
 			for (auto collider : all_colliders)//.begin(); o != all_colliders.end(); ++o)
 			{
 				tryCollideTrainObject(train, collider);
