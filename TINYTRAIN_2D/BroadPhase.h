@@ -2,6 +2,8 @@
 #include <functional>
 #include <vector>
 #include <map>
+#include <unordered_set>
+
 namespace tgf
 {
 	namespace collision
@@ -16,7 +18,7 @@ namespace tgf
 			std::function<void(CollisionEntity*)> callback_leave;
 			uint16_t collision_mask;
 			uint16_t collision_category;
-			std::vector<CollisionEntity*> currentCollisions;
+			std::unordered_set<CollisionEntity*> currentCollisions;
 		};
 		enum CollisionCategory
 		{
@@ -44,6 +46,7 @@ namespace tgf
 			virtual void update() = 0;
 			virtual std::vector<std::pair<collidingObject*, collidingObject*>> findPairs() = 0;
 			virtual std::vector<collidingObject*> findShapePairs(c2Shape* shape, uint16_t collision_mask) = 0; //todo maybe use collidingObject* instead of shape/coll_mask
+			virtual std::vector<collidingObject*> getAllColliders() = 0;	// todo - remove
 			//virtual std::unordered_map<collidingObject*, collidingObject*> findPairs();
 
 			virtual void add(tgf::collision::collidingObject& obj) = 0;

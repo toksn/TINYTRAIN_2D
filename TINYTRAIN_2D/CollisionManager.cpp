@@ -75,8 +75,8 @@ namespace tgf
 				hit = c2Collided(collider1.shape_, NULL, collider1.type_, collider2.shape_, NULL, collider2.type_);
 
 			// find collisions that already took place
-			auto o1o2 = std::find(obj1.currentCollisions.begin(), obj1.currentCollisions.end(), obj2.obj);
-			auto o2o1 = std::find(obj2.currentCollisions.begin(), obj2.currentCollisions.end(), obj1.obj);
+			auto o1o2 = obj1.currentCollisions.find(obj2.obj);
+			auto o2o1 = obj2.currentCollisions.find(obj1.obj);
 
 			// call callbacks
 			if (hit)
@@ -86,7 +86,7 @@ namespace tgf
 					if (obj1.callback_enter)
 						obj1.callback_enter(obj2.obj);
 
-					obj1.currentCollisions.push_back(obj2.obj);
+					obj1.currentCollisions.emplace(obj2.obj);
 				}
 
 				if (o2o1 == obj2.currentCollisions.end())
@@ -94,7 +94,7 @@ namespace tgf
 					if (obj2.callback_enter)
 						obj2.callback_enter(obj1.obj);
 
-					obj2.currentCollisions.push_back(obj1.obj);
+					obj2.currentCollisions.emplace(obj1.obj);
 				}
 			}
 			else

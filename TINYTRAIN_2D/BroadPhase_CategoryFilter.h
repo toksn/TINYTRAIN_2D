@@ -17,6 +17,7 @@ namespace tgf
 			virtual void update() override;
 			virtual std::vector<std::pair<collidingObject*, collidingObject*>> findPairs() override;
 			virtual std::vector<collidingObject*> findShapePairs(c2Shape * shape, uint16_t collision_mask) override;
+			virtual std::vector<collidingObject*> getAllColliders() override;
 			virtual void add(tgf::collision::collidingObject & obj) override;
 			virtual void remove(CollisionEntity * obj) override;
 

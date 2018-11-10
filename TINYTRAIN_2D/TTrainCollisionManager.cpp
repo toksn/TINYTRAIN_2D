@@ -178,17 +178,17 @@ namespace tinytrain
 		}
 			
 		// find collisions that already took place
-		std::vector<tgf::collision::CollisionEntity*>::iterator col = std::find(obj->currentCollisions.begin(), obj->currentCollisions.end(), (tgf::collision::CollisionEntity*)train);
+		auto col = obj->currentCollisions.find(train);
 		
 		// call callbacks
 		if (hit)
 		{
 			if (col == obj->currentCollisions.end())
 			{
-				obj->currentCollisions.push_back(train);
+				obj->currentCollisions.emplace(train);
 
 				if (obj->callback_enter)
-					obj->callback_enter((tgf::collision::CollisionEntity*)train);
+					obj->callback_enter(train);
 
 				train->collision(obj->obj);
 			}				

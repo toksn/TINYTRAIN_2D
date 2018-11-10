@@ -8,6 +8,7 @@ namespace tgf
 
 		BroadPhase_CategoryFilter::BroadPhase_CategoryFilter()
 		{
+			printf("broadphase cat filter ctor\n");
 		}
 
 
@@ -82,6 +83,10 @@ namespace tgf
 			}
 
 			return collidedEntities;
+		}
+		std::vector<collidingObject*> BroadPhase_CategoryFilter::getAllColliders()
+		{
+			return findShapePairs(NULL, 0xFFFF);
 		}
 		void BroadPhase_CategoryFilter::add(collidingObject & obj)
 		{
