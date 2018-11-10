@@ -341,6 +341,8 @@ namespace tinytrain
 					cur_node_.valid = true;
 					cur_node_.node_id_ = node_id;
 					cur_node_.distStart_ = waypoints_.getLength();
+					cur_node_.distEnd_ = 0.0f;
+					cur_node_.started = false;
 					cur_node_.from = from;
 					cur_node_.to = to;
 				}
