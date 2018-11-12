@@ -105,6 +105,11 @@ namespace tinytrain
 
 	void TTrainCollisionManager::update()
 	{
+
+		// check all collider object against each other, only test for collision when they have their masks set up properly
+		CollisionManager::update();
+
+
 		// check for collisions of trains against any obstacle based entity (this is special as trains always collide with everything and have no TObstacle base)
 		for (auto& train : trains_)
 		{
@@ -130,9 +135,6 @@ namespace tinytrain
 				tryCollideTrainObject(train, collider);
 			}
 		}
-
-		// check all collider object against each other, only test for collision when they have their masks set up properly
-		CollisionManager::update();
 	}
 
 	void TTrainCollisionManager::tryCollideTrainObject(TTrain* train, tgf::collision::collidingObject* obj)
