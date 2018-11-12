@@ -23,6 +23,8 @@ namespace tinytrain
 			gs_->getCollisionManager()->addTrainToCollision(this);
 
 		debugDraw_ = false;
+		
+		currentCollisions.clear();
 	}
 
 	TTrain::~TTrain()

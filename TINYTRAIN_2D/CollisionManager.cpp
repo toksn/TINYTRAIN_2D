@@ -60,63 +60,74 @@ namespace tgf
 		{
 			broadphase_->update();
 
+			resolveCurrentCollisions();
+
 			auto pairs = broadphase_->findPairs();
 			for(auto p : pairs)
 				tryCollideObjects(*p.first, *p.second);
+		}
+
+		void CollisionManager::resolveCurrentCollisions()
+		{
+			auto colliders = broadphase_->getAllColliders();
+			for (auto it1 = colliders.begin(); it1 != colliders.end(); )
+			{
+				collidingObject* obj1 = *it1;
+				++it1;
+				for (auto it2 = obj1->currentCollisions.begin(); it2 != obj1->currentCollisions.end(); )
+				{
+					collidingObject* obj2 = *it2;
+					++it2;
+
+					auto shape = obj1->obj->getCollisionShape();
+					auto shape2 = obj2->obj->getCollisionShape();
+					if (c2Collided(shape.shape_, NULL, shape.type_, shape2.shape_, NULL, shape2.type_) == false)
+					{
+						if(obj1->callback_leave)
+							obj1->callback_leave(obj2->obj);
+						if(obj2->callback_leave)
+							obj2->callback_leave(obj1->obj);						
+
+						// remove from currentCol->currentCollision
+						obj2->currentCollisions.erase(obj1);
+
+						// remove from c->obj->currentCollision
+						obj1->currentCollisions.erase(obj2);
+					}
+				}
+			}
 		}
 		
 		void CollisionManager::tryCollideObjects(collidingObject& obj1, collidingObject& obj2)
 		{
 			bool hit = false;
 
+			// find collisions that already took place
+			bool o1o2 = obj1.currentCollisions.find(&obj2) != obj1.currentCollisions.end();
+			bool o2o1 = obj2.currentCollisions.find(&obj1) != obj2.currentCollisions.end();
+
 			auto collider1 = obj1.obj->getCollisionShape();
 			auto collider2 = obj2.obj->getCollisionShape();
-			if (collider1.shape_ && collider2.shape_)
+			
+			if (collider1.shape_ && collider2.shape_ && o1o2 == false && o2o1 == false)
 				hit = c2Collided(collider1.shape_, NULL, collider1.type_, collider2.shape_, NULL, collider2.type_);
-
-			// find collisions that already took place
-			auto o1o2 = obj1.currentCollisions.find(obj2.obj);
-			auto o2o1 = obj2.currentCollisions.find(obj1.obj);
-
+			
 			// call callbacks
 			if (hit)
 			{
-				if (o1o2 == obj1.currentCollisions.end())
+				if (o2o1 == false)
 				{
 					if (obj1.callback_enter)
 						obj1.callback_enter(obj2.obj);
 
-					obj1.currentCollisions.emplace(obj2.obj);
+					obj1.currentCollisions.emplace(&obj2);
 				}
-
-				if (o2o1 == obj2.currentCollisions.end())
+				if (o2o1 == false)
 				{
 					if (obj2.callback_enter)
 						obj2.callback_enter(obj1.obj);
 
-					obj2.currentCollisions.emplace(obj1.obj);
-				}
-			}
-			else
-			{
-				// remove from collision list
-				if (o1o2 != obj1.currentCollisions.end())
-				{
-					obj1.currentCollisions.erase(o1o2);
-
-					// callback on collision end
-					if (obj1.callback_leave)
-						obj1.callback_leave(obj2.obj);
-				}
-
-
-				if (o2o1 != obj2.currentCollisions.end())
-				{
-					obj2.currentCollisions.erase(o2o1);
-
-					// callback on collision end
-					if (obj2.callback_leave)
-						obj2.callback_leave(obj1.obj);
+					obj2.currentCollisions.emplace(&obj1);
 				}
 			}
 		}

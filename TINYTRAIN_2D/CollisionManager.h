@@ -33,6 +33,8 @@ namespace tgf
 
 			virtual void update();
 
+			virtual void resolveCurrentCollisions();
+
 						
 			template<class T> void addToCollision(T* const object, void(T::* const on_enter)(CollisionEntity*), void(T::* const on_leave)(CollisionEntity*), CollisionCategory category = CollisionCategory::STATIC_CATEGORY_1, uint16_t collisionmask = (uint16_t)CollisionCategory::STATIC_CATEGORY_1)
 			{

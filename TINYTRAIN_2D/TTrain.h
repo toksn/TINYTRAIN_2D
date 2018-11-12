@@ -45,6 +45,7 @@ namespace tinytrain
 
 		void collision(tgf::collision::CollisionEntity* other);
 		void collisionEnd(tgf::collision::CollisionEntity* other);
+		std::unordered_set<tgf::collision::collidingObject*> currentCollisions;
 
 	protected:
 		// Inherited via Entity

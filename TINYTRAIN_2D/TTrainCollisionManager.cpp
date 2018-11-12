@@ -103,12 +103,76 @@ namespace tinytrain
 		return CollisionManager::checkShapeForCollisions(shape, collisionmask);
 	}
 
+	void TTrainCollisionManager::resolveCurrentCollisions()
+	{
+		CollisionManager::resolveCurrentCollisions();
+
+		for (auto& train : trains_)
+		{
+			// resolve train current collisions
+			for (auto it = train->currentCollisions.begin(); it != train->currentCollisions.end();)
+			{
+				tgf::collision::collidingObject* obj = *it;
+				auto collider = obj->obj->getCollisionShape();
+				++it;
+				if (train->wagons_.size() && collider.shape_)
+				{
+#if 0		// TODO: re-enable when more more than just one wagons are checked
+					auto bb = train->wagons_[0].getGlobalBounds();
+					c2AABB aabb;
+					aabb.min.x = bb.left;
+					aabb.min.y = bb.top;
+					aabb.max.x = bb.left + bb.width;
+					aabb.max.y = bb.top + bb.height;
+					if (c2Collided(&aabb, NULL, C2_AABB, collider.shape_, NULL, collider.type_))
+					{
+						// train wagon AABB and obj.shape did collide
+						float rotation = train->wagons_[0].getRotation();
+						// test rotation for 0, 90, 180, 270, 360 degrees
+						rotation = fmod(rotation, 90.0f);
+						if (rotation == 0)
+						{
+							// dont have to test again because train AABB == train rect
+							hit = true;
+						}
+						else
+#else		constexpr if(true)
+						{
+#endif
+							{
+								// TODO: check for more than just the first wagon
+								// can make proper hit test now
+								c2Poly train_rect;
+								auto temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(0));
+								train_rect.verts[0] = { temp.x, temp.y };
+								temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(1));
+								train_rect.verts[1] = { temp.x, temp.y };
+								temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(2));
+								train_rect.verts[2] = { temp.x, temp.y };
+								temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(3));
+								train_rect.verts[3] = { temp.x, temp.y };
+								train_rect.count = 4;
+								if (c2Collided(collider.shape_, NULL, collider.type_, &train_rect, NULL, C2_POLY))
+								{
+									//if(train->collisionEnd)
+									train->collisionEnd(obj->obj);
+
+									if (obj->callback_leave)
+										obj->callback_leave(train);
+
+									train->currentCollisions.erase(obj);									
+								}
+							}
+						}
+				}
+			}
+		}
+	}
+
 	void TTrainCollisionManager::update()
 	{
-
 		// check all collider object against each other, only test for collision when they have their masks set up properly
 		CollisionManager::update();
-
 
 		// check for collisions of trains against any obstacle based entity (this is special as trains always collide with everything and have no TObstacle base)
 		for (auto& train : trains_)
@@ -144,6 +208,10 @@ namespace tinytrain
 
 		bool hit = false;
 		auto collider = obj->obj->getCollisionShape();
+
+		// find collisions that already took place
+		if (train->currentCollisions.find(obj) != train->currentCollisions.end())
+			return;
 
 		if (train->wagons_.size() && collider.shape_)
 		{
@@ -196,31 +264,16 @@ namespace tinytrain
 
 			hit = c2Collided(collider.shape_, NULL, collider.type_, &fake_point, NULL, C2_AABB);
 		}
-			
-		// find collisions that already took place
-		auto col = obj->currentCollisions.find(train);
 		
 		// call callbacks
 		if (hit)
 		{
-			if (col == obj->currentCollisions.end())
-			{
-				obj->currentCollisions.emplace(train);
+			train->currentCollisions.emplace(obj);
 
-				if (obj->callback_enter)
-					obj->callback_enter(train);
+			if (obj->callback_enter)
+				obj->callback_enter(train);
 
-				train->collision(obj->obj);
-			}				
-		}
-		else if (col != obj->currentCollisions.end())
-		{
-			obj->currentCollisions.erase(col);
-
-			if (obj->callback_leave)
-				obj->callback_leave((tgf::collision::CollisionEntity*)train);
-
-			train->collisionEnd(obj->obj);
+			train->collision(obj->obj);
 		}
 	}
 }

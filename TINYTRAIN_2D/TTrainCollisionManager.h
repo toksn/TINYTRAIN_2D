@@ -11,6 +11,7 @@ namespace tinytrain
 		~TTrainCollisionManager();
 
 		virtual void update() override;
+		virtual void TTrainCollisionManager::resolveCurrentCollisions() override;
 
 		void addTrainToCollision(TTrain* train);
 		virtual void removeFromCollision(void* obj) override;

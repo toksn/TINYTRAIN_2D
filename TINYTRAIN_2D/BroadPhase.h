@@ -18,8 +18,9 @@ namespace tgf
 			std::function<void(CollisionEntity*)> callback_leave;
 			uint16_t collision_mask;
 			uint16_t collision_category;
-			std::unordered_set<CollisionEntity*> currentCollisions;
+			std::unordered_set<collidingObject*> currentCollisions;
 		};
+
 		enum CollisionCategory
 		{
 			STATIC_CATEGORY_1 = (1u << 0),
