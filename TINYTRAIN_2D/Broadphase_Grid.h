@@ -36,6 +36,7 @@ namespace tgf
 			virtual void add(tgf::collision::collidingObject & obj) override;
 			virtual void remove(CollisionEntity * obj) override;
 
+			void calcGridCells(tgf::collision::c2Shape shape, sf::Vector2i & mincell, sf::Vector2i& maxcell);
 			void initGridSize(unsigned short x, unsigned short y, float cellsize, sf::Vector2f pos = sf::Vector2f(0.0f, 0.0f));
 			std::vector<collidingObject*> findPairs_forObject(collidingObject * collider, std::unordered_set<collidingObject*>& ignore_objects);
 			std::vector<collidingObject*>& cellMembers(unsigned short x, unsigned short y);
