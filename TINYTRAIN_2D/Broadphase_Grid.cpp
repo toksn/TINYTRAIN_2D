@@ -228,12 +228,16 @@ namespace tgf
 
 		void Broadphase_Grid::remove(CollisionEntity * obj)
 		{
-			printf("broadphase remove obj called...\t");
+			printf("broadphase remove obj called...\n");
 			for (auto c = colliders_.begin(); c != colliders_.end(); ++c)
 			{
 				if (c->obj.obj == obj)
 				{
-					printf("found obj... removing from cells (%i,%i)-(%i,%i)\n", c->x_min, c->y_min, c->x_max, c->y_max);
+					// remove from currentCollisions in other objects
+					for(auto obj2 : c->obj.currentCollisions)
+						obj2->currentCollisions.erase(&c->obj);
+
+					//printf("found obj... removing from cells (%i,%i)-(%i,%i)\n", c->x_min, c->y_min, c->x_max, c->y_max);
 					// remove collidingobject from its cells
 					removeCollidingObjectFromCells(*c);
 
