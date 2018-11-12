@@ -152,7 +152,7 @@ namespace tinytrain
 								temp = train->wagons_[0].getTransform().transformPoint(train->wagons_[0].getPoint(3));
 								train_rect.verts[3] = { temp.x, temp.y };
 								train_rect.count = 4;
-								if (c2Collided(collider.shape_, NULL, collider.type_, &train_rect, NULL, C2_POLY))
+								if (c2Collided(collider.shape_, NULL, collider.type_, &train_rect, NULL, C2_POLY) == false)
 								{
 									//if(train->collisionEnd)
 									train->collisionEnd(obj->obj);

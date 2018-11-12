@@ -172,6 +172,16 @@ namespace tinytrain
 					if (it->get() == passenger)
 					{
 						passenger->level_->points_ += passenger->points_;
+
+						// remove from current collisions
+						for (auto& c:currentCollisions)
+						{
+							if (c->obj == passenger)
+							{
+								currentCollisions.erase(c);
+								break;
+							}
+						}
 						
 						passengers_done_.push_back( std::move(*it) );
 						passengers_.erase(it);
