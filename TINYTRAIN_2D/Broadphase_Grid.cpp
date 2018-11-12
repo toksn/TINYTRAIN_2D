@@ -27,10 +27,13 @@ namespace tgf
 
 		void Broadphase_Grid::update()
 		{
+			//for (auto&c : cells_)
+			//	c.members.clear();
+
 			for (auto& a : colliders_)
 			{
 				auto& c = a.obj;
-				if (c.obj->collisionUpdated == false)
+				if (c.obj == nullptr || c.obj->collisionUpdated == false)
 					continue;
 
 				sf::Vector2i mincell, maxcell;
@@ -59,7 +62,7 @@ namespace tgf
 						for (int y = mincell.y; y <= maxcell.y; y++)
 							cells_[x + y * gridsize_.x].members.push_back(&c);
 
-					printf("moving object from cell range (%i,%i)-(%i,%i) to (%i, %i)-(%i, %i)\n", a.x_min, a.y_min, a.x_max, a.y_max, mincell.x, mincell.y, maxcell.x, maxcell.y);
+					//printf("moving object from cell range (%i,%i)-(%i,%i) to (%i, %i)-(%i, %i)\n", a.x_min, a.y_min, a.x_max, a.y_max, mincell.x, mincell.y, maxcell.x, maxcell.y);
 					// save grid cells into objects (for faster update, remove)
 					a.x_max = maxcell.x;
 					a.x_min = mincell.x;
@@ -69,12 +72,17 @@ namespace tgf
 
 				
 			}
+		
+			//debug_checkGridAndCells();
 		}
 
 		void Broadphase_Grid::debug_checkGridAndCells()
 		{
 			for (auto& a : colliders_)
 			{
+				if (a.obj.obj == nullptr)
+					continue;
+
 				auto shape = a.obj.obj->getCollisionShape();
 				sf::Vector2i mincell, maxcell;
 				calcGridCells(shape, mincell, maxcell);
@@ -92,6 +100,8 @@ namespace tgf
 				auto cell_index = tgf::math::MathHelper2D::getArrayCoordsFromIndex(i, gridsize_.x);
 				for (auto obj : c.members)
 				{
+					if (obj->obj == nullptr)
+						continue;
 					auto shape = obj->obj->getCollisionShape();
 					sf::Vector2i mincell, maxcell;
 					calcGridCells(shape, mincell, maxcell);
@@ -175,6 +185,9 @@ namespace tgf
 			std::vector<collidingObject*> pairs;
 			sf::Vector2i mincell, maxcell;
 
+			if (collider->obj == nullptr)
+				return pairs;
+
 			c2Shape col = collider->obj->getCollisionShape();
 			calcGridCells(col, mincell, maxcell);
 
@@ -215,17 +228,17 @@ namespace tgf
 
 		void Broadphase_Grid::remove(CollisionEntity * obj)
 		{
-			int i = 0;
 			printf("broadphase remove obj called...\t");
-			for (; i < colliders_.size(); i++)
+			for (auto c = colliders_.begin(); c != colliders_.end(); ++c)
 			{
-				if (colliders_[i].obj.obj == obj)
+				if (c->obj.obj == obj)
 				{
-					printf("found obj... removing from cells (%i,%i)-(%i,%i)\n", colliders_[i].x_min, colliders_[i].y_min, colliders_[i].x_max, colliders_[i].y_max);
+					printf("found obj... removing from cells (%i,%i)-(%i,%i)\n", c->x_min, c->y_min, c->x_max, c->y_max);
 					// remove collidingobject from its cells
-					removeCollidingObjectFromCells(colliders_[i]);
+					removeCollidingObjectFromCells(*c);
 
-					colliders_.erase(colliders_.begin() + i);
+					//colliders_[i].obj.obj = nullptr;
+					colliders_.erase(c);
 					break;
 				}
 			}
@@ -245,21 +258,20 @@ namespace tgf
 				for (int y = obj.y_min; y <= obj.y_max; y++)
 				{
 					auto& cellmembers = cells_[x + y * gridsize_.x].members;
-					for (int t = 0; t < cellmembers.size(); t++)
+					int size = cellmembers.size();
+					for (auto member = cellmembers.begin(); member != cellmembers.end(); ++member)
 					{
-						auto object = cellmembers[t];
-
-						if (object == &obj.obj)
+						if (*member == &obj.obj)
 						{
 							printf("(%i, %i)\t", x, y);
-							cellmembers.erase(cellmembers.begin() + t);
+							cellmembers.erase(member);
 							//cellmembers[t] = cellmembers[cellmembers.size() - 1];
 							//cellmembers.pop_back();
 
 							break;
 						}
 					}
-					if(t>cellmembers.size())
+					if(size==cellmembers.size())
 						printf("error: tried to remove an object from broadphase grid cell. didnt find it!");
 				}
 			}

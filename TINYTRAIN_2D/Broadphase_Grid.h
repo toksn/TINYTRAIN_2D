@@ -3,6 +3,7 @@
 #include <SFML\Graphics.hpp>
 
 #include <unordered_set>
+#include <list>
 
 namespace tgf
 {
@@ -44,7 +45,7 @@ namespace tgf
 		protected:
 			void removeCollidingObjectFromCells(object_info& obj);
 
-			std::vector<object_info> colliders_;
+			std::list<object_info> colliders_;
 			std::vector<cell> cells_;
 
 			// grid dimensions
