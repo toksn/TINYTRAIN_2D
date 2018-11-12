@@ -251,7 +251,7 @@ namespace tgf
 
 		void Broadphase_Grid::removeCollidingObjectFromCells(object_info& obj)
 		{
-			printf("removing object from cell. (%i,%i) to (%i,%i), erasing from:\t", obj.x_min, obj.y_min, obj.x_max, obj.y_max);
+			//printf("removing object from cell. (%i,%i) to (%i,%i), erasing from:\t", obj.x_min, obj.y_min, obj.x_max, obj.y_max);
 			// remove collidingobject from its cells
 			for (int x = obj.x_min; x <= obj.x_max; x++)
 			{
@@ -263,7 +263,7 @@ namespace tgf
 					{
 						if (*member == &obj.obj)
 						{
-							printf("(%i, %i)\t", x, y);
+							//printf("(%i, %i)\t", x, y);
 							cellmembers.erase(member);
 							//cellmembers[t] = cellmembers[cellmembers.size() - 1];
 							//cellmembers.pop_back();
@@ -272,10 +272,10 @@ namespace tgf
 						}
 					}
 					if(size==cellmembers.size())
-						printf("error: tried to remove an object from broadphase grid cell. didnt find it!");
+						printf("error: tried to remove an object from broadphase grid cell. didnt find it!\n");
 				}
 			}
-			printf("\n");
+			//printf("\n");
 		}
 
 	}

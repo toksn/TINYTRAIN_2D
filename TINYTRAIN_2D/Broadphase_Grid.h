@@ -43,6 +43,7 @@ namespace tgf
 			std::vector<collidingObject*>& cellMembers(unsigned short x, unsigned short y);
 			//void updateGrid();
 		protected:
+			void debug_checkGridAndCells();
 			void removeCollidingObjectFromCells(object_info& obj);
 
 			std::list<object_info> colliders_;

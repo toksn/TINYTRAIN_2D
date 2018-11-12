@@ -6,6 +6,8 @@
 	- combine neighboured tiles into bigger collisions to have as few collision shapes as possible
 
 - broad phase for collisions
+	- resolveCurrentCollisions before broadphase collision checking
+		- check for currentcollisions before adding a pair
 	- grid based (low constant overhead, narrow phase can run into performance issues when things clump up )
 	- quadtree subdivision (more overhead when updating stuff, less narrow phase collisions have to calced)
 
