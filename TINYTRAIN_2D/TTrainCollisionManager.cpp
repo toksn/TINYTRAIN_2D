@@ -113,6 +113,11 @@ namespace tinytrain
 			for (auto it = train->currentCollisions.begin(); it != train->currentCollisions.end();)
 			{
 				tgf::collision::collidingObject* obj = *it;
+				if (obj == nullptr)
+				{
+					it = train->currentCollisions.erase(it);
+					continue;
+				}
 				auto collider = obj->obj->getCollisionShape();
 				++it;
 				if (train->wagons_.size() && collider.shape_)
@@ -159,8 +164,8 @@ namespace tinytrain
 
 									if (obj->callback_leave)
 										obj->callback_leave(train);
-
-									train->currentCollisions.erase(obj);									
+									
+									train->currentCollisions.erase(obj);
 								}
 							}
 						}

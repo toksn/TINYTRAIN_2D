@@ -158,6 +158,8 @@ namespace tinytrain
 		TPassenger* passenger = dynamic_cast<TPassenger*>(other);
 		if (passenger)
 		{
+
+			printf("hit a passenger. id: %i\n", passenger->id_);
 			TPassenger::PassengerState state = passenger->getState();
 			if (state == TPassenger::PassengerState::WAIT_FOR_PICKUP && hasCapacity())
 			{
@@ -174,7 +176,7 @@ namespace tinytrain
 						passenger->level_->points_ += passenger->points_;
 
 						// remove from current collisions
-						for (auto& c:currentCollisions)
+						for (auto c : currentCollisions)
 						{
 							if (c->obj == passenger)
 							{
