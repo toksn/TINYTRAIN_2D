@@ -88,8 +88,23 @@ namespace tinytrain
 		info_level4.points_to_reach = 50;
 		info_level4.timelimit = 0.0f;
 
-		loadLevel(info_level3);
+		TLevel::level_info info_testlevel;
+		//info_testlevel.header = "sandbox"
+		info_testlevel.introduction_text = "Find your way through the traffic to bring at least 3 passengers to their destinations before going home!";
+		info_testlevel.map_file = "data/images/level/testbed.png";
+		info_testlevel.car_count = 20;
+		info_testlevel.passenger_count = 5;
+		info_testlevel.inital_wagon_count = 3;
+		info_testlevel.start_pts.emplace_back(sf::FloatRect(13.0f, 2.0f, 1.0f, 1.0f), direction::SOUTH, sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_testlevel.stations.emplace_back(sf::FloatRect(7.0f, 5.0f, 1.0f, 1.0f), sf::IntRect(0.0f, 0.0f, 0.0f, 0.0f));
+		info_testlevel.points_to_reach = 5;
+		info_testlevel.timelimit = 0.0f;
+
 		//loadLevel(info_level1);
+		//loadLevel(info_level2);
+		loadLevel(info_level3);
+		//loadLevel(info_level4);
+		//loadLevel(info_testlevel);
 		
 		gui_ = std::make_unique<gui::TLevelInfo_HUD>(level_.get(), *(game->font_));
 		if (game && game->window_)
