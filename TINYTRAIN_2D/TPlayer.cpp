@@ -46,7 +46,7 @@ namespace tinytrain
 		railcast_timer_ = 0.0f;
 		first_rail_ = true;
 
-		autocast_ = true;
+		autocast_ = false;
 	}
 
 

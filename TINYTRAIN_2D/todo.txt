@@ -2,20 +2,7 @@
 **  TODO  **
 ************
 
-- out of bounds collision
-	- combine neighboured tiles into bigger collisions to have as few collision shapes as possible
-
-- broad phase for collisions
-	- resolveCurrentCollisions before broadphase collision checking
-		- check for currentcollisions before adding a pair
-	- grid based (low constant overhead, narrow phase can run into performance issues when things clump up )
-	- quadtree subdivision (more overhead when updating stuff, less narrow phase collisions have to calced)
-
-- level editor or procedural level creation?
-	- level1: reach target zone (tutorial deco images)
-	- level2: do an easy passenger and reach target zone in time
-	- level3: do 3 passengers (in time)
-	- level4: [QUESTIONABLE] collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
+- TLevel_Builder: create 2 renderTextures from all static city elements. ground + above_train
 
 - GUI: add on-screen instructions (controls, goals, hints)
 	- add "get to your homestation" objective in the list when targetzones are active
@@ -28,7 +15,11 @@
 		- for environment particles
 		- particle effects when colliding
 
-- TLevel_Builder: create 2 renderTextures from all static city elements. ground + above_train
+- level editor or procedural level creation?
+	- level1: reach target zone (tutorial deco images)
+	- level2: do an easy passenger and reach target zone in time
+	- level3: do 3 passengers (in time)
+	- level4: [QUESTIONABLE] collect 1000pts (passengers, collectables, close calls, combos) and reach target zone
 
 - train vs train collision
 - check all wagons of a train for collision [only against non-static categories]
@@ -63,6 +54,10 @@
 ********************
 **	QUESTIONABLE  **
 ********************
+- broad phase for collisions
+	- quadtree subdivision (more overhead when updating stuff, less narrow phase collisions have to calced)
+- out of bounds collision
+	- combine neighboured tiles into bigger collisions to have as few collision shapes as possible
 - autocasting rails:
 	- add info about current angle [done] and current speed (circle from (0) to 2 to 4)
 	- only show current angle for first rail
@@ -79,6 +74,11 @@
 ************
 **	DONE  **
 ************
+- broad phase for collisions
+	- resolveCurrentCollisions before broadphase collision checking
+		- check for currentcollisions before adding a pair
+	- grid based (low constant overhead, narrow phase can run into performance issues when things clump up )
+
 - first iteration on "out of bounds collision"
 	- fixed: collisionzones around the map do not trigger
 
