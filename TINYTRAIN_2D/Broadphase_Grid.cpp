@@ -132,18 +132,18 @@ namespace tgf
 			return pairs;
 		}
 
-		std::vector<collidingObject*> Broadphase_Grid::getAllColliders()
+		std::unordered_set<collidingObject*> Broadphase_Grid::getAllColliders()
 		{
-			std::vector<collidingObject*> col;
+			std::unordered_set<collidingObject*> col;
 			col.reserve(colliders_.size());
 			for (auto& o : colliders_)
-				col.push_back(&o.obj);
+				col.emplace(&o.obj);
 			return col;
 		}
 
-		std::vector<collidingObject*> Broadphase_Grid::findShapePairs(c2Shape * shape, uint16_t collision_mask)
+		std::unordered_set<collidingObject*> Broadphase_Grid::findShapePairs(c2Shape * shape, uint16_t collision_mask)
 		{
-			std::vector<collidingObject*> pairs;
+			std::unordered_set<collidingObject*> pairs;
 			sf::Vector2i mincell, maxcell;
 			calcGridCells(*shape, mincell, maxcell);
 			
@@ -155,7 +155,7 @@ namespace tgf
 					for (auto other : cellmembers)
 					{
 						if (collision_mask & other->collision_category)
-							pairs.push_back(other);
+							pairs.emplace(other);
 					}
 				}
 			}
@@ -180,9 +180,9 @@ namespace tgf
 		}
 
 		// find other objects in the same grid cells as collider
-		std::vector<collidingObject*> Broadphase_Grid::findPairs_forObject(collidingObject * collider, std::unordered_set<collidingObject*>& ignore_objects)
+		std::unordered_set<collidingObject*> Broadphase_Grid::findPairs_forObject(collidingObject * collider, std::unordered_set<collidingObject*>& ignore_objects)
 		{
-			std::vector<collidingObject*> pairs;
+			std::unordered_set<collidingObject*> pairs;
 			sf::Vector2i mincell, maxcell;
 
 			if (collider->obj == nullptr)
@@ -206,14 +206,14 @@ namespace tgf
 							if (ignore_objects.find(other) != ignore_objects.end())
 								continue;
 							
-							pairs.push_back(other);
+							pairs.emplace(other);
 						}
 					}
 				}
 			}
 
 			// only ignore this object further down the line when it occupies more than 1 cell
-			if (mincell == maxcell)
+			if (mincell != maxcell)
 				ignore_objects.insert(collider);
 
 			return pairs;

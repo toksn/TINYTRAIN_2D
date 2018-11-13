@@ -65,9 +65,9 @@ namespace tgf
 			}
 			return pairs;
 		}
-		std::vector<collidingObject*> BroadPhase_CategoryFilter::findShapePairs(c2Shape * shape, uint16_t collision_mask)
+		std::unordered_set<collidingObject*> BroadPhase_CategoryFilter::findShapePairs(c2Shape * shape, uint16_t collision_mask)
 		{
-			std::vector<collidingObject*> collidedEntities;
+			std::unordered_set<collidingObject*> collidedEntities;
 			if (collision_mask != 0/* && shape->shape_ != nullptr*/)
 			{
 				for (auto& category : colliders_)
@@ -76,7 +76,7 @@ namespace tgf
 					{
 						for (auto& other : category.second)
 						{
-							collidedEntities.push_back(&other);
+							collidedEntities.emplace(&other);
 						}
 					}
 				}
@@ -84,7 +84,7 @@ namespace tgf
 
 			return collidedEntities;
 		}
-		std::vector<collidingObject*> BroadPhase_CategoryFilter::getAllColliders()
+		std::unordered_set<collidingObject*> BroadPhase_CategoryFilter::getAllColliders()
 		{
 			return findShapePairs(NULL, 0xFFFF);
 		}
