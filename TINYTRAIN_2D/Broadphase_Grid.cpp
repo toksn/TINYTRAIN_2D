@@ -116,13 +116,14 @@ namespace tgf
 		{
 			std::vector<std::pair<collidingObject*, collidingObject*>> pairs;
 			std::unordered_set<collidingObject*> already_checked;
+			std::unordered_set<collidingObject*> others;
 
 			for (auto& c : colliders_)
 			{
 				auto& collider = c.obj;
 
 				// find other objects in the same grid cells as collider
-				auto others = findPairs_forObject(&collider, already_checked);
+				findPairs_forObject(&collider, already_checked, others);
 				
 				// add them to the found pairs
 				for(auto other : others)
@@ -180,13 +181,13 @@ namespace tgf
 		}
 
 		// find other objects in the same grid cells as collider
-		std::unordered_set<collidingObject*> Broadphase_Grid::findPairs_forObject(collidingObject * collider, std::unordered_set<collidingObject*>& ignore_objects)
+		void Broadphase_Grid::findPairs_forObject(collidingObject * collider, std::unordered_set<collidingObject*>& ignore_objects, std::unordered_set<collidingObject*>& pairs)
 		{
-			std::unordered_set<collidingObject*> pairs;
 			sf::Vector2i mincell, maxcell;
+			pairs.clear();
 
 			if (collider->obj == nullptr)
-				return pairs;
+				return;
 
 			c2Shape col = collider->obj->getCollisionShape();
 			calcGridCells(col, mincell, maxcell);
@@ -216,7 +217,7 @@ namespace tgf
 			if (mincell != maxcell)
 				ignore_objects.insert(collider);
 
-			return pairs;
+			return;
 		}
 
 		void Broadphase_Grid::add(tgf::collision::collidingObject & obj)

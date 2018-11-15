@@ -31,7 +31,7 @@ namespace tgf
 				//for (auto collider : category->second)
 				for (int i = 0; i < category->second.size(); i++)
 				{
-					auto collider = category->second[i];
+					auto& collider = category->second[i];
 					if ((collider.collision_mask & (uint16_t)category->first) != 0)
 					{
 						// only check against upcoming objects FROM THE SAME CATEGORY to prevent finding collisions twice
