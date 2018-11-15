@@ -2,6 +2,10 @@
 **  TODO  **
 ************
 
+- TPassenger: add class to draw sprite animations
+	- tgf::animatedSprite::transformable,drawable: fps, direction_mode[from movement_mode] (oneway, twoway), repeat, continue, pause, reset
+	- tgf::animation: (name), vec<coords> frames (sprite_size?), texture, functions_to_access_frames_rw
+
 - TLevel_Builder: create 2 renderTextures from all static city elements. ground + above_train
 
 - GUI: add on-screen instructions (controls, goals, hints)
