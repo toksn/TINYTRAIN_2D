@@ -12,6 +12,12 @@ enum direction
 	DIR_COUNT	// 4
 };
 
+enum class directionMode
+{
+	OneWay = 0,		// A>B   (A>B)  (A>B)
+	TwoWay			// A>B>A (A>B>A) (A>B>A)
+};
+
 
 constexpr float RAD_TO_DEG = 180.0f / M_PI;
 constexpr float DEG_TO_RAD = M_PI / 180.0f;

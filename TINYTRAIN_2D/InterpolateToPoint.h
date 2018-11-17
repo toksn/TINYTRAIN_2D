@@ -7,17 +7,11 @@ namespace tgf
 {
 	namespace components
 	{
-		enum class MovementType
-		{
-			OneWay,			// A>B   (A>B)  (A>B)
-			TwoWay			// A>B>A (A>B>A) (A>B>A)
-		};
-
 		class InterpolateToPoint : public Component
 		{
 		public:
 			InterpolateToPoint();
-			InterpolateToPoint(sf::Vector2f start, sf::Vector2f end, float duration, MovementType type = MovementType::OneWay, bool repeat = false, bool removeOnEnd = true);
+			InterpolateToPoint(sf::Vector2f start, sf::Vector2f end, float duration, directionMode type = directionMode::OneWay, bool repeat = false, bool removeOnEnd = true);
 			~InterpolateToPoint();
 
 			// Inherited via Component
@@ -37,7 +31,7 @@ namespace tgf
 			void getControlPoints(sf::Vector2f& start, sf::Vector2f& end);
 
 
-			MovementType type_ = MovementType::OneWay;
+			directionMode type_ = directionMode::OneWay;
 			bool repeat_ = false;
 			// set to negative number to fully pause before repeat
 			float delayOnRepeat_ = 0.0f;

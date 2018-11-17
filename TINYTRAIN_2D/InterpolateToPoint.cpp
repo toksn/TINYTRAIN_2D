@@ -8,7 +8,7 @@ namespace tgf
 		InterpolateToPoint::InterpolateToPoint()
 		{
 			// default values
-			MovementType type_ = MovementType::OneWay;
+			directionMode type_ = directionMode::OneWay;
 			bool repeat_ = false;
 			// set to negative number to fully pause before repeat
 			float delayOnRepeat_ = 0.0f;
@@ -23,7 +23,7 @@ namespace tgf
 		}
 
 		// constructor for interpolation of an entity with default values to use for fire and forget
-		InterpolateToPoint::InterpolateToPoint(sf::Vector2f start, sf::Vector2f end, float duration, MovementType type, bool repeat, bool removeOnEnd)
+		InterpolateToPoint::InterpolateToPoint(sf::Vector2f start, sf::Vector2f end, float duration, directionMode type, bool repeat, bool removeOnEnd)
 		{
 			setControlPoints(start, end);
 			duration_ = duration;
@@ -50,10 +50,10 @@ namespace tgf
 				// todo: use delayonrepeat
 				if (time_ >= duration_)
 				{
-					if (repeat_ || (back_ == false && type_ == MovementType::TwoWay))
+					if (repeat_ || (back_ == false && type_ == directionMode::TwoWay))
 					{
 						// repeat in the other direction
-						if(type_ == MovementType::TwoWay)
+						if(type_ == directionMode::TwoWay)
 							back_ = !back_;
 
 						time_ = time_ - duration_;
