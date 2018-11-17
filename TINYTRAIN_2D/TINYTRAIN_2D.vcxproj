@@ -136,6 +136,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedSprite.cpp" />
     <ClCompile Include="Broadphase_CategoryFilter.cpp" />
     <ClCompile Include="CityGenerator.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
@@ -155,6 +156,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineTexture.cpp" />
     <ClCompile Include="Spline_CatmullRom.cpp" />
+    <ClCompile Include="SpriteSequence.cpp" />
     <ClCompile Include="TCar.cpp" />
     <ClCompile Include="TCollisionZone.cpp" />
     <ClCompile Include="TConeInputComponent.cpp" />
@@ -176,6 +178,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClCompile Include="TTrainCollisionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedSprite.h" />
     <ClInclude Include="Broadphase.h" />
     <ClInclude Include="Broadphase_CategoryFilter.h" />
     <ClInclude Include="CityGenerator.h" />
@@ -199,6 +202,7 @@ XCOPY $(ProjectDir)resources\images\* $(OutputPath)data\images /i /s /Y</Command
     <ClInclude Include="Spline.h" />
     <ClInclude Include="SplineTexture.h" />
     <ClInclude Include="Spline_CatmullRom.h" />
+    <ClInclude Include="SpriteSequence.h" />
     <ClInclude Include="TCar.h" />
     <ClInclude Include="TCollisionZone.h" />
     <ClInclude Include="TConeInputComponent.h" />

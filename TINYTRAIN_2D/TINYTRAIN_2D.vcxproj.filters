@@ -164,6 +164,12 @@
     <ClCompile Include="Broadphase_Grid.cpp">
       <Filter>GameFramework\collision\broadphase</Filter>
     </ClCompile>
+    <ClCompile Include="SpriteSequence.cpp">
+      <Filter>GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedSprite.cpp">
+      <Filter>GameFramework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -294,6 +300,12 @@
     </ClInclude>
     <ClInclude Include="Broadphase_Grid.h">
       <Filter>GameFramework\collision\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteSequence.h">
+      <Filter>GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedSprite.h">
+      <Filter>GameFramework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
