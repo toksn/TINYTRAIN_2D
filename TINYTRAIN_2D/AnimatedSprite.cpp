@@ -93,6 +93,13 @@ namespace tgf
 		texture_ = tex;
 	}
 
+	void AnimatedSprite::setRandomFrame()
+	{
+		auto fcount = frameSequence_->getFrameCount();
+		if (fcount)
+			frame_ = rand() % fcount;
+	}
+
 	const sf::Vector2f & AnimatedSprite::getCurrentFrameSize()
 	{
 		return vertices_[2].position;

@@ -27,6 +27,7 @@ namespace tinytrain
 			//sprite_->setTexture(spriteSeq_->getSpriteSheetTexture());
 			sprite_->setFrameSequence(spriteSeq_.get());
 
+			sprite_->setRandomFrame();
 			sprite_->setDirectionMode(directionMode::TwoWay, true);
 			sprite_->run();
 		}

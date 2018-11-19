@@ -20,6 +20,7 @@ namespace tgf
 		void setFPS(unsigned int fps);
 		void setColor(sf::Color col);
 		void setTexture(sf::Texture* tex);
+		void setRandomFrame();
 
 		const sf::Vector2f& getCurrentFrameSize();
 
