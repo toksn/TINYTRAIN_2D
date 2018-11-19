@@ -1,6 +1,7 @@
 #pragma once
 //#include "TObstacle.h"
 #include "TCollisionZone.h"
+#include "AnimatedSprite.h"
 
 namespace tinytrain
 {
@@ -30,6 +31,8 @@ namespace tinytrain
 		void setState(PassengerState newstate);
 		PassengerState getState();
 
+		virtual void updateCollisionShape_matchDrawable();
+
 	private:
 		PassengerState state_;
 
@@ -38,6 +41,10 @@ namespace tinytrain
 
 		virtual void onTriggerEnter(tgf::collision::CollisionEntity* other) override;
 
+		std::unique_ptr<tgf::AnimatedSprite> sprite_;
+		std::unique_ptr<tgf::SpriteSequence> spriteSeq_;
+
+		// todo is this needed?
 		sf::VertexArray collision_quad_;
 	};
 }

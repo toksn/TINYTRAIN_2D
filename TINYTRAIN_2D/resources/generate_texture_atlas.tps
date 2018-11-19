@@ -183,6 +183,29 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_00.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_01.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_02.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_03.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_04.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_05.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_06.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_07.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_08.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_09.png</key>
+            <key type="filename">../../../GFX/2d/64x64/animations/passenger/ani_passenger_10.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>8,8,16,16</rect>
+                <key>scale9Paddings</key>
+                <rect>8,8,16,16</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_1.png</key>
             <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_2.png</key>
             <key type="filename">../../../GFX/2d/64x64/fulltile/fulltile_bg_3.png</key>
@@ -292,6 +315,7 @@
             <filename>images/info/arrow.png</filename>
             <filename>../../../GFX/2d/64x64/info</filename>
             <filename>../../../GFX/2d/64x64/fulltile</filename>
+            <filename>../../../GFX/2d/64x64/animations/passenger</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
