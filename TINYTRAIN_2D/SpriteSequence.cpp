@@ -21,12 +21,17 @@ namespace tgf
 
 		if (atlas)
 		{
+			texture_ = atlas->getTexture();
+
 			// fill frames from ani_name_xx
 			const std::string prefix = "ani_" + name + "_";
 			auto first = atlas->texture_coords_.lower_bound(prefix);
 			auto second = atlas->texture_coords_.upper_bound(prefix + "zzz");
 			if (first != atlas->texture_coords_.end() && second != atlas->texture_coords_.end())
 			{
+				if(first == second)
+					printf("SpriteSequence ctor: could not find any ani_%s_[] entries in the texture atlas\n", name.c_str());
+
 				for (auto it = first; it != second; ++it)
 				{
 					std::string suffix = it->first.substr(prefix.length());
@@ -37,6 +42,8 @@ namespace tgf
 					}
 				}
 			}
+			else
+				printf("SpriteSequence ctor: could not find any ani_%s_[] entries in the texture atlas\n", name.c_str());
 		}
 	}
 
@@ -46,7 +53,7 @@ namespace tgf
 
 	bool SpriteSequence::getFrame(sf::IntRect& output, int frame_index)
 	{
-		if (frame_index < 0 || frame_index > frames_.size() - 1)
+		if (frames_.size() == 0 || frame_index < 0 || frame_index > frames_.size() - 1)
 			return false;
 
 		output = frames_[frame_index];

@@ -19,7 +19,7 @@ namespace tinytrain
 		void setCollisionCategory(tgf::collision::CollisionCategory cat);
 		void setCollisionShape_AABB(c2v min, c2v max);
 		void setCollisionShape_Poly(const c2Poly poly);
-		void updateCollisionShape_matchDrawable();
+		virtual void updateCollisionShape_matchDrawable();
 
 		virtual void onTriggerEnter(tgf::collision::CollisionEntity* a_other);
 		virtual void onTriggerLeave(tgf::collision::CollisionEntity* a_other);

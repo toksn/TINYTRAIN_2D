@@ -4,7 +4,7 @@
 
 namespace tgf
 {
-	class AnimatedSprite : public sf::Transformable, sf::Drawable
+	class AnimatedSprite : public sf::Transformable, public sf::Drawable
 	{
 	public:
 		AnimatedSprite();
@@ -19,6 +19,9 @@ namespace tgf
 		void setDirectionMode(directionMode dir, bool repeat = true);
 		void setFPS(unsigned int fps);
 		void setColor(sf::Color col);
+		void setTexture(sf::Texture* tex);
+
+		const sf::Vector2f& getCurrentFrameSize();
 
 		void run();
 		void pause();

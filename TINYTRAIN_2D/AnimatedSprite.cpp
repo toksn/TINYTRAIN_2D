@@ -55,6 +55,7 @@ namespace tgf
 			if (time_ >= frametime_)
 			{
 				nextFrame();
+				time_ -= frametime_;
 			}
 		}
 	}
@@ -85,6 +86,16 @@ namespace tgf
 	{
 		for (int i = 0; i < 4; i++)
 			vertices_[i].color = col;
+	}
+
+	void AnimatedSprite::setTexture(sf::Texture * tex)
+	{
+		texture_ = tex;
+	}
+
+	const sf::Vector2f & AnimatedSprite::getCurrentFrameSize()
+	{
+		return vertices_[2].position;
 	}
 
 	void AnimatedSprite::run()
@@ -126,7 +137,7 @@ namespace tgf
 			actual_frame = 2 * frameSequence_->getFrameCount() - frame_ - 2;
 
 		sf::IntRect rect;
-		if (frameSequence_->getFrame(rect, frame_))
+		if (frameSequence_->getFrame(rect, actual_frame))
 		{
 			vertices_[0].position.x = 0.0f;
 			vertices_[0].position.y = 0.0f;
