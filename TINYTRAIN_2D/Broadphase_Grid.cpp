@@ -229,7 +229,7 @@ namespace tgf
 
 		void Broadphase_Grid::remove(CollisionEntity * obj)
 		{
-			printf("broadphase remove obj called...\n");
+			//printf("broadphase remove obj called...\n");
 			for (auto c = colliders_.begin(); c != colliders_.end(); ++c)
 			{
 				if (c->obj.obj == obj)

@@ -87,6 +87,9 @@ namespace tinytrain
 				wagons_[i].setFillColor(color_filledwagons_);
 		}
 
+		for (auto& p : passengers_)
+			p->update(dt);
+
 		passengers_done_.clear();
 	}
 
