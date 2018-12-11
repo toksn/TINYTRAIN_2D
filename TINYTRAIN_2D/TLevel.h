@@ -97,8 +97,8 @@ namespace tinytrain
 		GameState_Running* gs_;
 
 		sf::VertexArray background_static_;
-		sf::VertexArray foreground_static_;			// drawn in front of static2_
-		sf::VertexArray foreground_static2_;		// drawn behind static_
-		sf::VertexArray foreground_dynamic_;		// drawn in front of both statics
+		sf::VertexArray foreground_static2_;		// drawn in front of background_static, behind foreground_static_
+		sf::VertexArray foreground_static_;			// drawn in front of foreground_static2_
+		sf::VertexArray foreground_dynamic_;		// drawn in front of both foreground statics
 	};
 }
